@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:news_app/config/theme/app_icons.dart';
 import 'package:news_app/config/theme/theme.dart';
-import 'package:news_app/features/auth/screens/login_screen.dart';
-import 'package:news_app/features/auth/widgets/sign_up_form.dart';
+import 'package:news_app/features/auth/widgets/login_form.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
-  static const String route = '/kRouteSignUp';
-
+  static const String route = '/kRouteLogin';
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   bool isObscure = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,12 +49,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 25),
               child: Text(
-                "Sign Up",
+                "Login",
                 style: AppStyle.boldText20
                     .copyWith(color: AppColors.darkBlueShade1),
               ),
             ),
-            SignUpForm(),
+            LoginForm(),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text("or with your",
@@ -82,17 +79,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: 25.h,
             ),
             GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed(LoginScreen.route);
-              },
               child: RichText(
                 text: TextSpan(
-                  text: "Already have an account? ",
+                  text: "New Here? ",
                   style: AppStyle.regularText14
                       .copyWith(color: AppColors.darkBlueShade2),
                   children: [
                     TextSpan(
-                      text: "Login",
+                      text: "SignUp",
                       style: AppStyle.boldText16
                           .copyWith(color: AppColors.yellowShade2),
                     ),
