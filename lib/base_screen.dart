@@ -15,10 +15,14 @@ class BaseScreen extends StatelessWidget {
     return StreamBuilder<User?>(
         stream: _authService.checkUser(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.data != null) {
             return const AuthTest();
           }
-          return LoginScreen();
+          if (snapshot.data == null) {
+            return LoginScreen();
+          } else {
+            return CircularProgressIndicator();
+          }
         });
   }
 }

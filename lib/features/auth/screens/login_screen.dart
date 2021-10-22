@@ -6,6 +6,7 @@ import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/auth/screens/auth_test.dart';
+import 'package:news_app/features/auth/screens/sign_up_screen.dart';
 import 'package:news_app/features/auth/widgets/login_form.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -66,10 +67,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     final result = value.currentState!.value;
                     BlocProvider.of<AuthBloc>(context)
                         .add(LoginEvent(user: UserModel.fromMap(result)));
-                    if (state is AuthSuccess) {
-                      Navigator.of(context)
-                          .pushReplacementNamed(AuthTest.route);
-                    }
                   },
                 ),
                 Padding(
@@ -96,6 +93,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 25.h,
                 ),
                 GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushReplacementNamed(SignUpScreen.route);
+                  },
                   child: RichText(
                     text: TextSpan(
                       text: "New Here? ",

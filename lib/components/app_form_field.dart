@@ -10,6 +10,7 @@ class AppFormField extends StatelessWidget {
       required this.hintText,
       this.isObscure,
       this.onTap,
+      this.validators,
       required this.suffixIcon,
       required this.textInputAction})
       : super(key: key);
@@ -17,6 +18,7 @@ class AppFormField extends StatelessWidget {
   final String fieldTitle, fieldName, hintText;
   final IconData suffixIcon;
   final TextInputAction textInputAction;
+  FormFieldValidator<String>? validators;
   bool? isObscure;
   VoidCallback? onTap;
 
@@ -33,6 +35,7 @@ class AppFormField extends StatelessWidget {
                 .copyWith(color: AppColors.darkBlueShade1),
           ),
           FormBuilderTextField(
+            validator: validators,
             obscureText: isObscure ?? false,
             name: fieldName,
             textInputAction: textInputAction,

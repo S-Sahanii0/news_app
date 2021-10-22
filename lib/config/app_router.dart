@@ -33,7 +33,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ));
 
     case AuthTest.route:
-      return MaterialPageRoute(builder: (context) => const AuthTest());
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _authBloc,
+                child: AuthTest(),
+              ));
 
     default:
       return CupertinoPageRoute<void>(

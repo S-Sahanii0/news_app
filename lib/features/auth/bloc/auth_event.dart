@@ -14,3 +14,7 @@ class LoginEvent extends AuthEvent {
 
   LoginEvent({required this.user});
 }
+
+class LogoutEvent extends AuthEvent {}
+
+class ListenUserState extends AuthEvent {}

@@ -26,6 +26,8 @@ class _SignUpFormState extends State<SignUpForm> {
             hintText: "Username",
             suffixIcon: Icons.person_outline_outlined,
             textInputAction: TextInputAction.next,
+            validators: FormBuilderValidators.compose(
+                [FormBuilderValidators.required(context)]),
           ),
           AppFormField(
             fieldTitle: "Email",
@@ -52,7 +54,7 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
           FormButton(
             onTap: () {
-              widget.onSubmit;
+              widget.onSubmit(SignUpForm._formKey);
             },
           ),
           SizedBox(

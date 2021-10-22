@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:news_app/base_screen.dart';
 
 import 'package:news_app/config/theme/app_icons.dart';
 import 'package:news_app/config/theme/theme.dart';
@@ -24,25 +25,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isObscure = true;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: AppColors.appWhite,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: const Icon(
-            Icons.chevron_left_outlined,
-            color: AppColors.appBlack,
-            size: 20,
+    return BlocConsumer<AuthBloc, AuthState>(
+      buildWhen: (prev, current) => prev != current,
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          Navigator.of(context).pushReplacementNamed(AuthTest.route);
+        }
+        if (state is LogoutState) {
+          Navigator.of(context).pushReplacementNamed(LoginScreen.route);
+        }
+      },
+      builder: (context, state) => Scaffold(
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: AppColors.appWhite,
+            leading: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: const Icon(
+                Icons.chevron_left_outlined,
+                color: AppColors.appBlack,
+                size: 20,
+              ),
+            ),
           ),
-        ),
-      ),
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          return SingleChildScrollView(
+          body: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -69,11 +78,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     final result = value.currentState!.value;
                     BlocProvider.of<AuthBloc>(context)
                         .add(RegisterEvent(user: UserModel.fromMap(result)));
-
-                    if (state is AuthSuccess) {
-                      Navigator.of(context)
-                          .pushReplacementNamed(AuthTest.route);
-                    }
                   },
                 ),
                 Padding(
@@ -123,9 +127,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 )
               ],
             ),
-          );
-        },
-      ),
+          )),
     );
   }
 }

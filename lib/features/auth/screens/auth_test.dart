@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/features/auth/bloc/auth_bloc.dart';
+import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/auth/services/auth_service.dart';
 
 class AuthTest extends StatelessWidget {
@@ -14,7 +17,8 @@ class AuthTest extends StatelessWidget {
         children: [
           GestureDetector(
               onTap: () {
-                AuthService().logout();
+                Navigator.of(context).pushReplacementNamed(LoginScreen.route);
+                BlocProvider.of<AuthBloc>(context).add(LogoutEvent());
               },
               child: Center(
                   child: Text(FirebaseAuth.instance.currentUser!.email!))),

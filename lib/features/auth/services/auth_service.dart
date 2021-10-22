@@ -26,11 +26,11 @@ class AuthService {
   }
 
   Stream<User?> checkUser() {
-    return _firebaseAuth.authStateChanges();
+    return _firebaseAuth.authStateChanges().asBroadcastStream();
   }
 
-  void logout() {
-    _firebaseAuth.signOut();
+  void logout() async {
+    await _firebaseAuth.signOut();
   }
 
   Future login(UserModel userModel) {

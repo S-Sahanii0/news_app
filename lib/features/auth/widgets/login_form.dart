@@ -45,7 +45,7 @@ class _LoginFormState extends State<LoginForm> {
             height: 10.h,
           ),
           FormButton(
-            onTap: () => widget.onSubmit,
+            onTap: () => widget.onSubmit(LoginForm._formKey),
           ),
           SizedBox(
             height: 15.h,
