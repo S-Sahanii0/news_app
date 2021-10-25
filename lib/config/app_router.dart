@@ -6,6 +6,7 @@ import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/auth/screens/sign_up_screen.dart';
+import 'package:news_app/features/news_feed/screens/my_feed.dart';
 
 import 'theme/app_colors.dart';
 
@@ -32,11 +33,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                 child: const LoginScreen(),
               ));
 
-    case AuthTest.route:
+    case MyFeedScreen.route:
       return MaterialPageRoute(
           builder: (context) => BlocProvider.value(
                 value: _authBloc,
-                child: AuthTest(),
+                child: const MyFeedScreen(),
               ));
 
     default:

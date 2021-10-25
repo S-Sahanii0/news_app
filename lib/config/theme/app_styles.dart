@@ -11,6 +11,10 @@ class AppStyle {
       fontFamily: 'PoppinsRegular',
       fontWeight: FontWeight.w700,
       fontSize: 16.sp);
+  static TextStyle boldText14 = TextStyle(
+      fontFamily: 'PoppinsRegular',
+      fontWeight: FontWeight.w700,
+      fontSize: 14.sp);
 
   //SemiBoldTextStyle
   static TextStyle semiBoldText16 = TextStyle(
@@ -61,6 +65,10 @@ class AppStyle {
       fontFamily: 'PoppinsRegular',
       fontWeight: FontWeight.w400,
       fontSize: 12.sp);
+  static TextStyle regularText10 = TextStyle(
+      fontFamily: 'PoppinsRegular',
+      fontWeight: FontWeight.w400,
+      fontSize: 10.sp);
 
   //Light TextStyle
   static TextStyle lightText12 = TextStyle(

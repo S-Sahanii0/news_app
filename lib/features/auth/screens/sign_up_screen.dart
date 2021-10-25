@@ -11,6 +11,7 @@ import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/auth/widgets/sign_up_form.dart';
+import 'package:news_app/features/news_feed/screens/my_feed.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -29,7 +30,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       buildWhen: (prev, current) => prev != current,
       listener: (context, state) {
         if (state is AuthSuccess) {
-          Navigator.of(context).pushReplacementNamed(AuthTest.route);
+          Navigator.of(context).pushReplacementNamed(MyFeedScreen.route);
         }
         if (state is LogoutState) {
           Navigator.of(context).pushReplacementNamed(LoginScreen.route);
