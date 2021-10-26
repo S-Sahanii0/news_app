@@ -14,4 +14,5 @@ class AppIcons {
   static const commentTapped = AssetImage('assets/images/comment_tapped.png');
   static const share = AssetImage('assets/images/share.png');
   static const hamburger = AssetImage('assets/images/hamburger.png');
+  static const floating = AssetImage('assets/images/floating.png');
 }
