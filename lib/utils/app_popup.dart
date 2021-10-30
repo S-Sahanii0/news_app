@@ -92,6 +92,7 @@ class _FilteringTab extends StatefulWidget {
 
 class __FilteringTabState extends State<_FilteringTab> {
   int currentIndex = 0;
+  int? currentOptionIndex;
   List<String> option = ["Read", "UnRead", "Channel"];
   @override
   Widget build(BuildContext context) {
@@ -148,7 +149,15 @@ class __FilteringTabState extends State<_FilteringTab> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: option.length,
               itemBuilder: (context, index) {
-                return _Option(option: option[index]);
+                return _Option(
+                  option: option[index],
+                  onTap: () {
+                    setState(() {
+                      currentOptionIndex = index;
+                    });
+                  },
+                  isSelected: currentOptionIndex == index,
+                );
               }),
         )
       ],
@@ -158,7 +167,15 @@ class __FilteringTabState extends State<_FilteringTab> {
 
 class _Option extends StatefulWidget {
   final String option;
-  const _Option({Key? key, required this.option}) : super(key: key);
+
+  final VoidCallback onTap;
+  final bool isSelected;
+  const _Option(
+      {Key? key,
+      required this.option,
+      required this.onTap,
+      required this.isSelected})
+      : super(key: key);
 
   @override
   __OptionState createState() => __OptionState();
@@ -170,18 +187,25 @@ class __OptionState extends State<_Option> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(
+        Icon(
           Icons.done,
-          color: AppColors.darkBlueShade1,
+          color: widget.isSelected
+              ? AppColors.darkBlueShade1
+              : AppColors.darkBlueShade3,
           size: 20,
         ),
         SizedBox(
           width: 15.w,
         ),
-        Text(
-          widget.option,
-          style:
-              AppStyle.regularText12.copyWith(color: AppColors.darkBlueShade1),
+        GestureDetector(
+          onTap: widget.onTap,
+          child: Text(
+            widget.option,
+            style: AppStyle.regularText12.copyWith(
+                color: widget.isSelected
+                    ? AppColors.darkBlueShade1
+                    : AppColors.darkBlueShade3),
+          ),
         ),
       ],
     );

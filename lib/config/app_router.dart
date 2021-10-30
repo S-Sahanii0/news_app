@@ -7,6 +7,7 @@ import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/auth/screens/sign_up_screen.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
+import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
 
 import 'theme/app_colors.dart';
 
@@ -39,6 +40,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                 value: _authBloc,
                 child: const MyFeedScreen(),
               ));
+
+    case SingleNewsScreen.route:
+      return MaterialPageRoute(builder: (context) => const SingleNewsScreen());
 
     default:
       return CupertinoPageRoute<void>(

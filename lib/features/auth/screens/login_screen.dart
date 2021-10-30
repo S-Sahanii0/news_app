@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:news_app/config/app_bar/app_bar.dart';
 import 'package:news_app/config/theme/app_icons.dart';
 import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
@@ -24,20 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: AppColors.appWhite,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: const Icon(
-            Icons.chevron_left_outlined,
-            color: AppColors.appBlack,
-            size: 20,
-          ),
-        ),
-      ),
+      appBar: CustomAppBar().appBarWithBack(context),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return SingleChildScrollView(

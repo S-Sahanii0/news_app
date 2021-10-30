@@ -65,10 +65,10 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                       Row(
                         children: [
                           const Flexible(
-                            flex: 2,
+                            flex: 8,
                             child: CircleAvatar(
                               backgroundColor: AppColors.yellowShade2,
-                              radius: 12,
+                              radius: 15,
                               backgroundImage: ExactAssetImage(
                                   "assets/images/dummy_channel.png"),
                             ),
@@ -80,11 +80,14 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                               style: AppStyle.regularText12
                                   .copyWith(color: AppColors.darkBlueShade2)),
                           const Spacer(
-                            flex: 2,
+                            flex: 6,
                           ),
-                          Text(widget.newsTime,
-                              style: AppStyle.regularText12
-                                  .copyWith(color: AppColors.darkBlueShade2)),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Text(widget.newsTime,
+                                style: AppStyle.regularText12
+                                    .copyWith(color: AppColors.darkBlueShade2)),
+                          ),
                         ],
                       ),
                       Text(
@@ -156,7 +159,7 @@ Widget _feedIconRow(
         ),
       ),
       const Spacer(
-        flex: 2,
+        flex: 4,
       ),
       Row(
         mainAxisSize: MainAxisSize.min,

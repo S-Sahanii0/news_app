@@ -15,4 +15,6 @@ class AppIcons {
   static const share = AssetImage('assets/images/share.png');
   static const hamburger = AssetImage('assets/images/hamburger.png');
   static const floating = AssetImage('assets/images/floating.png');
+  static const play = AssetImage('assets/images/play_arrow.png');
+  static const fontSize = AssetImage('assets/images/font_option.png');
 }
