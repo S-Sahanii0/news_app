@@ -41,11 +41,12 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
   @override
   Widget build(BuildContext context) {
     return Align(
+      widthFactor: 10.sw,
       alignment: Alignment.topCenter,
       child: ColoredBox(
         color: AppColors.appWhite,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -58,55 +59,55 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  child: ListView(
+                    shrinkWrap: true,
                     children: [
                       Row(
                         children: [
-                          const CircleAvatar(
-                            backgroundColor: AppColors.yellowShade2,
-                            radius: 12,
-                            backgroundImage: ExactAssetImage(
-                                "assets/images/dummy_channel.png"),
+                          const Flexible(
+                            flex: 2,
+                            child: CircleAvatar(
+                              backgroundColor: AppColors.yellowShade2,
+                              radius: 12,
+                              backgroundImage: ExactAssetImage(
+                                  "assets/images/dummy_channel.png"),
+                            ),
                           ),
                           SizedBox(
-                            width: 10.h,
+                            width: 5.w,
                           ),
                           Text(widget.newsTitle,
                               style: AppStyle.regularText12
                                   .copyWith(color: AppColors.darkBlueShade2)),
-                          const Spacer(),
+                          const Spacer(
+                            flex: 2,
+                          ),
                           Text(widget.newsTime,
                               style: AppStyle.regularText12
                                   .copyWith(color: AppColors.darkBlueShade2)),
                         ],
                       ),
-                      Flexible(
-                        flex: 2,
-                        child: Text(
-                          widget.newsDescription,
-                          style: AppStyle.boldText14
-                              .copyWith(color: AppColors.darkBlueShade1),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                        ),
+                      Text(
+                        widget.newsDescription,
+                        style: AppStyle.boldText14
+                            .copyWith(color: AppColors.darkBlueShade1),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
                       ),
                       const Divider(
                         thickness: 2,
                       ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      _feedIconRow(
-                          onTapHeart: widget.onTapHeart,
-                          onTapBookmark: widget.onTapBookmark,
-                          onTapComment: widget.onTapComment,
-                          onTapShare: widget.onTapShare,
-                          onTapBookMark: widget.onTapBookmark,
-                          isHeart: widget.isHeart!,
-                          isBookmark: widget.isBookmark!)
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: _feedIconRow(
+                            onTapHeart: widget.onTapHeart,
+                            onTapBookmark: widget.onTapBookmark,
+                            onTapComment: widget.onTapComment,
+                            onTapShare: widget.onTapShare,
+                            onTapBookMark: widget.onTapBookmark,
+                            isHeart: widget.isHeart!,
+                            isBookmark: widget.isBookmark!),
+                      )
                     ],
                   ),
                 ),
@@ -128,42 +129,53 @@ Widget _feedIconRow(
     required bool isHeart,
     required bool isBookmark}) {
   return Row(
-    crossAxisAlignment: CrossAxisAlignment.end,
+    // crossAxisAlignment: CrossAxisAlignment.end,
+    mainAxisSize: MainAxisSize.min,
+
     children: [
       InkWell(
         onTap: onTapHeart,
         child: Image(image: isHeart ? AppIcons.heartTapped : AppIcons.heart),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Text(
           "100",
           style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
         ),
       ),
       SizedBox(
-        width: 5.w,
+        width: 2.w,
       ),
       InkWell(onTap: onTapComment, child: const Image(image: AppIcons.comment)),
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Text(
           "100",
           style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
         ),
       ),
-      const Spacer(),
-      InkWell(
-        onTap: onTapBookmark,
-        child: Image(
-            image: isBookmark ? AppIcons.bookmarkTapped : AppIcons.bookmark),
+      const Spacer(
+        flex: 2,
       ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: InkWell(
-            onTap: onTapShare, child: const Image(image: AppIcons.share)),
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          InkWell(
+            onTap: onTapBookmark,
+            child: Image(
+                image:
+                    isBookmark ? AppIcons.bookmarkTapped : AppIcons.bookmark),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: InkWell(
+                onTap: onTapShare, child: const Image(image: AppIcons.share)),
+          ),
+          InkWell(onTap: () {}, child: const Image(image: AppIcons.hamburger)),
+        ],
       ),
-      InkWell(onTap: () {}, child: const Image(image: AppIcons.hamburger)),
     ],
   );
 }
