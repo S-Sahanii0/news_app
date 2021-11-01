@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/features/channels/screens/channels_screen.dart';
+import 'package:news_app/features/news_feed/screens/discover_screen.dart';
+import 'package:news_app/features/news_feed/screens/my_feed.dart';
 
 import '../config/theme/theme.dart';
 
@@ -37,7 +40,9 @@ class AppDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamed(MyFeedScreen.route);
+                  },
                   child: Text(
                     "My Feed",
                     style: AppStyle.mediumText20,
@@ -47,7 +52,9 @@ class AppDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamed(DiscoverScreen.route);
+                  },
                   child: Text(
                     "Discover",
                     style: AppStyle.mediumText20,
@@ -67,7 +74,9 @@ class AppDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamed(ChannelScreen.route);
+                  },
                   child: Text(
                     "Channels",
                     style: AppStyle.mediumText20,

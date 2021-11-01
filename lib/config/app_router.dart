@@ -6,6 +6,8 @@ import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/auth/screens/sign_up_screen.dart';
+import 'package:news_app/features/channels/screens/channels_screen.dart';
+import 'package:news_app/features/news_feed/screens/discover_screen.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
 import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
 
@@ -41,8 +43,17 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                 child: const MyFeedScreen(),
               ));
 
+    case DiscoverScreen.route:
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _authBloc,
+                child: const DiscoverScreen(),
+              ));
+
     case SingleNewsScreen.route:
       return MaterialPageRoute(builder: (context) => const SingleNewsScreen());
+    case ChannelScreen.route:
+      return MaterialPageRoute(builder: (context) => const ChannelScreen());
 
     default:
       return CupertinoPageRoute<void>(

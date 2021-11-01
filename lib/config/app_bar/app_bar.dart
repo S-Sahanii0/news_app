@@ -24,6 +24,26 @@ class CustomAppBar {
     );
   }
 
+  AppBar primaryAppBarNoFilter({required String pageTitle}) {
+    return AppBar(
+      backgroundColor: AppColors.appWhite,
+      title: Center(
+        child: Text(
+          pageTitle,
+          style:
+              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+        ),
+      ),
+      actions: const [
+        Icon(
+          Icons.search_outlined,
+          size: 20,
+          color: AppColors.darkBlueShade3,
+        ),
+      ],
+    );
+  }
+
   AppBar appBarWithBack(BuildContext context) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
