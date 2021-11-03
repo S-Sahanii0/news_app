@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/features/categories/category_screen.dart';
+import 'package:news_app/features/categories/choose_category_screen.dart';
 import 'package:news_app/features/channels/screens/channels_screen.dart';
 import 'package:news_app/features/news_feed/screens/discover_screen.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
@@ -53,7 +55,7 @@ class AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed(DiscoverScreen.route);
+                    Navigator.of(context).pushNamed(ChooseCategoryScreen.route);
                   },
                   child: Text(
                     "Discover",
@@ -64,7 +66,9 @@ class AppDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamed(CategoryScreen.route);
+                  },
                   child: Text(
                     "Categories",
                     style: AppStyle.mediumText20,

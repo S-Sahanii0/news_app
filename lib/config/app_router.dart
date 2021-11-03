@@ -6,6 +6,8 @@ import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/auth/screens/sign_up_screen.dart';
+import 'package:news_app/features/categories/category_screen.dart';
+import 'package:news_app/features/categories/choose_category_screen.dart';
 import 'package:news_app/features/channels/screens/channels_screen.dart';
 import 'package:news_app/features/news_feed/screens/discover_screen.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
@@ -54,6 +56,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const SingleNewsScreen());
     case ChannelScreen.route:
       return MaterialPageRoute(builder: (context) => const ChannelScreen());
+    case CategoryScreen.route:
+      return MaterialPageRoute(builder: (context) => const CategoryScreen());
+    case ChooseCategoryScreen.route:
+      return MaterialPageRoute(
+          builder: (context) => const ChooseCategoryScreen());
 
     default:
       return CupertinoPageRoute<void>(

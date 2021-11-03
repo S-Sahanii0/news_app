@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/config/theme/theme.dart';
 
-class AppCard extends StatelessWidget {
-  const AppCard({
+class AppCard extends StatefulWidget {
+  AppCard({
     Key? key,
     required this.cardText,
     this.canBeSaved = false,
-    this.isSaved,
+    this.isSaved = false,
     required this.onTap,
     this.onTapheart,
   }) : super(key: key);
 
   final String cardText;
-  final bool? canBeSaved;
-  final bool? isSaved;
+  bool canBeSaved;
+  bool isSaved;
   final VoidCallback onTap;
   final VoidCallback? onTapheart;
 
   @override
+  State<AppCard> createState() => _AppCardState();
+}
+
+class _AppCardState extends State<AppCard> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15),
+      padding: const EdgeInsets.symmetric(vertical: 7),
       child: Row(
         children: [
           const CircleAvatar(
@@ -31,7 +36,7 @@ class AppCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
-              cardText,
+              widget.cardText,
               style: AppStyle.mediumText14
                   .copyWith(color: AppColors.darkBlueShade1),
             ),
@@ -39,15 +44,21 @@ class AppCard extends StatelessWidget {
           const Spacer(
             flex: 6,
           ),
-          if (canBeSaved!)
+          if (widget.canBeSaved)
             GestureDetector(
-              onTap: onTapheart,
+              onTap: () {
+                setState(() {
+                  widget.isSaved = !widget.isSaved;
+                });
+
+                widget.onTapheart;
+              },
               child: Image(
                   image:
-                      isSaved ?? false ? AppIcons.heartTapped : AppIcons.heart),
+                      widget.isSaved ? AppIcons.heartTapped : AppIcons.heart),
             ),
           GestureDetector(
-            onTap: onTap,
+            onTap: widget.onTap,
             child: const Icon(
               Icons.chevron_right_outlined,
               color: AppColors.darkBlueShade2,

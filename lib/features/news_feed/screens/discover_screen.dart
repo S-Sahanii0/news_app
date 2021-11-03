@@ -4,7 +4,7 @@ import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
-import 'package:news_app/config/app_bar/app_bar.dart';
+import 'package:news_app/components/app_bar/app_bar.dart';
 import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
 import 'package:news_app/utils/app_drawer.dart';
 import 'package:news_app/config/theme/app_colors.dart';

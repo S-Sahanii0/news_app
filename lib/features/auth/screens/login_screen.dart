@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/config/app_bar/app_bar.dart';
+import 'package:news_app/components/app_bar/app_bar.dart';
 import 'package:news_app/config/theme/app_icons.dart';
 import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';

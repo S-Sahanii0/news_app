@@ -35,10 +35,13 @@ class CustomAppBar {
         ),
       ),
       actions: const [
-        Icon(
-          Icons.search_outlined,
-          size: 20,
-          color: AppColors.darkBlueShade3,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 17),
+          child: Icon(
+            Icons.search_outlined,
+            size: 20,
+            color: AppColors.darkBlueShade3,
+          ),
         ),
       ],
     );

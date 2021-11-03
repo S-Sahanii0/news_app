@@ -6,15 +6,15 @@ import 'package:news_app/components/buttons/app_card.dart';
 import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/utils/app_drawer.dart';
 
-class ChannelScreen extends StatefulWidget {
-  const ChannelScreen({Key? key}) : super(key: key);
-  static const String route = '/kRouteChannel';
+class CategoryScreen extends StatefulWidget {
+  const CategoryScreen({Key? key}) : super(key: key);
+  static const String route = '/kRouteInterest';
 
   @override
-  _ChannelScreenState createState() => _ChannelScreenState();
+  _CategoryScreenState createState() => _CategoryScreenState();
 }
 
-class _ChannelScreenState extends State<ChannelScreen> {
+class _CategoryScreenState extends State<CategoryScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Top Picks",
+              Text("My Interests",
                   style: AppStyle.regularText14
                       .copyWith(color: AppColors.darkBlueShade2)),
               SizedBox(
@@ -56,7 +56,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
               SizedBox(
                 height: 8.h,
               ),
-              Text("Other Channels",
+              Text("Other Topics",
                   style: AppStyle.regularText14
                       .copyWith(color: AppColors.darkBlueShade2)),
               SizedBox(
@@ -69,6 +69,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   itemBuilder: (context, index) {
                     return AppCard(
                       cardText: "Interest #1",
+                      canBeSaved: true,
                       onTap: () {},
                     );
                   })
