@@ -22,7 +22,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
     return SafeArea(
       child: Scaffold(
         key: _key,
-        appBar: CustomAppBar().primaryAppBarNoFilter(pageTitle: "Channel"),
+        appBar: CustomAppBar()
+            .primaryAppBarNoFilter(pageTitle: "Channel", context: context),
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),

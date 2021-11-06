@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: CustomAppBar().appBarWithBack(context),
+      appBar: CustomAppBar().appBarWithBack(context: context, pageTitle: ""),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return SingleChildScrollView(

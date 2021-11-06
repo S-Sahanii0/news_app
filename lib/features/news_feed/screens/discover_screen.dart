@@ -34,7 +34,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
-          appBar: CustomAppBar().primaryAppBar(pageTitle: "Discover"),
+          appBar: CustomAppBar()
+              .primaryAppBar(pageTitle: "Discover", context: context),
           body: GestureDetector(
             onTap: () {
               Navigator.of(context).pushNamed(SingleNewsScreen.route);

@@ -18,7 +18,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar().appBarWithBack(context),
+        appBar: CustomAppBar().appBarWithBack(context: context, pageTitle: ""),
         bottomSheet: const NewsDetailBottomSheet(),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),

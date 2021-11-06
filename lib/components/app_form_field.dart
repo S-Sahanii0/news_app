@@ -53,7 +53,7 @@ class AppFormField extends StatelessWidget {
               hintText: hintText,
               hintStyle:
                   AppStyle.lightText12.copyWith(color: AppColors.greyShade1)),
-        )
+        ),
       ],
     );
   }

@@ -35,7 +35,8 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
-          appBar: CustomAppBar().primaryAppBar(pageTitle: "My Feed"),
+          appBar: CustomAppBar()
+              .primaryAppBar(pageTitle: "My Feed", context: context),
           body: GestureDetector(
             onTap: () {
               Navigator.of(context).pushNamed(SingleNewsScreen.route);

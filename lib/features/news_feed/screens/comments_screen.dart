@@ -21,7 +21,8 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar().appBarWithBack(context),
+        appBar: CustomAppBar()
+            .appBarWithBack(context: context, pageTitle: "Comments"),
         body: SingleChildScrollView(
           child: Column(
             children: [

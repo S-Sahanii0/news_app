@@ -22,7 +22,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return SafeArea(
       child: Scaffold(
         key: _key,
-        appBar: CustomAppBar().primaryAppBarNoFilter(pageTitle: "Category"),
+        appBar: CustomAppBar()
+            .primaryAppBarNoFilter(pageTitle: "Category", context: context),
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),
