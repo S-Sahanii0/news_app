@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/features/categories/category_screen.dart';
-import 'package:news_app/features/categories/choose_category_screen.dart';
+import 'package:news_app/features/categories/screens/category_screen.dart';
+import 'package:news_app/features/categories/screens/choose_category_screen.dart';
 import 'package:news_app/features/channels/screens/channels_screen.dart';
 import 'package:news_app/features/news_feed/screens/discover_screen.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
+import 'package:news_app/features/profile/screens/profile_screen.dart';
 
 import '../config/theme/theme.dart';
 
@@ -90,9 +91,11 @@ class AppDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamed(ProfileScreen.route);
+                  },
                   child: Text(
-                    "Invite",
+                    "Profile",
                     style: AppStyle.mediumText20,
                   ),
                 ),

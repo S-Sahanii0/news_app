@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/components/app_bar/app_bar.dart';
-import 'package:news_app/components/buttons/app_card.dart';
+import 'package:news_app/components/app_card.dart';
 
 import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/utils/app_drawer.dart';
@@ -21,7 +21,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return SafeArea(
       child: Scaffold(
         key: _key,
-        appBar: CustomAppBar().primaryAppBarNoFilter(pageTitle: "Channel"),
+        appBar: CustomAppBar().primaryAppBarNoFilter(pageTitle: "Category"),
         floatingActionButton: InkWell(
           onTap: () {
             _key.currentState!.openDrawer();
@@ -48,9 +48,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   shrinkWrap: true,
                   itemCount: 5,
                   itemBuilder: (context, index) {
-                    return AppCard(
+                    return AppCard.hasHeart(
                       cardText: "Interest #1",
                       onTap: () {},
+                      isSaved: false,
+                      onTapheart: () {},
                     );
                   }),
               SizedBox(
@@ -67,10 +69,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   shrinkWrap: true,
                   itemCount: 5,
                   itemBuilder: (context, index) {
-                    return AppCard(
+                    return AppCard.hasHeart(
                       cardText: "Interest #1",
-                      canBeSaved: true,
                       onTap: () {},
+                      isSaved: false,
+                      onTapheart: () {},
                     );
                   })
             ],

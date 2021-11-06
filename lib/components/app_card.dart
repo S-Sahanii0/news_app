@@ -2,20 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:news_app/config/theme/theme.dart';
 
 class AppCard extends StatefulWidget {
+  AppCard.hasHeart({
+    Key? key,
+    required this.cardText,
+    required this.isSaved,
+    required this.onTap,
+    required this.onTapheart,
+  }) : super(key: key) {
+    canBeSaved = true;
+    hasNumber = false;
+  }
+  AppCard.hasNumber(
+      {Key? key,
+      required this.cardText,
+      required this.onTap,
+      required this.number})
+      : super(key: key) {
+    canBeSaved = false;
+    hasNumber = true;
+  }
   AppCard({
     Key? key,
     required this.cardText,
-    this.canBeSaved = false,
-    this.isSaved = false,
     required this.onTap,
-    this.onTapheart,
-  }) : super(key: key);
+  }) : super(key: key) {
+    canBeSaved = false;
+    hasNumber = false;
+  }
 
   final String cardText;
-  bool canBeSaved;
-  bool isSaved;
+  bool? canBeSaved;
+  bool? isSaved;
+  bool? hasNumber;
+  int? number;
   final VoidCallback onTap;
-  final VoidCallback? onTapheart;
+  VoidCallback? onTapheart;
 
   @override
   State<AppCard> createState() => _AppCardState();
@@ -44,18 +65,27 @@ class _AppCardState extends State<AppCard> {
           const Spacer(
             flex: 6,
           ),
-          if (widget.canBeSaved)
+          if (widget.hasNumber!)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                widget.number.toString(),
+                style: AppStyle.mediumText16
+                    .copyWith(color: AppColors.darkBlueShade1),
+              ),
+            ),
+          if (widget.canBeSaved!)
             GestureDetector(
               onTap: () {
                 setState(() {
-                  widget.isSaved = !widget.isSaved;
+                  widget.isSaved = !widget.isSaved!;
                 });
 
                 widget.onTapheart;
               },
               child: Image(
                   image:
-                      widget.isSaved ? AppIcons.heartTapped : AppIcons.heart),
+                      widget.isSaved! ? AppIcons.heartTapped : AppIcons.heart),
             ),
           GestureDetector(
             onTap: widget.onTap,
