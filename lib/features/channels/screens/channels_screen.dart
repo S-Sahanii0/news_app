@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/components/app_bar/app_bar.dart';
 import 'package:news_app/components/app_card.dart';
+import 'package:news_app/components/app_floating_button.dart';
 
 import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/utils/app_drawer.dart';
@@ -22,13 +23,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
       child: Scaffold(
         key: _key,
         appBar: CustomAppBar().primaryAppBarNoFilter(pageTitle: "Channel"),
-        floatingActionButton: InkWell(
-          onTap: () {
-            _key.currentState!.openDrawer();
-          },
-          child: const Image(
-            image: AppIcons.floating,
-          ),
+        floatingActionButton: AppFloatingActionButton(
+          scaffoldKey: _key,
         ),
         drawer: const AppDrawer(),
         body: Padding(

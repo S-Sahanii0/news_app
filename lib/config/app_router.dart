@@ -9,6 +9,7 @@ import 'package:news_app/features/auth/screens/sign_up_screen.dart';
 import 'package:news_app/features/categories/screens/category_screen.dart';
 import 'package:news_app/features/categories/screens/choose_category_screen.dart';
 import 'package:news_app/features/channels/screens/channels_screen.dart';
+import 'package:news_app/features/news_feed/screens/comments_screen.dart';
 import 'package:news_app/features/news_feed/screens/discover_screen.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
 import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
@@ -64,6 +65,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) => const ChooseCategoryScreen());
     case ProfileScreen.route:
       return MaterialPageRoute(builder: (context) => const ProfileScreen());
+    case CommentScreen.route:
+      return MaterialPageRoute(builder: (context) => const CommentScreen());
 
     default:
       return CupertinoPageRoute<void>(

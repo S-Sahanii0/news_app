@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:news_app/components/app_bar/app_bar.dart';
+import 'package:news_app/components/app_floating_button.dart';
+import 'package:news_app/features/news_feed/screens/comments_screen.dart';
 import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
 import 'package:news_app/utils/app_drawer.dart';
 import 'package:news_app/config/theme/app_colors.dart';
@@ -26,7 +28,6 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
   bool isBookmark = false;
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   CustomPopupMenuController _controller = CustomPopupMenuController();
-  List menuItems = ["yay", "fuck"];
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +54,9 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                   isHeart = !isHeart;
                 });
               },
-              onTapComment: () {},
+              onTapComment: () {
+                Navigator.of(context).pushNamed(CommentScreen.route);
+              },
               onTapBookmark: () {
                 setState(() {
                   isBookmark = !isBookmark;
@@ -63,13 +66,8 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
               onTapMenu: () {},
             ),
           ),
-          floatingActionButton: InkWell(
-            onTap: () {
-              _key.currentState!.openDrawer();
-            },
-            child: const Image(
-              image: AppIcons.floating,
-            ),
+          floatingActionButton: AppFloatingActionButton(
+            scaffoldKey: _key,
           ),
           drawer: const AppDrawer()),
     );

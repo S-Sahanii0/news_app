@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:news_app/components/app_floating_button.dart';
 import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
 import 'package:news_app/features/profile/tabs/bookmark_tab.dart';
 import 'package:news_app/features/profile/tabs/history.dart';
 import 'package:news_app/features/profile/tabs/settings_tab.dart';
 import 'package:news_app/features/profile/widgets/profile_card.dart';
+import 'package:news_app/utils/app_drawer.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -16,11 +18,17 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   TabController? _tabController;
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: _key,
+        floatingActionButton: AppFloatingActionButton(
+          scaffoldKey: _key,
+        ),
+        drawer: const AppDrawer(),
         body: Stack(
           children: [
             DefaultTabController(

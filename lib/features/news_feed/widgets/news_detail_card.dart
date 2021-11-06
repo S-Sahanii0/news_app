@@ -11,6 +11,7 @@ class NewsDetailCard extends StatefulWidget {
   final String numberOfComments;
   bool? isHeart;
   bool? isBookmark;
+  bool? commentTapped;
   final VoidCallback onTapHeart;
   final VoidCallback onTapComment;
   final VoidCallback onTapBookmark;
@@ -29,6 +30,7 @@ class NewsDetailCard extends StatefulWidget {
       required this.onTapBookmark,
       required this.onTapShare,
       required this.onTapMenu,
+      this.commentTapped = false,
       this.isHeart = false,
       this.isBookmark = false})
       : super(key: key);
@@ -109,7 +111,8 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                             onTapShare: widget.onTapShare,
                             onTapBookMark: widget.onTapBookmark,
                             isHeart: widget.isHeart!,
-                            isBookmark: widget.isBookmark!),
+                            isBookmark: widget.isBookmark!,
+                            commentTapped: widget.commentTapped!),
                       )
                     ],
                   ),
@@ -129,6 +132,7 @@ Widget _feedIconRow(
     required VoidCallback onTapComment,
     required VoidCallback onTapShare,
     required VoidCallback onTapBookMark,
+    required bool commentTapped,
     required bool isHeart,
     required bool isBookmark}) {
   return Row(
@@ -150,7 +154,11 @@ Widget _feedIconRow(
       SizedBox(
         width: 2.w,
       ),
-      InkWell(onTap: onTapComment, child: const Image(image: AppIcons.comment)),
+      InkWell(
+          onTap: onTapComment,
+          child: Image(
+              image:
+                  commentTapped ? AppIcons.commentTapped : AppIcons.comment)),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Text(
