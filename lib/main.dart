@@ -7,10 +7,15 @@ import 'package:news_app/base_screen.dart';
 import 'package:news_app/config/app_router.dart' as router;
 import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/sign_up_screen.dart';
+import 'package:news_app/features/news_feed/services/news_service.dart';
+import 'package:news_app/utils/testttt.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  haha();
   await Firebase.initializeApp();
+
+  NewsService().addDataToFirebase();
   runApp(const MyApp());
 }
 
