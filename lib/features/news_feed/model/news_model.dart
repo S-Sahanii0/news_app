@@ -5,14 +5,14 @@ import 'package:news_app/features/channels/models/channel_model.dart';
 class News {
   final String newsImage;
   final String title;
-  final Channel channel;
+  // final Channel channel;
   final String date;
   final String content;
   final String url;
   News({
     required this.newsImage,
     required this.title,
-    required this.channel,
+    // required this.channel,
     required this.date,
     required this.content,
     required this.url,
@@ -29,7 +29,7 @@ class News {
     return News(
       newsImage: newsImage ?? this.newsImage,
       title: title ?? this.title,
-      channel: channel ?? this.channel,
+      // channel: channel ?? this.channel,
       date: date ?? this.date,
       content: content ?? this.content,
       url: url ?? this.url,
@@ -40,7 +40,7 @@ class News {
     return {
       'newsImage': newsImage,
       'title': title,
-      'channel': channel.toMap(),
+      // 'channel': channel.toMap(),
       'date': date,
       'content': content,
       'url': url,
@@ -51,7 +51,7 @@ class News {
     return News(
       newsImage: map['newsImage'],
       title: map['title'],
-      channel: Channel.fromMap(map['channel']),
+      // channel: Channel.fromMap(map['channel']),
       date: map['date'],
       content: map['content'],
       url: map['url'],
@@ -64,7 +64,7 @@ class News {
 
   @override
   String toString() {
-    return 'News(newsImage: $newsImage, title: $title, channel: $channel, date: $date, content: $content, url: $url)';
+    return 'News(newsImage: $newsImage, title: $title, date: $date, content: $content, url: $url)';
   }
 
   @override
@@ -74,7 +74,7 @@ class News {
     return other is News &&
         other.newsImage == newsImage &&
         other.title == title &&
-        other.channel == channel &&
+        // other.channel == channel &&
         other.date == date &&
         other.content == content &&
         other.url == url;
@@ -84,7 +84,7 @@ class News {
   int get hashCode {
     return newsImage.hashCode ^
         title.hashCode ^
-        channel.hashCode ^
+        // channel.hashCode ^
         date.hashCode ^
         content.hashCode ^
         url.hashCode;

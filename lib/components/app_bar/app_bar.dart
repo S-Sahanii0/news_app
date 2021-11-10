@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:news_app/components/app_popup.dart';
 import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/features/news_feed/screens/search_screen.dart';
-import 'package:news_app/utils/app_popup.dart';
 
 class CustomAppBar {
   AppBar primaryAppBar(

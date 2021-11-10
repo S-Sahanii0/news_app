@@ -5,26 +5,37 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'dart:convert';
 
-import 'package:news_app/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  CollectionReference category =
+      FirebaseFirestore.instance.collection('category');
+  // CollectionReference channel =
+  //     FirebaseFirestore.instance.collection('channel');
+  // CollectionReference news = FirebaseFirestore.instance.collection('news');
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  Future<void> addDataToFirebase() async {
+    final String response =
+        await rootBundle.loadString('assets/data/news_data.json');
+    final data = await json.decode(response);
+    List.from(data.keys).forEach((element) {
+      category.doc(element).set({"name": element, "news": data[element]});
+    });
+  }
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  test('Add to firebase', () async {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyAdvATQgl7JLfn8_a_fTSmao0Ns4M7jG8M",
+          appId: "1:164727143815:web:92f193a617020d77de6722",
+          messagingSenderId: "164727143815",
+          projectId: "newsapp-c4509"),
+    );
+    await addDataToFirebase();
   });
 }

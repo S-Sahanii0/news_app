@@ -5,14 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:news_app/components/app_bar/app_bar.dart';
+import 'package:news_app/components/app_drawer.dart';
 import 'package:news_app/components/app_floating_button.dart';
 import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
-import 'package:news_app/utils/app_drawer.dart';
 import 'package:news_app/config/theme/app_colors.dart';
 import 'package:news_app/config/theme/app_icons.dart';
 import 'package:news_app/config/theme/app_styles.dart';
 import 'package:news_app/features/news_feed/widgets/news_detail_card.dart';
-import 'package:news_app/utils/app_popup.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({Key? key}) : super(key: key);
