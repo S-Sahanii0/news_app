@@ -40,7 +40,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               Navigator.of(context).pushNamed(SingleNewsScreen.route);
             },
             child: NewsDetailCard(
-              newsTitle: "DummyTitle",
+              channelName: "DummyTitle",
               newsDescription:
                   "Lorem LORem Lorem Lorem Lorem Lorem Lorem Lorem Lorem",
               newsTime: "6 hours ago",
@@ -61,6 +61,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               },
               onTapShare: () {},
               onTapMenu: () {},
+              channelImage: '',
+              imageUrl: '',
             ),
           ),
           floatingActionButton: AppFloatingActionButton(

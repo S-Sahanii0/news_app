@@ -1,33 +1,33 @@
 import 'dart:convert';
 
 class Channel {
-  final String channelName;
+  final String channel;
   final String channelImage;
   Channel({
-    required this.channelName,
+    required this.channel,
     required this.channelImage,
   });
 
   Channel copyWith({
-    String? channelName,
+    String? channel,
     String? channelImage,
   }) {
     return Channel(
-      channelName: channelName ?? this.channelName,
+      channel: channel ?? this.channel,
       channelImage: channelImage ?? this.channelImage,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'channelName': channelName,
+      'channel': channel,
       'channelImage': channelImage,
     };
   }
 
   factory Channel.fromMap(Map<String, dynamic> map) {
     return Channel(
-      channelName: map['channelName'],
+      channel: map['channel'],
       channelImage: map['channelImage'],
     );
   }
@@ -39,17 +39,17 @@ class Channel {
 
   @override
   String toString() =>
-      'Channel(channelName: $channelName, channelImage: $channelImage)';
+      'Channel(channel: $channel, channelImage: $channelImage)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
     return other is Channel &&
-        other.channelName == channelName &&
+        other.channel == channel &&
         other.channelImage == channelImage;
   }
 
   @override
-  int get hashCode => channelName.hashCode ^ channelImage.hashCode;
+  int get hashCode => channel.hashCode ^ channelImage.hashCode;
 }

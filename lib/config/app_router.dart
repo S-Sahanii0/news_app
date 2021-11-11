@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/base_screen.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
-import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/auth/screens/sign_up_screen.dart';
 import 'package:news_app/features/categories/screens/category_screen.dart';
 import 'package:news_app/features/categories/screens/choose_category_screen.dart';
 import 'package:news_app/features/channels/screens/channels_screen.dart';
+import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
+import 'package:news_app/features/news_feed/model/news_model.dart';
 import 'package:news_app/features/news_feed/screens/comments_screen.dart';
 import 'package:news_app/features/news_feed/screens/discover_screen.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
@@ -20,6 +21,8 @@ import 'theme/app_colors.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   late final _authBloc = AuthBloc();
+  late final _newsBloc = NewsBloc();
+
   switch (settings.name) {
     case SignUpScreen.route:
       return MaterialPageRoute(
@@ -29,8 +32,15 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ));
     case BaseScreen.route:
       return MaterialPageRoute(
-          builder: (context) => BlocProvider(
-                create: (context) => _authBloc,
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider<AuthBloc>(
+                    create: (context) => _authBloc,
+                  ),
+                  BlocProvider<NewsBloc>(
+                    create: (context) => _newsBloc,
+                  ),
+                ],
                 child: BaseScreen(),
               ));
 
@@ -43,8 +53,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 
     case MyFeedScreen.route:
       return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _authBloc,
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(
+                    value: _authBloc,
+                  ),
+                  BlocProvider.value(value: _newsBloc),
+                ],
                 child: const MyFeedScreen(),
               ));
 

@@ -4,11 +4,13 @@ import 'package:news_app/config/theme/app_icons.dart';
 import 'package:news_app/config/theme/theme.dart';
 
 class NewsDetailCard extends StatefulWidget {
-  final String newsTitle;
+  final String channelName;
   final String newsDescription;
   final String newsTime;
   final String numberOfLikes;
   final String numberOfComments;
+  final String imageUrl;
+  final String channelImage;
   bool? isHeart;
   bool? isBookmark;
   bool? commentTapped;
@@ -20,7 +22,7 @@ class NewsDetailCard extends StatefulWidget {
 
   NewsDetailCard(
       {Key? key,
-      required this.newsTitle,
+      required this.channelName,
       required this.newsDescription,
       required this.newsTime,
       required this.numberOfLikes,
@@ -30,6 +32,8 @@ class NewsDetailCard extends StatefulWidget {
       required this.onTapBookmark,
       required this.onTapShare,
       required this.onTapMenu,
+      required this.imageUrl,
+      required this.channelImage,
       this.commentTapped = false,
       this.isHeart = false,
       this.isBookmark = false})
@@ -50,37 +54,53 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image(
-                image: AppIcons.dummy,
+              SizedBox(
                 height: 126.h,
                 width: 120.w,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                      border:
+                          Border.all(color: AppColors.yellowShade1, width: 1.5),
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                        fit: BoxFit.fitHeight,
+                        image: NetworkImage(widget.imageUrl),
+                      )),
+                ),
               ),
               Expanded(
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: ListView(
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     children: [
                       Row(
                         children: [
-                          const Flexible(
+                          Flexible(
                             flex: 8,
                             child: CircleAvatar(
                               backgroundColor: AppColors.yellowShade2,
                               radius: 15,
-                              backgroundImage: ExactAssetImage(
-                                  "assets/images/dummy_channel.png"),
+                              child: Image(
+                                fit: BoxFit.contain,
+                                image: NetworkImage(widget.channelImage),
+                              ),
                             ),
                           ),
                           SizedBox(
                             width: 5.w,
                           ),
-                          Text(widget.newsTitle,
-                              style: AppStyle.regularText12
-                                  .copyWith(color: AppColors.darkBlueShade2)),
+                          Flexible(
+                            flex: 18,
+                            child: Text(widget.channelName,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppStyle.regularText12
+                                    .copyWith(color: AppColors.darkBlueShade2)),
+                          ),
                           const Spacer(
                             flex: 6,
                           ),
@@ -97,7 +117,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                         style: AppStyle.boldText14
                             .copyWith(color: AppColors.darkBlueShade1),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
+                        maxLines: 2,
                       ),
                       const Divider(
                         thickness: 2,

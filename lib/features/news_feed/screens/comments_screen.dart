@@ -27,7 +27,7 @@ class _CommentScreenState extends State<CommentScreen> {
           child: Column(
             children: [
               NewsDetailCard(
-                newsTitle: "DummyTitle",
+                channelName: "DummyTitle",
                 newsDescription:
                     "Lorem LORem Lorem Lorem Lorem Lorem Lorem Lorem Lorem",
                 newsTime: "6 hours ago",
@@ -49,6 +49,8 @@ class _CommentScreenState extends State<CommentScreen> {
                 },
                 onTapShare: () {},
                 onTapMenu: () {},
+                channelImage: '',
+                imageUrl: '',
               ),
               Divider(
                 thickness: 2.h,

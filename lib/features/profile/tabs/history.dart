@@ -7,15 +7,18 @@ class History extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NewsDetailCard(
-        newsTitle: "Dummy",
-        newsDescription: "Lorem  Lorem Lorem Lorem Lorem Lorem Lorem",
-        newsTime: "6 hours ago",
-        numberOfLikes: 10.toString(),
-        numberOfComments: 10.toString(),
-        onTapHeart: () {},
-        onTapComment: () {},
-        onTapBookmark: () {},
-        onTapShare: () {},
-        onTapMenu: () {});
+      channelName: "Dummy",
+      newsDescription: "Lorem  Lorem Lorem Lorem Lorem Lorem Lorem",
+      newsTime: "6 hours ago",
+      numberOfLikes: 10.toString(),
+      numberOfComments: 10.toString(),
+      onTapHeart: () {},
+      onTapComment: () {},
+      onTapBookmark: () {},
+      onTapShare: () {},
+      onTapMenu: () {},
+      channelImage: '',
+      imageUrl: '',
+    );
   }
 }

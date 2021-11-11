@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart';
-import 'package:news_app/features/categories/models/category_model.dart';
-import 'package:news_app/features/news_feed/model/news_model.dart';
-import 'package:uuid/uuid.dart';
+
+import '../model/news_model.dart';
 
 class NewsService {
   CollectionReference category =
@@ -12,6 +8,27 @@ class NewsService {
   CollectionReference channel =
       FirebaseFirestore.instance.collection('channel');
   CollectionReference news = FirebaseFirestore.instance.collection('news');
+
+  Future<List<News>> getAllNews() async {
+    final newsDocs = await news.get();
+    List<News> result = [];
+    for (var newsDoc in newsDocs.docs) {
+      final newsData = newsDoc.data() as Map<String, dynamic>;
+
+      result.add(News.fromMap({
+        "title": newsData['title'],
+        "newsImage": newsData['newsImage'],
+        "content": newsData['content'],
+        "url": newsData['url'],
+        "date": newsData['date'],
+        "channel":
+            (await (newsData['channel'] as DocumentReference).get()).data()
+      }));
+    }
+
+    return result;
+  }
+
 //   var uuid = Uuid();
 
 //   Future<void> addDataToFirebase() async {
