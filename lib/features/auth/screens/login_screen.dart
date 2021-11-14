@@ -55,6 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onSubmit: (value) {
                       value.currentState!.save();
                       final result = value.currentState!.value;
+                      print(result);
                       BlocProvider.of<AuthBloc>(context)
                           .add(LoginEvent(user: UserModel.fromMap(result)));
                     },

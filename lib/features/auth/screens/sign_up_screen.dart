@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,6 +13,8 @@ import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/auth/widgets/sign_up_form.dart';
+import 'package:news_app/features/categories/screens/category_screen.dart';
+import 'package:news_app/features/categories/screens/choose_category_screen.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -23,6 +27,14 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  late final _authState;
+
+  @override
+  void initState() {
+    _authState = context.read<AuthBloc>();
+    super.initState();
+  }
+
   bool isObscure = true;
   @override
   Widget build(BuildContext context) {
@@ -30,7 +42,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       buildWhen: (prev, current) => prev != current,
       listener: (context, state) {
         if (state is AuthSuccess) {
-          Navigator.of(context).pushReplacementNamed(MyFeedScreen.route);
+          Navigator.of(context)
+              .pushReplacementNamed(ChooseCategoryScreen.route);
         }
         if (state is LogoutState) {
           Navigator.of(context).pushReplacementNamed(LoginScreen.route);

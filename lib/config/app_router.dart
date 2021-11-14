@@ -20,55 +20,35 @@ import 'package:news_app/features/profile/screens/profile_screen.dart';
 import 'theme/app_colors.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
-  late final _authBloc = AuthBloc();
-  late final _newsBloc = NewsBloc();
+  // final _authBloc = AuthBloc();
+  final _newsBloc = NewsBloc();
 
   switch (settings.name) {
     case SignUpScreen.route:
-      return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _authBloc,
-                child: const SignUpScreen(),
-              ));
+      return MaterialPageRoute(builder: (context) => const SignUpScreen());
     case BaseScreen.route:
       return MaterialPageRoute(
-          builder: (context) => MultiBlocProvider(
-                providers: [
-                  BlocProvider<AuthBloc>(
-                    create: (context) => _authBloc,
-                  ),
-                  BlocProvider<NewsBloc>(
-                    create: (context) => _newsBloc,
-                  ),
-                ],
+          builder: (context) => BlocProvider.value(
+                value: _newsBloc,
                 child: BaseScreen(),
               ));
 
     case LoginScreen.route:
-      return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _authBloc,
-                child: const LoginScreen(),
-              ));
+      return MaterialPageRoute(builder: (context) => const LoginScreen());
 
     case MyFeedScreen.route:
       return MaterialPageRoute(
           builder: (context) => MultiBlocProvider(
                 providers: [
                   BlocProvider.value(
-                    value: _authBloc,
+                    value: _newsBloc,
                   ),
-                  BlocProvider.value(value: _newsBloc),
                 ],
-                child: const MyFeedScreen(),
+                child: MyFeedScreen(),
               ));
 
     case DiscoverScreen.route:
-      return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _authBloc,
-                child: const DiscoverScreen(),
-              ));
+      return MaterialPageRoute(builder: (context) => const DiscoverScreen());
 
     case SingleNewsScreen.route:
       return MaterialPageRoute(
@@ -82,11 +62,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case ChooseCategoryScreen.route:
       return MaterialPageRoute(builder: (context) => ChooseCategoryScreen());
     case ProfileScreen.route:
-      return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _authBloc,
-                child: ProfileScreen(),
-              ));
+      return MaterialPageRoute(builder: (context) => ProfileScreen());
     case CommentScreen.route:
       return MaterialPageRoute(builder: (context) => const CommentScreen());
     case SearchScreen.route:

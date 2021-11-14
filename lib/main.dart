@@ -2,12 +2,16 @@ import 'package:device_preview/device_preview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/base_screen.dart';
 import 'package:news_app/config/app_router.dart' as router;
 import 'package:news_app/features/auth/screens/auth_test.dart';
 import 'package:news_app/features/auth/screens/sign_up_screen.dart';
+import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/services/news_service.dart';
+
+import 'features/auth/bloc/auth_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,12 +36,18 @@ class _MyAppState extends State<MyApp> {
       enabled: true,
       builder: (context) => ScreenUtilInit(
         designSize: const Size(410, 730),
-        builder: () => MaterialApp(
-          title: 'Flutter Demo',
-          initialRoute: BaseScreen.route,
-          onGenerateRoute: router.generateRoute,
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
+        builder: () => BlocProvider(
+          create: (context) => AuthBloc(),
+          child: BlocProvider(
+            create: (context) => NewsBloc(),
+            child: MaterialApp(
+              title: 'Flutter Demo',
+              initialRoute: BaseScreen.route,
+              onGenerateRoute: router.generateRoute,
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+              ),
+            ),
           ),
         ),
       ),

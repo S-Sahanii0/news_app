@@ -8,7 +8,7 @@ import 'package:news_app/features/news_feed/model/news_model.dart';
 class UserModel {
   final String? id;
   final String email;
-  final String username;
+  final String? username;
   final String? password;
   final List<String>? bookmarks;
   final List<String>? history;
@@ -59,7 +59,7 @@ class UserModel {
     return UserModel(
       id: map['id'] != null ? map['id'] : null,
       email: map['email'],
-      username: map['username'],
+      username: map['username'] != null ? map['username'] : "",
       password: map['password'] != null ? map['password'] : null,
       bookmarks:
           map['bookmarks'] != null ? List<String>.from(map['bookmarks']) : null,

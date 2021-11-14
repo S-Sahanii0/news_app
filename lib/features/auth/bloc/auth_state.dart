@@ -9,7 +9,15 @@ abstract class AuthState extends Equatable {
 
 class AuthInitial extends AuthState {}
 
-class AuthSuccess extends AuthState {}
+class AuthSuccess extends AuthState {
+  final UserModel currentUser;
+
+  AuthSuccess({required this.currentUser});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [currentUser];
+}
 
 class AuthFailure extends AuthState {}
 

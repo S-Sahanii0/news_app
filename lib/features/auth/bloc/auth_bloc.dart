@@ -11,20 +11,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final _authService = AuthService();
 
   AuthBloc() : super(AuthInitial()) {
+    (_authService.checkUser().listen((event) async {
+      if (event == null) {
+        add(LoginFailure());
+      } else {
+        final result = await _authService.getCurrentUser(event.uid);
+        add(LoginSuccess(user: result));
+      }
+    }));
     on<RegisterEvent>((event, emit) async {
       try {
-        await _authService.registerUser(event.user);
+        final result = await _authService.registerUser(event.user);
         // add(LoginEvent(user: event.user));
-        emit(AuthSuccess());
+        emit(AuthSuccess(currentUser: result));
       } catch (e) {
         emit(AuthFailure());
       }
     });
 
+    on<LoginSuccess>((event, emit) => AuthSuccess(currentUser: event.user));
+    on<LoginFailure>((event, emit) => AuthFailure());
     on<LoginEvent>((event, emit) async {
       try {
-        await _authService.login(event.user);
-        emit(AuthSuccess());
+        final result = await _authService.login(event.user);
+        emit(AuthSuccess(currentUser: result));
       } catch (e) {
         emit(AuthFailure());
       }

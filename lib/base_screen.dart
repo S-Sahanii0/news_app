@@ -24,10 +24,7 @@ class BaseScreen extends StatelessWidget {
           if (snapshot.data != null) {
             if (snapshot.data!.metadata.creationTime ==
                 snapshot.data!.metadata.lastSignInTime) {
-              return BlocProvider.value(
-                value: BlocProvider.of<AuthBloc>(context),
-                child: ChooseCategoryScreen(),
-              );
+              return ChooseCategoryScreen();
             } else {
               return BlocProvider.value(
                 value: BlocProvider.of<NewsBloc>(context),

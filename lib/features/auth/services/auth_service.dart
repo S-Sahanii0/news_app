@@ -38,6 +38,7 @@ class AuthService {
 
   Future<UserModel> getCurrentUser(String uid) async {
     final userModel = await users.doc(uid).get();
+    print(userModel);
     final newUser = <String, dynamic>{};
     newUser["id"] = uid;
     newUser["email"] = userModel.get("email");
@@ -53,8 +54,11 @@ class AuthService {
     await _firebaseAuth.signOut();
   }
 
-  Future login(UserModel userModel) {
-    return _firebaseAuth.signInWithEmailAndPassword(
+  Future login(UserModel userModel) async {
+    print(await _firebaseAuth.signInWithEmailAndPassword(
+        email: userModel.email, password: userModel.password!));
+    final result = await _firebaseAuth.signInWithEmailAndPassword(
         email: userModel.email, password: userModel.password!);
+    return getCurrentUser(result.user!.uid);
   }
 }

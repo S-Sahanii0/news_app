@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +11,8 @@ import 'package:news_app/components/app_bar/app_bar.dart';
 import 'package:news_app/components/app_drawer.dart';
 import 'package:news_app/components/app_floating_button.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
+import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/auth/services/auth_service.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/screens/comments_screen.dart';
 import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
@@ -30,14 +32,17 @@ class MyFeedScreen extends StatefulWidget {
 class _MyFeedScreenState extends State<MyFeedScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   late final NewsBloc _newsBloc;
-  final currentUser = FirebaseAuth.instance.currentUser;
+  late final AuthBloc _authBloc;
+  late final UserModel _currentUser;
   ScrollController controller = ScrollController();
   CustomPopupMenuController _controller = CustomPopupMenuController();
 
   @override
   void initState() {
+    // AuthService().logout();x
     controller.addListener(_scrollListener);
-
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    _currentUser = (_authBloc.state as AuthSuccess).currentUser;
     _newsBloc = BlocProvider.of<NewsBloc>(context)
       ..add(GetFirstNewsListEvent());
     super.initState();
@@ -53,6 +58,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log(_authBloc.state.toString());
     return SafeArea(
       child: Scaffold(
           key: _key,
@@ -82,6 +88,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
             }
             if (state is NewsLoadingSuccess) {
               final newsList = state.newsList;
+
               return ListView.builder(
                 controller: controller,
                 itemCount: newsList.length,
@@ -100,7 +107,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                       numberOfComments: "100",
                       onTapHeart: () {
                         _newsBloc.add(AddToHistory(
-                            newsModel: currentNews, uid: currentUser!.uid));
+                            newsModel: currentNews, uid: _currentUser.id!));
                       },
                       onTapComment: () {
                         Navigator.of(context).pushNamed(CommentScreen.route);
@@ -108,10 +115,12 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                       onTapBookmark: () {
                         _newsBloc.add(BookMarkNewsEvent(
                             newsToBookmark: currentNews,
-                            uid: currentUser!.uid));
+                            uid: _currentUser.id!));
                       },
                       onTapShare: () {},
                       onTapMenu: () {},
+                      isBookmark:
+                          _currentUser.bookmarks!.contains(currentNews.id),
                       channelImage: currentNews.channel.channelImage,
                       imageUrl: currentNews.newsImage,
                     ),
