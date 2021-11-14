@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/components/app_drawer.dart';
 import 'package:news_app/components/app_floating_button.dart';
 import 'package:news_app/config/theme/theme.dart';
+import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
 import 'package:news_app/features/profile/tabs/bookmark_tab.dart';
 import 'package:news_app/features/profile/tabs/history.dart';
@@ -55,11 +57,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: TabBarView(
                       physics: NeverScrollableScrollPhysics(),
                       children: [
-                        Settings(),
+                        BlocProvider.value(
+                          value: BlocProvider.of<AuthBloc>(context),
+                          child: Settings(),
+                        ),
                         BookmarkTab(),
                         History(),
                       ],

@@ -48,6 +48,7 @@ dependencies:
   flutter_screenutil: ^5.0.0+2
   shrink_sidemenu: ^2.0.0+1-null-safety
   uuid: ^3.0.5
+  loading_indicator: ^3.0.2
   # websafe_svg: ^2.0.0+1
 
 dev_dependencies:

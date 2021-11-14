@@ -7,8 +7,20 @@ abstract class NewsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetNewsEvent extends NewsEvent {}
+class GetFirstNewsListEvent extends NewsEvent {}
 
-class BookMarkNewsEvent extends NewsEvent {}
+class GetNextNewsListEvent extends NewsEvent {}
 
-class AddNewsToFavorites extends NewsEvent {}
+class BookMarkNewsEvent extends NewsEvent {
+  final News newsToBookmark;
+  final String uid;
+
+  const BookMarkNewsEvent({required this.newsToBookmark, required this.uid});
+}
+
+class AddToHistory extends NewsEvent {
+  final News newsModel;
+  final String uid;
+
+  const AddToHistory({required this.newsModel, required this.uid});
+}

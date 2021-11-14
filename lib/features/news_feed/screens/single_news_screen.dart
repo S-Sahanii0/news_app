@@ -3,10 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/components/app_bar/app_bar.dart';
 import 'package:news_app/config/theme/app_icons.dart';
 import 'package:news_app/config/theme/theme.dart';
+import 'package:news_app/features/news_feed/model/news_model.dart';
 import 'package:news_app/features/news_feed/widgets/news_detail_bottom_sheet.dart';
 
 class SingleNewsScreen extends StatefulWidget {
-  const SingleNewsScreen({Key? key}) : super(key: key);
+  const SingleNewsScreen({Key? key, required this.newsModel}) : super(key: key);
+  final News newsModel;
   static const String route = '/kRouteSingleNewsScreen';
 
   @override
@@ -16,6 +18,8 @@ class SingleNewsScreen extends StatefulWidget {
 class _SingleNewsScreenState extends State<SingleNewsScreen> {
   @override
   Widget build(BuildContext context) {
+    final _news = widget.newsModel;
+
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar().appBarWithBack(context: context, pageTitle: ""),
@@ -26,16 +30,18 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
             children: [
               Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     backgroundColor: AppColors.yellowShade2,
                     radius: 15,
-                    backgroundImage:
-                        ExactAssetImage("assets/images/dummy_channel.png"),
+                    child: Image(
+                      fit: BoxFit.contain,
+                      image: NetworkImage(_news.channel.channelImage),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
-                      "Channel",
+                      _news.channel.channel,
                       style: AppStyle.regularText14
                           .copyWith(color: AppColors.darkBlueShade2),
                     ),
@@ -50,8 +56,8 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                 width: double.infinity,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    image: const DecorationImage(
-                      image: AppIcons.dummy,
+                    image: DecorationImage(
+                      image: NetworkImage(_news.newsImage),
                       fit: BoxFit.cover,
                     ),
                     border: Border.all(
@@ -66,7 +72,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "Lorem lorem lorem lorem lorem lorem lorem lorem Lorem",
+                  _news.title,
                   style: AppStyle.regularText14
                       .copyWith(color: AppColors.darkBlueShade3),
                   overflow: TextOverflow.ellipsis,
@@ -74,7 +80,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                 ),
               ),
               Text(
-                "Lorem lorem lorem lorem lorem lorem lorem lorem Lorem Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem IpsumLorem Ipsum Lorem Ipsum Lorem Ipsum",
+                _news.content,
                 style: AppStyle.regularText18
                     .copyWith(color: AppColors.darkBlueShade1),
                 overflow: TextOverflow.ellipsis,
@@ -93,7 +99,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                       flex: 6,
                     ),
                     Text(
-                      "04/05/2021",
+                      _news.date,
                       style: AppStyle.regularText12
                           .copyWith(color: AppColors.darkBlueShade2),
                     ),

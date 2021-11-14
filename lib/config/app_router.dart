@@ -71,16 +71,22 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ));
 
     case SingleNewsScreen.route:
-      return MaterialPageRoute(builder: (context) => const SingleNewsScreen());
+      return MaterialPageRoute(
+          builder: (context) => SingleNewsScreen(
+                newsModel: settings.arguments as News,
+              ));
     case ChannelScreen.route:
       return MaterialPageRoute(builder: (context) => const ChannelScreen());
     case CategoryScreen.route:
       return MaterialPageRoute(builder: (context) => const CategoryScreen());
     case ChooseCategoryScreen.route:
-      return MaterialPageRoute(
-          builder: (context) => const ChooseCategoryScreen());
+      return MaterialPageRoute(builder: (context) => ChooseCategoryScreen());
     case ProfileScreen.route:
-      return MaterialPageRoute(builder: (context) => const ProfileScreen());
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _authBloc,
+                child: ProfileScreen(),
+              ));
     case CommentScreen.route:
       return MaterialPageRoute(builder: (context) => const CommentScreen());
     case SearchScreen.route:

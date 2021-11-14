@@ -14,7 +14,7 @@ void main() async {
 
   await Firebase.initializeApp();
 
-  NewsService().getAllNews();
+  // NewsService().addDataToFirebase();
   runApp(const MyApp());
 }
 

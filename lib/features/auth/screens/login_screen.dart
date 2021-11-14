@@ -49,13 +49,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         .copyWith(color: AppColors.darkBlueShade1),
                   ),
                 ),
-                LoginForm(
-                  onSubmit: (value) {
-                    value.currentState!.save();
-                    final result = value.currentState!.value;
-                    BlocProvider.of<AuthBloc>(context)
-                        .add(LoginEvent(user: UserModel.fromMap(result)));
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 65),
+                  child: LoginForm(
+                    onSubmit: (value) {
+                      value.currentState!.save();
+                      final result = value.currentState!.value;
+                      BlocProvider.of<AuthBloc>(context)
+                          .add(LoginEvent(user: UserModel.fromMap(result)));
+                    },
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
@@ -82,8 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context)
-                        .pushReplacementNamed(SignUpScreen.route);
+                    Navigator.of(context).pushNamed(SignUpScreen.route);
                   },
                   child: RichText(
                     text: TextSpan(

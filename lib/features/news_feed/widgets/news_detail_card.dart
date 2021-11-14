@@ -146,67 +146,107 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
   }
 }
 
-Widget _feedIconRow(
-    {required VoidCallback onTapHeart,
-    required VoidCallback onTapBookmark,
-    required VoidCallback onTapComment,
-    required VoidCallback onTapShare,
-    required VoidCallback onTapBookMark,
-    required bool commentTapped,
-    required bool isHeart,
-    required bool isBookmark}) {
-  return Row(
-    // crossAxisAlignment: CrossAxisAlignment.end,
-    mainAxisSize: MainAxisSize.min,
+class _feedIconRow extends StatefulWidget {
+  _feedIconRow(
+      {Key? key,
+      required this.onTapHeart,
+      required this.onTapBookmark,
+      required this.onTapComment,
+      required this.onTapShare,
+      required this.onTapBookMark,
+      this.commentTapped = false,
+      this.isHeart = false,
+      this.isBookmark = false})
+      : super(key: key);
+  final VoidCallback onTapHeart;
+  final VoidCallback onTapBookmark;
+  final VoidCallback onTapComment;
+  final VoidCallback onTapShare;
+  final VoidCallback onTapBookMark;
+  bool commentTapped;
+  bool isHeart;
+  bool isBookmark;
 
-    children: [
-      InkWell(
-        onTap: onTapHeart,
-        child: Image(image: isHeart ? AppIcons.heartTapped : AppIcons.heart),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Text(
-          "100",
-          style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
-        ),
-      ),
-      SizedBox(
-        width: 2.w,
-      ),
-      InkWell(
-          onTap: onTapComment,
+  @override
+  __feedIconRowState createState() => __feedIconRowState();
+}
+
+class __feedIconRowState extends State<_feedIconRow> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      // crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+
+      children: [
+        InkWell(
+          onTap: () {
+            setState(() {
+              widget.isHeart = !widget.isHeart;
+            });
+            widget.onTapHeart;
+          },
           child: Image(
-              image:
-                  commentTapped ? AppIcons.commentTapped : AppIcons.comment)),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Text(
-          "100",
-          style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
+              image: widget.isHeart ? AppIcons.heartTapped : AppIcons.heart),
         ),
-      ),
-      const Spacer(
-        flex: 4,
-      ),
-      Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          InkWell(
-            onTap: onTapBookmark,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            "100",
+            style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
+          ),
+        ),
+        SizedBox(
+          width: 2.w,
+        ),
+        InkWell(
+            onTap: () {
+              setState(() {
+                widget.commentTapped = !widget.commentTapped;
+              });
+              widget.onTapComment;
+            },
             child: Image(
-                image:
-                    isBookmark ? AppIcons.bookmarkTapped : AppIcons.bookmark),
+                image: widget.commentTapped
+                    ? AppIcons.commentTapped
+                    : AppIcons.comment)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            "100",
+            style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: InkWell(
-                onTap: onTapShare, child: const Image(image: AppIcons.share)),
-          ),
-          InkWell(onTap: () {}, child: const Image(image: AppIcons.hamburger)),
-        ],
-      ),
-    ],
-  );
+        ),
+        const Spacer(
+          flex: 4,
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: () {
+                setState(() {
+                  widget.isBookmark = !widget.isBookmark;
+                });
+                widget.onTapBookMark;
+              },
+              child: Image(
+                  image: widget.isBookmark
+                      ? AppIcons.bookmarkTapped
+                      : AppIcons.bookmark),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: InkWell(
+                  onTap: widget.onTapBookMark,
+                  child: const Image(image: AppIcons.share)),
+            ),
+            InkWell(
+                onTap: () {}, child: const Image(image: AppIcons.hamburger)),
+          ],
+        ),
+      ],
+    );
+  }
 }

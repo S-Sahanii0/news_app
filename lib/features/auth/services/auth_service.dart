@@ -14,6 +14,9 @@ class AuthService {
       "id": result.user!.uid,
       "username": user.username,
       "email": user.email,
+      "bookmark": [],
+      "chosenCategory": [],
+      "history": [],
     });
     final userModel = await users.doc(result.user!.uid).get();
 
@@ -21,12 +24,29 @@ class AuthService {
     newUser["id"] = result.user!.uid;
     newUser["email"] = userModel.get("email");
     newUser["username"] = userModel.get("username");
+    newUser["bookmarks"] = userModel.get("bookmark");
+    newUser["chosenCategories"] = userModel.get("chosenCategory");
+    newUser["history"] = userModel.get("history");
 
     return UserModel.fromMap(newUser);
   }
 
   Stream<User?> checkUser() {
+    print("checking");
     return _firebaseAuth.authStateChanges().asBroadcastStream();
+  }
+
+  Future<UserModel> getCurrentUser(String uid) async {
+    final userModel = await users.doc(uid).get();
+    final newUser = <String, dynamic>{};
+    newUser["id"] = uid;
+    newUser["email"] = userModel.get("email");
+    newUser["username"] = userModel.get("username");
+    newUser["bookmarks"] = userModel.get("bookmark");
+    newUser["chosenCategories"] = userModel.get("chosenCategory");
+    newUser["history"] = userModel.get("history");
+
+    return UserModel.fromMap(newUser);
   }
 
   void logout() async {

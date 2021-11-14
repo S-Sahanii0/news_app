@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:news_app/features/channels/models/channel_model.dart';
 
 class News {
+  final String? id;
   final String newsImage;
   final String title;
   final Channel channel;
@@ -10,6 +11,7 @@ class News {
   final String content;
   final String url;
   News({
+    required this.id,
     required this.newsImage,
     required this.title,
     required this.channel,
@@ -27,6 +29,7 @@ class News {
     String? url,
   }) {
     return News(
+      id: id ?? this.id,
       newsImage: newsImage ?? this.newsImage,
       title: title ?? this.title,
       channel: channel ?? this.channel,
@@ -38,9 +41,10 @@ class News {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'newsImage': newsImage,
       'title': title,
-      // 'channel': channel.toMap(),
+      'channel': channel.toMap(),
       'date': date,
       'content': content,
       'url': url,
@@ -49,6 +53,7 @@ class News {
 
   factory News.fromMap(Map<String, dynamic> map) {
     return News(
+      id: map['id'],
       newsImage: map['newsImage'],
       title: map['title'],
       channel: Channel.fromMap(map['channel']),
@@ -64,7 +69,7 @@ class News {
 
   @override
   String toString() {
-    return 'News(newsImage: $newsImage, title: $title, date: $date, channel:$channel, content: $content, url: $url)';
+    return 'News(id: $id, newsImage: $newsImage, title: $title, date: $date, channel:$channel, content: $content, url: $url)';
   }
 
   @override
@@ -72,6 +77,7 @@ class News {
     if (identical(this, other)) return true;
 
     return other is News &&
+        other.id == id &&
         other.newsImage == newsImage &&
         other.title == title &&
         other.channel == channel &&

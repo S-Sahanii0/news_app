@@ -1,10 +1,12 @@
 import 'dart:math';
 
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_bar/app_bar.dart';
 import 'package:news_app/components/app_drawer.dart';
 import 'package:news_app/components/app_floating_button.dart';
@@ -26,16 +28,27 @@ class MyFeedScreen extends StatefulWidget {
 }
 
 class _MyFeedScreenState extends State<MyFeedScreen> {
-  bool isHeart = false;
-  bool isBookmark = false;
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   late final NewsBloc _newsBloc;
+  final currentUser = FirebaseAuth.instance.currentUser;
+  ScrollController controller = ScrollController();
   CustomPopupMenuController _controller = CustomPopupMenuController();
 
   @override
   void initState() {
-    _newsBloc = BlocProvider.of<NewsBloc>(context)..add(GetNewsEvent());
+    controller.addListener(_scrollListener);
+
+    _newsBloc = BlocProvider.of<NewsBloc>(context)
+      ..add(GetFirstNewsListEvent());
     super.initState();
+  }
+
+  void _scrollListener() {
+    if (controller.offset >= controller.position.maxScrollExtent &&
+        !controller.position.outOfRange) {
+      print("end");
+      _newsBloc.add(GetNextNewsListEvent());
+    }
   }
 
   @override
@@ -47,18 +60,37 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
           appBar: CustomAppBar()
               .primaryAppBar(pageTitle: "My Feed", context: context),
           body: BlocBuilder<NewsBloc, NewsState>(builder: (context, state) {
-            if (state is Loading) {
+            if (state is NewsInitial) {
+              print("Loading");
               return const LinearProgressIndicator();
+            }
+            if (state is NewsLoading) {
+              return const Center(
+                child: SizedBox(
+                  height: 20,
+                  width: 100,
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.ballPulse,
+                    colors: [
+                      AppColors.yellowShade1,
+                      AppColors.yellowShade2,
+                    ],
+                    strokeWidth: 2,
+                  ),
+                ),
+              );
             }
             if (state is NewsLoadingSuccess) {
               final newsList = state.newsList;
               return ListView.builder(
+                controller: controller,
                 itemCount: newsList.length,
                 itemBuilder: (context, index) {
                   final currentNews = newsList[index];
                   return GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed(SingleNewsScreen.route);
+                      Navigator.of(context).pushNamed(SingleNewsScreen.route,
+                          arguments: currentNews);
                     },
                     child: NewsDetailCard(
                       channelName: currentNews.channel.channel,
@@ -66,20 +98,17 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                       newsTime: currentNews.date,
                       numberOfLikes: "100",
                       numberOfComments: "100",
-                      isHeart: isHeart,
-                      isBookmark: isBookmark,
                       onTapHeart: () {
-                        setState(() {
-                          isHeart = !isHeart;
-                        });
+                        _newsBloc.add(AddToHistory(
+                            newsModel: currentNews, uid: currentUser!.uid));
                       },
                       onTapComment: () {
                         Navigator.of(context).pushNamed(CommentScreen.route);
                       },
                       onTapBookmark: () {
-                        setState(() {
-                          isBookmark = !isBookmark;
-                        });
+                        _newsBloc.add(BookMarkNewsEvent(
+                            newsToBookmark: currentNews,
+                            uid: currentUser!.uid));
                       },
                       onTapShare: () {},
                       onTapMenu: () {},
@@ -90,9 +119,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                 },
               );
             } else {
-              return Center(
-                child: Text("Something went wrong"),
-              );
+              return Container();
             }
           }),
           floatingActionButton: AppFloatingActionButton(

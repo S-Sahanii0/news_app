@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/components/app_card.dart';
+import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/profile/widgets/email_card.dart';
 import 'package:news_app/features/profile/widgets/settings_screen_card.dart';
 
@@ -34,7 +37,13 @@ class _SettingsState extends State<Settings> {
           SettingsCard(cardText: "About us", onTap: () {}),
           SettingsCard.logout(
             cardText: "Logout",
-            onTap: () {},
+            onTap: () {
+              BlocProvider.of<AuthBloc>(context).add(LogoutEvent());
+              Navigator.of(context).pop();
+            },
+          ),
+          SizedBox(
+            height: 200.h,
           ),
         ],
       ),
