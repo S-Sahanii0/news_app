@@ -14,14 +14,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<AppStartedEvent>((event, emit) async {
       try {
-        _authService.checkUser().listen((authEvent) async {
+        await for (var authEvent in _authService.checkUser()) {
           if (authEvent != null) {
             final user = await _authService.getCurrentUser(authEvent.uid);
             emit(AuthSuccess(currentUser: user));
           } else {
             emit(AuthFailure());
           }
-        });
+        }
       } catch (e) {
         emit(AuthFailure());
       }

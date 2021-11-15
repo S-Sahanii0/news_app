@@ -10,12 +10,25 @@ import 'package:news_app/features/news_feed/screens/my_feed.dart';
 
 import 'features/news_feed/bloc/news_bloc.dart';
 
-class BaseScreen extends StatelessWidget {
+class BaseScreen extends StatefulWidget {
   BaseScreen({Key? key}) : super(key: key);
 
   static const String route = "/kBaseScreen";
+
+  @override
+  State<BaseScreen> createState() => _BaseScreenState();
+}
+
+class _BaseScreenState extends State<BaseScreen> {
   final _authService = AuthService();
+
   final _currentLoggedInUser = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AuthBloc>().add(AppStartedEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
