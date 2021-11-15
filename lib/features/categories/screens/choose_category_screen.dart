@@ -58,7 +58,7 @@ class _ChooseCategoryScreenState extends State<ChooseCategoryScreen> {
                         .copyWith(color: AppColors.yellowShade1)),
               ),
               FormButton(onTap: () {
-                Navigator.of(context).pushNamed(MyFeedScreen.route);
+                Navigator.of(context).pushReplacementNamed(MyFeedScreen.route);
               })
             ],
           ),

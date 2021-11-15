@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,18 +50,16 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const LoginScreen());
 
     case MyFeedScreen.route:
+      log('routing to Feed Screen');
       return MaterialPageRoute(
-          builder: (context) => MultiBlocProvider(
-                providers: [
-                  BlocProvider.value(
-                    value: _authBloc,
-                  ),
-                  BlocProvider.value(
-                    value: _newsBloc,
-                  ),
-                ],
-                child: MyFeedScreen(),
-              ));
+        builder: (context) => MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: _authBloc),
+            BlocProvider.value(value: _newsBloc),
+          ],
+          child: MyFeedScreen(),
+        ),
+      );
 
     case DiscoverScreen.route:
       return MaterialPageRoute(builder: (context) => const DiscoverScreen());
@@ -74,7 +74,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case CategoryScreen.route:
       return MaterialPageRoute(builder: (context) => const CategoryScreen());
     case ChooseCategoryScreen.route:
-      return MaterialPageRoute(builder: (context) => ChooseCategoryScreen());
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _authBloc,
+                child: ChooseCategoryScreen(),
+              ));
     case ProfileScreen.route:
       return MaterialPageRoute(
           builder: (context) => BlocProvider.value(
