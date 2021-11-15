@@ -15,28 +15,28 @@ class BaseScreen extends StatelessWidget {
 
   static const String route = "/kBaseScreen";
   final _authService = AuthService();
+  final _currentLoggedInUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-        stream: _authService.checkUser(),
-        builder: (context, snapshot) {
-          if (snapshot.data != null) {
-            if (snapshot.data!.metadata.creationTime ==
-                snapshot.data!.metadata.lastSignInTime) {
-              return ChooseCategoryScreen();
-            } else {
-              return BlocProvider.value(
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is AuthSuccess) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
                 value: BlocProvider.of<NewsBloc>(context),
-                child: MyFeedScreen(),
-              );
-            }
-          }
-          if (snapshot.data == null) {
-            return LoginScreen();
-          } else {
-            return CircularProgressIndicator();
-          }
-        });
+              ),
+              BlocProvider.value(
+                value: BlocProvider.of<AuthBloc>(context),
+              ),
+            ],
+            child: MyFeedScreen(),
+          );
+        } else {
+          return LoginScreen();
+        }
+      },
+    );
   }
 }

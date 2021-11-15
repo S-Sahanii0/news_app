@@ -18,9 +18,11 @@ class LoginEvent extends AuthEvent {
 class LogoutEvent extends AuthEvent {}
 
 class LoginSuccess extends AuthEvent {
-  final UserModel user;
+  final User user;
 
   LoginSuccess({required this.user});
 }
+
+class AppStartedEvent extends AuthEvent {}
 
 class LoginFailure extends AuthEvent {}

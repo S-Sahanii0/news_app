@@ -20,16 +20,27 @@ import 'package:news_app/features/profile/screens/profile_screen.dart';
 import 'theme/app_colors.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
-  // final _authBloc = AuthBloc();
+  final _authBloc = AuthBloc();
   final _newsBloc = NewsBloc();
 
   switch (settings.name) {
     case SignUpScreen.route:
-      return MaterialPageRoute(builder: (context) => const SignUpScreen());
-    case BaseScreen.route:
       return MaterialPageRoute(
           builder: (context) => BlocProvider.value(
-                value: _newsBloc,
+                value: _authBloc,
+                child: SignUpScreen(),
+              ));
+    case BaseScreen.route:
+      return MaterialPageRoute(
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(
+                    value: _authBloc,
+                  ),
+                  BlocProvider.value(
+                    value: _newsBloc,
+                  ),
+                ],
                 child: BaseScreen(),
               ));
 
@@ -40,6 +51,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) => MultiBlocProvider(
                 providers: [
+                  BlocProvider.value(
+                    value: _authBloc,
+                  ),
                   BlocProvider.value(
                     value: _newsBloc,
                   ),
@@ -62,7 +76,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case ChooseCategoryScreen.route:
       return MaterialPageRoute(builder: (context) => ChooseCategoryScreen());
     case ProfileScreen.route:
-      return MaterialPageRoute(builder: (context) => ProfileScreen());
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _authBloc,
+                child: ProfileScreen(),
+              ));
     case CommentScreen.route:
       return MaterialPageRoute(builder: (context) => const CommentScreen());
     case SearchScreen.route:

@@ -33,7 +33,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
-  late final UserModel _currentUser;
+  late final _currentUser;
   ScrollController controller = ScrollController();
   CustomPopupMenuController _controller = CustomPopupMenuController();
 
@@ -42,7 +42,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
     // AuthService().logout();x
     controller.addListener(_scrollListener);
     _authBloc = BlocProvider.of<AuthBloc>(context);
-    _currentUser = (_authBloc.state as AuthSuccess).currentUser;
+    _currentUser = FirebaseAuth.instance.currentUser;
     _newsBloc = BlocProvider.of<NewsBloc>(context)
       ..add(GetFirstNewsListEvent());
     super.initState();
@@ -119,8 +119,8 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                       },
                       onTapShare: () {},
                       onTapMenu: () {},
-                      isBookmark:
-                          _currentUser.bookmarks!.contains(currentNews.id),
+                      // isBookmark:,
+                      // _currentUser.bookmarks!.contains(currentNews.id),
                       channelImage: currentNews.channel.channelImage,
                       imageUrl: currentNews.newsImage,
                     ),
