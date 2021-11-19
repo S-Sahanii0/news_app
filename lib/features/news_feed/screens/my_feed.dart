@@ -5,8 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import '../../auth/services/auth_service.dart';
-import '../services/news_service.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
@@ -46,13 +44,16 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
   @override
   Widget build(BuildContext context) {
     log(_authBloc.state.toString());
+    var userData = (_authBloc.state as AuthSuccess).currentUser;
     return SafeArea(
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
           appBar: CustomAppBar()
               .primaryAppBar(pageTitle: "My Feed", context: context),
-          body: BlocBuilder<NewsBloc, NewsState>(builder: (context, state) {
+          body: BlocBuilder<NewsBloc, NewsState>(buildWhen: (current, prev) {
+            return current != prev;
+          }, builder: (context, state) {
             if (state is NewsInitial || state is NewsLoading)
               return const AppLoadingIndicator();
             if (state is NewsLoadingSuccess) {
@@ -75,9 +76,16 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                             numberOfLikes: "100",
                             numberOfComments: "100",
                             onTapHeart: () {
-                              _newsBloc.add(AddToHistory(
-                                  newsModel: state.newsList[index],
-                                  uid: _currentUser.uid));
+                              if (userData.history!
+                                  .contains(state.newsList[index])) {
+                                _newsBloc.add(RemoveFromHistory(
+                                    newsModel: state.newsList[index],
+                                    uid: _currentUser.uid));
+                              } else {
+                                _newsBloc.add(AddToHistory(
+                                    newsModel: state.newsList[index],
+                                    uid: _currentUser.uid));
+                              }
                             },
                             onTapComment: () {
                               Navigator.of(context).pushNamed(
@@ -85,14 +93,23 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                   arguments: state.newsList[index]);
                             },
                             onTapBookmark: () {
-                              _newsBloc.add(BookMarkNewsEvent(
-                                  newsToBookmark: state.newsList[index],
-                                  uid: _currentUser.uid));
+                              if (userData.bookmarks!
+                                  .contains(state.newsList[index])) {
+                                _newsBloc.add(RemoveBookMarkNewsEvent(
+                                    newsToBookmark: state.newsList[index],
+                                    uid: _currentUser.uid));
+                              } else {
+                                _newsBloc.add(BookMarkNewsEvent(
+                                    newsToBookmark: state.newsList[index],
+                                    uid: _currentUser.uid));
+                              }
                             },
                             onTapShare: () {},
                             onTapMenu: () {},
-                            // isBookmark:,
-                            // _currentUser.bookmarks!.contains(currentNews.id),
+                            isBookmark: userData.bookmarks!
+                                .contains(state.newsList[index]),
+                            isHeart: userData.history!
+                                .contains(state.newsList[index]),
                             channelImage:
                                 state.newsList[index].channel.channelImage,
                             imageUrl: state.newsList[index].newsImage,

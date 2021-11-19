@@ -36,8 +36,16 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     });
     on<BookMarkNewsEvent>((event, emit) async {
       try {
-        emit(NewsLoading());
+        print(_newsList.length);
         await _newsService.addToBookmarks(event.newsToBookmark, event.uid);
+        emit(NewsLoadingSuccess(newsList: _newsList));
+      } catch (e) {
+        emit(NewsLoadingFailure());
+      }
+    });
+    on<RemoveBookMarkNewsEvent>((event, emit) async {
+      try {
+        await _newsService.removeFromBookmarks(event.newsToBookmark, event.uid);
         emit(NewsLoadingSuccess(newsList: _newsList));
       } catch (e) {
         emit(NewsLoadingFailure());
@@ -45,7 +53,14 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     });
     on<AddToHistory>((event, emit) async {
       try {
-        emit(NewsLoading());
+        await _newsService.addToHistory(event.newsModel, event.uid);
+        emit(NewsLoadingSuccess(newsList: _newsList));
+      } catch (e) {
+        emit(NewsLoadingFailure());
+      }
+    });
+    on<RemoveFromHistory>((event, emit) async {
+      try {
         await _newsService.addToHistory(event.newsModel, event.uid);
         emit(NewsLoadingSuccess(newsList: _newsList));
       } catch (e) {

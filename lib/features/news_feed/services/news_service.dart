@@ -90,12 +90,9 @@ class NewsService {
       return [];
     } else {
       final result = await news.where('id', whereIn: idList).get();
-      print(result.docs.first.data());
-      print(channelList);
       var resultNewsList = <Map<String, dynamic>>[];
       var listOfNewsSnapshot = result.docs;
       for (var e in listOfNewsSnapshot) {
-        print(e.data());
         final newsData = e.data() as Map<String, dynamic>;
         resultNewsList.add(News.fromMap({
           "id": newsData['id'],
@@ -123,16 +120,34 @@ class NewsService {
     ));
   }
 
+  Future<void> removeFromBookmarks(News newsToBookmark, String uid) {
+    final newsId = newsToBookmark.id!;
+    return (userRef.doc(uid).update(
+      {
+        'bookmark': FieldValue.arrayRemove([newsId])
+      },
+    ));
+  }
+
   Future<List> getAllBookmarks(String uid) async {
     return ((await userRef.where('id', isEqualTo: uid).get()).docs.first.data()
         as Map<String, dynamic>)['bookmark'];
   }
 
-  Future<void> addToHistory(News newsToBookmark, String uid) {
-    final newsId = newsToBookmark.id!;
+  Future<void> addToHistory(News newsToAdd, String uid) {
+    final newsId = newsToAdd.id!;
     return userRef.doc(uid).update({
       'history': FieldValue.arrayUnion([newsId])
     });
+  }
+
+  Future<void> removeFromHistory(News newsToAdd, String uid) {
+    final newsId = newsToAdd.id!;
+    return (userRef.doc(uid).update(
+      {
+        'history': FieldValue.arrayRemove([newsId])
+      },
+    ));
   }
 }
   

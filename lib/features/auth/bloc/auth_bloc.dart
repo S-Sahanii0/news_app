@@ -4,14 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
-import '../../news_feed/services/news_service.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final _authService = AuthService();
-  final _newsService = NewsService();
 
   AuthBloc() : super(AuthInitial()) {
     on<AppStartedEvent>(_handleAppStarted);

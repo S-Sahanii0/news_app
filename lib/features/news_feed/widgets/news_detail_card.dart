@@ -220,8 +220,8 @@ class __feedIconRowState extends State<_feedIconRow> {
               onTap: () {
                 setState(() {
                   widget.isBookmark = !widget.isBookmark;
-                  widget.onTapBookmark();
                 });
+                widget.onTapBookmark();
               },
               child: Image(
                   image: widget.isBookmark
