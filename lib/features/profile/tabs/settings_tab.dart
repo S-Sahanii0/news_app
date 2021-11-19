@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/components/app_card.dart';
-import 'package:news_app/features/auth/bloc/auth_bloc.dart';
-import 'package:news_app/features/profile/widgets/email_card.dart';
-import 'package:news_app/features/profile/widgets/settings_screen_card.dart';
+import '../../../components/app_card.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../widgets/email_card.dart';
+import '../widgets/settings_screen_card.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);

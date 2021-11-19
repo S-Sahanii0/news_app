@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:news_app/features/auth/services/auth_service.dart';
-import 'package:news_app/features/news_feed/services/news_service.dart';
+import '../../auth/services/auth_service.dart';
+import '../services/news_service.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';

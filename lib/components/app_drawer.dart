@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/features/categories/screens/category_screen.dart';
-import 'package:news_app/features/categories/screens/choose_category_screen.dart';
-import 'package:news_app/features/channels/screens/channels_screen.dart';
-import 'package:news_app/features/news_feed/screens/discover_screen.dart';
-import 'package:news_app/features/news_feed/screens/my_feed.dart';
-import 'package:news_app/features/profile/screens/profile_screen.dart';
+import '../features/categories/screens/category_screen.dart';
+import '../features/categories/screens/choose_category_screen.dart';
+import '../features/channels/screens/channels_screen.dart';
+import '../features/news_feed/screens/discover_screen.dart';
+import '../features/news_feed/screens/my_feed.dart';
+import '../features/profile/screens/profile_screen.dart';
 
 import '../config/theme/theme.dart';
 

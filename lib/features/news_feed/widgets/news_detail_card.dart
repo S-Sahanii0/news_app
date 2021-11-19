@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/config/theme/app_icons.dart';
-import 'package:news_app/config/theme/theme.dart';
+import '../../../config/theme/app_icons.dart';
+import '../../../config/theme/theme.dart';
 
 class NewsDetailCard extends StatefulWidget {
   final String channelName;

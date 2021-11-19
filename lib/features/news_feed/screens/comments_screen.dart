@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/components/app_bar/app_bar.dart';
-import 'package:news_app/components/app_form_field.dart';
-import 'package:news_app/config/theme/theme.dart';
-import 'package:news_app/features/news_feed/model/news_model.dart';
-import 'package:news_app/features/news_feed/widgets/comment_card.dart';
-import 'package:news_app/features/news_feed/widgets/news_detail_card.dart';
+
+import '../../../components/app_bar/app_bar.dart';
+import '../../../components/app_form_field.dart';
+import '../model/news_model.dart';
+import '../widgets/comment_card.dart';
+import '../widgets/news_detail_card.dart';
 
 class CommentScreen extends StatefulWidget {
   const CommentScreen({Key? key, required this.newsModel}) : super(key: key);
@@ -23,7 +23,8 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar().appBarWithBack(context: context, pageTitle: "Comments"),
+        appBar: CustomAppBar()
+            .appBarWithBack(context: context, pageTitle: "Comments"),
         body: SingleChildScrollView(
           child: Column(
             children: [

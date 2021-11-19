@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:news_app/features/news_feed/model/news_model.dart';
-import 'package:news_app/features/news_feed/services/news_service.dart';
+import '../model/news_model.dart';
+import '../services/news_service.dart';
 
 part 'news_event.dart';
 part 'news_state.dart';

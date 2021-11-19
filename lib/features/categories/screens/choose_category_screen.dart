@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/components/buttons/form_button.dart';
-import 'package:news_app/config/theme/app_colors.dart';
-import 'package:news_app/config/theme/app_styles.dart';
-import 'package:news_app/features/auth/bloc/auth_bloc.dart';
-import 'package:news_app/features/auth/models/user_model.dart';
-import 'package:news_app/features/news_feed/screens/my_feed.dart';
+import '../../../components/buttons/form_button.dart';
+import '../../../config/theme/app_colors.dart';
+import '../../../config/theme/app_styles.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/models/user_model.dart';
+import '../../news_feed/screens/my_feed.dart';
 
 class ChooseCategoryScreen extends StatefulWidget {
   const ChooseCategoryScreen({

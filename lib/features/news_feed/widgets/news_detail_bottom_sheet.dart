@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/config/theme/app_icons.dart';
-import 'package:news_app/config/theme/theme.dart';
+import '../../../config/theme/app_icons.dart';
+import '../../../config/theme/theme.dart';
 
 class NewsDetailBottomSheet extends StatefulWidget {
   const NewsDetailBottomSheet({Key? key}) : super(key: key);

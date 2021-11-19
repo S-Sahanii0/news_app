@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/components/app_bar/app_bar.dart';
-import 'package:news_app/config/theme/theme.dart';
+import '../../../components/app_bar/app_bar.dart';
+import '../../../config/theme/theme.dart';
 
 class SearchScreen extends StatelessWidget {
   static const String route = "/kRouteSearch";

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/config/theme/theme.dart';
+import '../../../config/theme/theme.dart';
 
 class SettingsCard extends StatefulWidget {
   SettingsCard.toggle({

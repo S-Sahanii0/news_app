@@ -2,9 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
-import 'package:news_app/features/auth/models/user_model.dart';
-import 'package:news_app/features/auth/services/auth_service.dart';
-import 'package:news_app/features/news_feed/services/news_service.dart';
+import '../models/user_model.dart';
+import '../services/auth_service.dart';
+import '../../news_feed/services/news_service.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';

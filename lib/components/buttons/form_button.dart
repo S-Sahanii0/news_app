@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/config/theme/theme.dart';
+import '../../config/theme/theme.dart';
 
 class FormButton extends StatelessWidget {
   const FormButton({Key? key, required this.onTap}) : super(key: key);

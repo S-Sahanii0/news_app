@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:news_app/config/theme/theme.dart';
+import '../config/theme/theme.dart';
 
 class AppFormField extends StatelessWidget {
   AppFormField(

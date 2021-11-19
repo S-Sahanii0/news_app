@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/base_screen.dart';
-import 'package:news_app/config/app_router.dart' as router;
-import 'package:news_app/features/auth/screens/auth_test.dart';
-import 'package:news_app/features/auth/screens/sign_up_screen.dart';
-import 'package:news_app/features/news_feed/services/news_service.dart';
+import 'base_screen.dart';
+import 'config/app_router.dart' as router;
+import 'features/auth/screens/auth_test.dart';
+import 'features/auth/screens/sign_up_screen.dart';
+import 'features/news_feed/services/news_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

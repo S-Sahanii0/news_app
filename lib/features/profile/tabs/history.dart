@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/features/news_feed/widgets/news_detail_card.dart';
+import '../../news_feed/widgets/news_detail_card.dart';
 
 class History extends StatelessWidget {
   const History({Key? key}) : super(key: key);

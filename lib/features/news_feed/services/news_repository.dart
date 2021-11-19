@@ -1,4 +1,4 @@
-import 'package:news_app/features/news_feed/model/news_model.dart';
+import '../model/news_model.dart';
 
 abstract class NewsRepository {
   Future<List<News>> getAllNews();

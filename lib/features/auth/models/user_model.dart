@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:news_app/features/categories/models/category_model.dart';
-import 'package:news_app/features/news_feed/model/news_model.dart';
+import '../../categories/models/category_model.dart';
+import '../../news_feed/model/news_model.dart';
 
 class UserModel {
   final String? id;

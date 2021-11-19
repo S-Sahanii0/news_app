@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/components/app_drawer.dart';
-import 'package:news_app/components/app_floating_button.dart';
-import 'package:news_app/config/theme/theme.dart';
-import 'package:news_app/features/auth/bloc/auth_bloc.dart';
-import 'package:news_app/features/news_feed/screens/my_feed.dart';
-import 'package:news_app/features/profile/tabs/bookmark_tab.dart';
-import 'package:news_app/features/profile/tabs/history.dart';
-import 'package:news_app/features/profile/tabs/settings_tab.dart';
-import 'package:news_app/features/profile/widgets/profile_card.dart';
+import '../../../components/app_drawer.dart';
+import '../../../components/app_floating_button.dart';
+import '../../../config/theme/theme.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../../news_feed/screens/my_feed.dart';
+import '../tabs/bookmark_tab.dart';
+import '../tabs/history.dart';
+import '../tabs/settings_tab.dart';
+import '../widgets/profile_card.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);

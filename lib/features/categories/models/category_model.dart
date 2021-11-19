@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:news_app/features/news_feed/model/news_model.dart';
+import '../../news_feed/model/news_model.dart';
 
 class CategoryModel {
   final String categoryName;

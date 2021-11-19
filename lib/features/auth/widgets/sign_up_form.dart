@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/components/app_form_field.dart';
-import 'package:news_app/components/buttons/form_button.dart';
+import '../../../components/app_form_field.dart';
+import '../../../components/buttons/form_button.dart';
 
 class SignUpForm extends StatefulWidget {
   SignUpForm({Key? key, required this.onSubmit}) : super(key: key);

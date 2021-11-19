@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:news_app/components/app_bar/app_bar.dart';
-import 'package:news_app/config/theme/app_icons.dart';
-import 'package:news_app/config/theme/theme.dart';
-import 'package:news_app/features/news_feed/model/news_model.dart';
-import 'package:news_app/features/news_feed/widgets/news_detail_bottom_sheet.dart';
+import '../../../components/app_bar/app_bar.dart';
+import '../../../config/theme/app_icons.dart';
+import '../../../config/theme/theme.dart';
+import '../model/news_model.dart';
+import '../widgets/news_detail_bottom_sheet.dart';
 
 class SingleNewsScreen extends StatefulWidget {
   const SingleNewsScreen({Key? key, required this.newsModel}) : super(key: key);

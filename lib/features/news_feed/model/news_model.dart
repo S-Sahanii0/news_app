@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:news_app/features/channels/models/channel_model.dart';
+import '../../channels/models/channel_model.dart';
 
 class News {
   final String? id;

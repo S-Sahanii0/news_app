@@ -5,8 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
-import 'package:news_app/features/categories/models/category_model.dart';
-import 'package:news_app/features/channels/models/channel_model.dart';
+import '../../categories/models/category_model.dart';
+import '../../channels/models/channel_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../model/news_model.dart';
@@ -115,13 +115,7 @@ class NewsService {
   }
 
   Future<void> addToBookmarks(News newsToBookmark, String uid) {
-    print(newsToBookmark.toJson());
-    print(uid);
     final newsId = newsToBookmark.id!;
-    print("NEWSID: ${newsToBookmark.id}");
-    print(userRef.doc(uid).update({
-      'bookmark': FieldValue.arrayUnion([newsId])
-    }));
     return (userRef.doc(uid).update(
       {
         'bookmark': FieldValue.arrayUnion([newsId])
