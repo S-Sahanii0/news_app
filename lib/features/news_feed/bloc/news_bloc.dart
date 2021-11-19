@@ -16,7 +16,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       emit(NewsLoading());
       try {
         await for (var news in _newsService.getFirstNewsList()) {
-          _newsList = news;
+          _newsList = List.from(news);
           emit(NewsLoadingSuccess(newsList: _newsList));
         }
       } catch (e) {
@@ -25,9 +25,9 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     });
     on<GetNextNewsListEvent>((event, emit) async {
       try {
-        emit(NewsLoading());
+        // emit(NewsLoading());
         await for (var news in await _newsService.getNextNewsList()) {
-          _newsList = news;
+          _newsList = List.from(news);
           emit(NewsLoadingSuccess(newsList: _newsList));
         }
       } catch (e) {

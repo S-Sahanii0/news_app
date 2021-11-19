@@ -129,7 +129,6 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                             onTapBookmark: widget.onTapBookmark,
                             onTapComment: widget.onTapComment,
                             onTapShare: widget.onTapShare,
-                            onTapBookMark: widget.onTapBookmark,
                             isHeart: widget.isHeart!,
                             isBookmark: widget.isBookmark!,
                             commentTapped: widget.commentTapped!),
@@ -153,7 +152,6 @@ class _feedIconRow extends StatefulWidget {
       required this.onTapBookmark,
       required this.onTapComment,
       required this.onTapShare,
-      required this.onTapBookMark,
       this.commentTapped = false,
       this.isHeart = false,
       this.isBookmark = false})
@@ -162,7 +160,6 @@ class _feedIconRow extends StatefulWidget {
   final VoidCallback onTapBookmark;
   final VoidCallback onTapComment;
   final VoidCallback onTapShare;
-  final VoidCallback onTapBookMark;
   bool commentTapped;
   bool isHeart;
   bool isBookmark;
@@ -183,8 +180,8 @@ class __feedIconRowState extends State<_feedIconRow> {
           onTap: () {
             setState(() {
               widget.isHeart = !widget.isHeart;
+              widget.onTapHeart();
             });
-            widget.onTapHeart;
           },
           child: Image(
               image: widget.isHeart ? AppIcons.heartTapped : AppIcons.heart),
@@ -200,12 +197,7 @@ class __feedIconRowState extends State<_feedIconRow> {
           width: 2.w,
         ),
         InkWell(
-            onTap: () {
-              setState(() {
-                widget.commentTapped = !widget.commentTapped;
-              });
-              widget.onTapComment;
-            },
+            onTap: widget.onTapComment,
             child: Image(
                 image: widget.commentTapped
                     ? AppIcons.commentTapped
@@ -228,8 +220,8 @@ class __feedIconRowState extends State<_feedIconRow> {
               onTap: () {
                 setState(() {
                   widget.isBookmark = !widget.isBookmark;
+                  widget.onTapBookmark();
                 });
-                widget.onTapBookMark;
               },
               child: Image(
                   image: widget.isBookmark
@@ -239,8 +231,7 @@ class __feedIconRowState extends State<_feedIconRow> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: InkWell(
-                  onTap: widget.onTapBookMark,
-                  child: const Image(image: AppIcons.share)),
+                  onTap: () {}, child: const Image(image: AppIcons.share)),
             ),
             InkWell(
                 onTap: () {}, child: const Image(image: AppIcons.hamburger)),

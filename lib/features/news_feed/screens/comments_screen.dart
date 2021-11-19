@@ -3,13 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/components/app_bar/app_bar.dart';
 import 'package:news_app/components/app_form_field.dart';
 import 'package:news_app/config/theme/theme.dart';
+import 'package:news_app/features/news_feed/model/news_model.dart';
 import 'package:news_app/features/news_feed/widgets/comment_card.dart';
 import 'package:news_app/features/news_feed/widgets/news_detail_card.dart';
 
 class CommentScreen extends StatefulWidget {
-  const CommentScreen({Key? key}) : super(key: key);
+  const CommentScreen({Key? key, required this.newsModel}) : super(key: key);
 
   static const String route = "/kRouteComment";
+  final News newsModel;
   @override
   _CommentScreenState createState() => _CommentScreenState();
 }
@@ -21,15 +23,13 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar()
-            .appBarWithBack(context: context, pageTitle: "Comments"),
+        appBar: CustomAppBar().appBarWithBack(context: context, pageTitle: "Comments"),
         body: SingleChildScrollView(
           child: Column(
             children: [
               NewsDetailCard(
-                channelName: "DummyTitle",
-                newsDescription:
-                    "Lorem LORem Lorem Lorem Lorem Lorem Lorem Lorem Lorem",
+                channelName: widget.newsModel.channel.channel,
+                newsDescription: widget.newsModel.content,
                 newsTime: "6 hours ago",
                 numberOfLikes: "100",
                 numberOfComments: "100",
@@ -50,7 +50,7 @@ class _CommentScreenState extends State<CommentScreen> {
                 onTapShare: () {},
                 onTapMenu: () {},
                 channelImage: '',
-                imageUrl: '',
+                imageUrl: widget.newsModel.newsImage,
               ),
               Divider(
                 thickness: 2.h,

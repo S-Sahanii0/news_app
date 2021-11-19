@@ -1,25 +1,22 @@
 import 'dart:developer';
 
-import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:news_app/components/app_bar/app_bar.dart';
-import 'package:news_app/components/app_drawer.dart';
-import 'package:news_app/components/app_floating_button.dart';
-import 'package:news_app/features/auth/bloc/auth_bloc.dart';
-import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/auth/services/auth_service.dart';
-import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
-import 'package:news_app/features/news_feed/screens/comments_screen.dart';
-import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
-import 'package:news_app/config/theme/app_colors.dart';
-import 'package:news_app/config/theme/app_icons.dart';
-import 'package:news_app/config/theme/app_styles.dart';
-import 'package:news_app/features/news_feed/widgets/news_detail_card.dart';
+import 'package:news_app/features/news_feed/services/news_service.dart';
+
+import '../../../components/app_bar/app_bar.dart';
+import '../../../components/app_drawer.dart';
+import '../../../components/app_floating_button.dart';
+import '../../../config/theme/app_colors.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../bloc/news_bloc.dart';
+import '../widgets/news_detail_card.dart';
+import 'comments_screen.dart';
+import 'single_news_screen.dart';
 
 class MyFeedScreen extends StatefulWidget {
   const MyFeedScreen({Key? key}) : super(key: key);
@@ -33,27 +30,17 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
-  late final _currentUser;
-  ScrollController controller = ScrollController();
-  CustomPopupMenuController _controller = CustomPopupMenuController();
+  late final User _currentUser;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
-    // AuthService().logout();x
-    controller.addListener(_scrollListener);
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    _currentUser = FirebaseAuth.instance.currentUser!;
     _authBloc = BlocProvider.of<AuthBloc>(context);
-    _currentUser = FirebaseAuth.instance.currentUser;
     _newsBloc = BlocProvider.of<NewsBloc>(context)
       ..add(GetFirstNewsListEvent());
-    super.initState();
-  }
-
-  void _scrollListener() {
-    if (controller.offset >= controller.position.maxScrollExtent &&
-        !controller.position.outOfRange) {
-      print("end");
-      _newsBloc.add(GetNextNewsListEvent());
-    }
   }
 
   @override
@@ -66,75 +53,102 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
           appBar: CustomAppBar()
               .primaryAppBar(pageTitle: "My Feed", context: context),
           body: BlocBuilder<NewsBloc, NewsState>(builder: (context, state) {
-            if (state is NewsInitial) {
-              print("Loading");
-              return const LinearProgressIndicator();
-            }
-            if (state is NewsLoading) {
-              return const Center(
-                child: SizedBox(
-                  height: 20,
-                  width: 100,
-                  child: LoadingIndicator(
-                    indicatorType: Indicator.ballPulse,
-                    colors: [
-                      AppColors.yellowShade1,
-                      AppColors.yellowShade2,
-                    ],
-                    strokeWidth: 2,
-                  ),
-                ),
-              );
-            }
+            if (state is NewsInitial || state is NewsLoading)
+              return const AppLoadingIndicator();
             if (state is NewsLoadingSuccess) {
-              final newsList = state.newsList;
-
               return ListView.builder(
-                controller: controller,
-                itemCount: newsList.length,
+                controller: _scrollController,
+                itemCount: state.newsList.length + 1,
                 itemBuilder: (context, index) {
-                  final currentNews = newsList[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(SingleNewsScreen.route,
-                          arguments: currentNews);
-                    },
-                    child: NewsDetailCard(
-                      channelName: currentNews.channel.channel,
-                      newsDescription: currentNews.content,
-                      newsTime: currentNews.date,
-                      numberOfLikes: "100",
-                      numberOfComments: "100",
-                      onTapHeart: () {
-                        _newsBloc.add(AddToHistory(
-                            newsModel: currentNews, uid: _currentUser.id!));
-                      },
-                      onTapComment: () {
-                        Navigator.of(context).pushNamed(CommentScreen.route);
-                      },
-                      onTapBookmark: () {
-                        _newsBloc.add(BookMarkNewsEvent(
-                            newsToBookmark: currentNews,
-                            uid: _currentUser.id!));
-                      },
-                      onTapShare: () {},
-                      onTapMenu: () {},
-                      // isBookmark:,
-                      // _currentUser.bookmarks!.contains(currentNews.id),
-                      channelImage: currentNews.channel.channelImage,
-                      imageUrl: currentNews.newsImage,
-                    ),
-                  );
+                  return index >= state.newsList.length
+                      ? const AppLoadingIndicator()
+                      : GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                                SingleNewsScreen.route,
+                                arguments: state.newsList[index]);
+                          },
+                          child: NewsDetailCard(
+                            channelName: state.newsList[index].channel.channel,
+                            newsDescription: state.newsList[index].content,
+                            newsTime: state.newsList[index].date,
+                            numberOfLikes: "100",
+                            numberOfComments: "100",
+                            onTapHeart: () {
+                              _newsBloc.add(AddToHistory(
+                                  newsModel: state.newsList[index],
+                                  uid: _currentUser.uid));
+                            },
+                            onTapComment: () {
+                              Navigator.of(context).pushNamed(
+                                  CommentScreen.route,
+                                  arguments: state.newsList[index]);
+                            },
+                            onTapBookmark: () {
+                              _newsBloc.add(BookMarkNewsEvent(
+                                  newsToBookmark: state.newsList[index],
+                                  uid: _currentUser.uid));
+                            },
+                            onTapShare: () {},
+                            onTapMenu: () {},
+                            // isBookmark:,
+                            // _currentUser.bookmarks!.contains(currentNews.id),
+                            channelImage:
+                                state.newsList[index].channel.channelImage,
+                            imageUrl: state.newsList[index].newsImage,
+                          ),
+                        );
                 },
               );
             } else {
-              return Container();
+              return const Center(child: Text("Error fetching news."));
             }
           }),
           floatingActionButton: AppFloatingActionButton(
             scaffoldKey: _key,
           ),
           drawer: const AppDrawer()),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) _newsBloc.add(GetNextNewsListEvent());
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= maxScroll && !_scrollController.position.outOfRange;
+  }
+}
+
+class AppLoadingIndicator extends StatelessWidget {
+  const AppLoadingIndicator({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: SizedBox(
+        height: 20,
+        width: 100,
+        child: LoadingIndicator(
+          indicatorType: Indicator.ballPulse,
+          colors: [
+            AppColors.yellowShade1,
+            AppColors.yellowShade2,
+          ],
+          strokeWidth: 2,
+        ),
+      ),
     );
   }
 }

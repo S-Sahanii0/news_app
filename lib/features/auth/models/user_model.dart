@@ -10,13 +10,13 @@ class UserModel {
   final String email;
   final String? username;
   final String? password;
-  final List<String>? bookmarks;
-  final List<String>? history;
+  final List<News>? bookmarks;
+  final List<News>? history;
   final List<String>? chosenCategories;
   UserModel({
     this.id,
     required this.email,
-    required this.username,
+    this.username,
     this.password,
     this.bookmarks,
     this.history,
@@ -28,8 +28,8 @@ class UserModel {
     String? email,
     String? username,
     String? password,
-    List<String>? bookmarks,
-    List<String>? history,
+    List<News>? bookmarks,
+    List<News>? history,
     List<String>? chosenCategories,
   }) {
     return UserModel(
@@ -49,8 +49,8 @@ class UserModel {
       'email': email,
       'username': username,
       'password': password,
-      'bookmarks': bookmarks,
-      'history': history,
+      'bookmarks': bookmarks?.map((x) => x.toMap()).toList(),
+      'history': history?.map((x) => x.toMap()).toList(),
       'chosenCategories': chosenCategories,
     };
   }
@@ -59,12 +59,14 @@ class UserModel {
     return UserModel(
       id: map['id'] != null ? map['id'] : null,
       email: map['email'],
-      username: map['username'] != null ? map['username'] : "",
+      username: map['username'] != null ? map['username'] : null,
       password: map['password'] != null ? map['password'] : null,
-      bookmarks:
-          map['bookmarks'] != null ? List<String>.from(map['bookmarks']) : null,
-      history:
-          map['history'] != null ? List<String>.from(map['history']) : null,
+      bookmarks: map['bookmarks'] != null
+          ? List<News>.from(map['bookmarks']?.map((x) => News.fromMap(x)))
+          : null,
+      history: map['history'] != null
+          ? List<News>.from(map['history']?.map((x) => News.fromMap(x)))
+          : null,
       chosenCategories: map['chosenCategories'] != null
           ? List<String>.from(map['chosenCategories'])
           : null,

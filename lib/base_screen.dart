@@ -46,6 +46,13 @@ class _BaseScreenState extends State<BaseScreen> {
             ],
             child: MyFeedScreen(),
           );
+        }
+        if (state is AuthLoading) {
+          return const Scaffold(
+            body: Center(
+              child: AppLoadingIndicator(),
+            ),
+          );
         } else {
           return LoginScreen();
         }

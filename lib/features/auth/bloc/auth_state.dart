@@ -23,4 +23,4 @@ class AuthFailure extends AuthState {}
 
 class LogoutState extends AuthState {}
 
-class Loading extends AuthState {}
+class AuthLoading extends AuthState {}

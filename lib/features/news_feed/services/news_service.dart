@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,9 +23,10 @@ class NewsService {
 
   Stream<List<Channel>> listenToChannel() {
     return channel.snapshots().map((event) {
-      return event.docs
+      channelList = event.docs
           .map((e) => Channel.fromMap(e.data() as Map<String, dynamic>))
           .toList();
+      return channelList;
     });
   }
 
@@ -32,10 +34,11 @@ class NewsService {
     listenToChannel().listen((event) {
       channelList = event;
     });
-    return news.limit(10).snapshots().map((event) {
+    return news.limit(20).snapshots().map((event) {
       newsList.addAll(event.docs.map((e) {
         final newsData = e.data() as Map<String, dynamic>;
         return News.fromMap({
+          "id": newsData['id'],
           "title": newsData['title'],
           "newsImage": newsData['newsImage'],
           "content": newsData['content'],
@@ -55,17 +58,15 @@ class NewsService {
     final prevDocument = await news
         .where('title', isEqualTo: newsList[newsList.length - 1].title)
         .get();
-    print(prevDocument);
-    print("""""" """""" """""" "");
-    print(newsList.length);
     return news
         .startAfterDocument(prevDocument.docs.first)
-        .limit(10)
+        .limit(20)
         .snapshots()
         .map((event) {
       newsList.addAll(event.docs.map((e) {
         final newsData = e.data() as Map<String, dynamic>;
         return News.fromMap({
+          "id": newsData['id'],
           "title": newsData['title'],
           "newsImage": newsData['newsImage'],
           "content": newsData['content'],
@@ -81,11 +82,56 @@ class NewsService {
     });
   }
 
-  Future<void> addToBookmarks(News newsToBookmark, String uid) {
-    final newsId = newsToBookmark.id!;
-    return userRef.doc(uid).update({
-      'bookmark': FieldValue.arrayUnion([newsId])
+  Future getNewsModel(List<String> idList) async {
+    listenToChannel().listen((event) {
+      channelList = event;
     });
+    if (idList.isEmpty) {
+      return [];
+    } else {
+      final result = await news.where('id', whereIn: idList).get();
+      print(result.docs.first.data());
+      print(channelList);
+      var resultNewsList = <Map<String, dynamic>>[];
+      var listOfNewsSnapshot = result.docs;
+      for (var e in listOfNewsSnapshot) {
+        print(e.data());
+        final newsData = e.data() as Map<String, dynamic>;
+        resultNewsList.add(News.fromMap({
+          "id": newsData['id'],
+          "title": newsData['title'],
+          "newsImage": newsData['newsImage'],
+          "content": newsData['content'],
+          "url": newsData['url'],
+          "date": newsData['date'],
+          "channel": channelList
+              .where((element) => element.channel == newsData['channel'])
+              .first
+              .toMap()
+        }).toMap());
+      }
+      return resultNewsList;
+    }
+  }
+
+  Future<void> addToBookmarks(News newsToBookmark, String uid) {
+    print(newsToBookmark.toJson());
+    print(uid);
+    final newsId = newsToBookmark.id!;
+    print("NEWSID: ${newsToBookmark.id}");
+    print(userRef.doc(uid).update({
+      'bookmark': FieldValue.arrayUnion([newsId])
+    }));
+    return (userRef.doc(uid).update(
+      {
+        'bookmark': FieldValue.arrayUnion([newsId])
+      },
+    ));
+  }
+
+  Future<List> getAllBookmarks(String uid) async {
+    return ((await userRef.where('id', isEqualTo: uid).get()).docs.first.data()
+        as Map<String, dynamic>)['bookmark'];
   }
 
   Future<void> addToHistory(News newsToBookmark, String uid) {

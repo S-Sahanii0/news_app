@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/news_feed/services/news_service.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final _newsService = NewsService();
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   Future<UserModel> registerUser(UserModel user) async {
@@ -38,14 +40,22 @@ class AuthService {
 
   Future<UserModel> getCurrentUser(String uid) async {
     final userModel = await users.doc(uid).get();
+
     print(userModel);
     final newUser = <String, dynamic>{};
+    print(userModel.get("bookmark"));
     newUser["id"] = uid;
     newUser["email"] = userModel.get("email");
     newUser["username"] = userModel.get("username");
-    newUser["bookmarks"] = userModel.get("bookmark");
+    newUser["bookmarks"] = await _newsService.getNewsModel(
+        (userModel.get("bookmark") as List<dynamic>)
+            .map((e) => e.toString())
+            .toList());
     newUser["chosenCategories"] = userModel.get("chosenCategory");
-    newUser["history"] = userModel.get("history");
+    newUser["history"] = await _newsService.getNewsModel(
+        (userModel.get("history") as List<dynamic>)
+            .map((e) => e.toString())
+            .toList());
 
     return UserModel.fromMap(newUser);
   }
