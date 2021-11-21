@@ -3,6 +3,16 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/app/cubit/navigation_cubit.dart';
+import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/auth/services/auth_service.dart';
+import 'package:news_app/features/categories/bloc/category_bloc.dart';
+import 'package:news_app/features/categories/screens/news_by_category.dart';
+import 'package:news_app/features/categories/services/category_service.dart';
+import 'package:news_app/features/channels/bloc/channel_bloc.dart';
+import 'package:news_app/features/channels/screens/news_by_channel.dart';
+import 'package:news_app/features/channels/services/channel_service.dart';
+import 'package:news_app/features/news_feed/services/news_service.dart';
 import '../base_screen.dart';
 import '../features/auth/bloc/auth_bloc.dart';
 import '../features/auth/screens/login_screen.dart';
@@ -22,8 +32,17 @@ import '../features/profile/screens/profile_screen.dart';
 import 'theme/app_colors.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
-  final _authBloc = AuthBloc();
-  final _newsBloc = NewsBloc();
+  //Services instance
+  final _newsService = NewsService();
+  final _authService = AuthService(newsService: _newsService);
+  final _categoryService = CategoryService(newsService: _newsService);
+  final _channelService = ChannelService(newsService: _newsService);
+
+  //Bloc Instances
+  final _authBloc = AuthBloc(authService: _authService);
+  final _newsBloc = NewsBloc(newsService: _newsService);
+  final _categoryBloc = CategoryBloc(catgoryService: _categoryService);
+  final _channelBloc = ChannelBloc(channelService: _channelService);
 
   switch (settings.name) {
     case SignUpScreen.route:
@@ -36,12 +55,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) => MultiBlocProvider(
                 providers: [
-                  BlocProvider.value(
-                    value: _authBloc,
-                  ),
-                  BlocProvider.value(
-                    value: _newsBloc,
-                  ),
+                  BlocProvider.value(value: _authBloc),
+                  BlocProvider.value(value: _newsBloc),
+                  BlocProvider.value(value: _categoryBloc),
+                  BlocProvider.value(value: _channelBloc),
+                  BlocProvider(create: (_) => NavigationCubit()),
                 ],
                 child: BaseScreen(),
               ));
@@ -70,9 +88,60 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                 newsModel: settings.arguments as News,
               ));
     case ChannelScreen.route:
-      return MaterialPageRoute(builder: (context) => const ChannelScreen());
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _channelBloc,
+                child: ChannelScreen(),
+              ));
     case CategoryScreen.route:
-      return MaterialPageRoute(builder: (context) => const CategoryScreen());
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _categoryBloc,
+                child: CategoryScreen(),
+              ));
+    case NewsByChannelScreen.route:
+      return MaterialPageRoute(builder: (context) {
+        final args = settings.arguments as List;
+        return BlocProvider.value(
+          value: _categoryBloc,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _channelBloc,
+              ),
+              BlocProvider.value(
+                value: _newsBloc,
+              ),
+            ],
+            child: NewsByChannelScreen(
+              userData: args.first as UserModel,
+              channelName: args[1],
+            ),
+          ),
+        );
+      });
+
+    case NewsByCategoryScreen.route:
+      return MaterialPageRoute(builder: (context) {
+        final args = settings.arguments as List;
+        return BlocProvider.value(
+          value: _categoryBloc,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _newsBloc,
+              ),
+              BlocProvider.value(
+                value: _categoryBloc,
+              ),
+            ],
+            child: NewsByCategoryScreen(
+              userData: args.first as UserModel,
+              categoryName: args[1],
+            ),
+          ),
+        );
+      });
     case ChooseCategoryScreen.route:
       return MaterialPageRoute(
           builder: (context) => BlocProvider.value(

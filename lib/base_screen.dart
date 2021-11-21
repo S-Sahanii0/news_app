@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/app/screens/navigation_screen.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/screens/auth_test.dart';
 import 'features/auth/screens/login_screen.dart';
@@ -20,10 +21,6 @@ class BaseScreen extends StatefulWidget {
 }
 
 class _BaseScreenState extends State<BaseScreen> {
-  final _authService = AuthService();
-
-  final _currentLoggedInUser = FirebaseAuth.instance.currentUser;
-
   @override
   void initState() {
     super.initState();
@@ -35,17 +32,7 @@ class _BaseScreenState extends State<BaseScreen> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthSuccess) {
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: BlocProvider.of<NewsBloc>(context),
-              ),
-              BlocProvider.value(
-                value: BlocProvider.of<AuthBloc>(context),
-              ),
-            ],
-            child: MyFeedScreen(),
-          );
+          return const NavigationScreen();
         }
         if (state is AuthLoading) {
           return const Scaffold(
@@ -54,7 +41,7 @@ class _BaseScreenState extends State<BaseScreen> {
             ),
           );
         } else {
-          return LoginScreen();
+          return const LoginScreen();
         }
       },
     );

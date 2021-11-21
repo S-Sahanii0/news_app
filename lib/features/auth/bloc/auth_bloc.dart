@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
+import 'package:news_app/features/news_feed/services/news_service.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 
@@ -9,9 +10,9 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final _authService = AuthService();
+  final AuthService authService;
 
-  AuthBloc() : super(AuthInitial()) {
+  AuthBloc({required this.authService}) : super(AuthInitial()) {
     on<AppStartedEvent>(_handleAppStarted);
     on<RegisterEvent>(_handleRegister);
     on<LoginSuccess>(_handleLoginSuccess);
@@ -23,10 +24,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _handleAppStarted(AppStartedEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      await for (var authEvent in _authService.checkUser()) {
+      // NewsService().listenToChannelEvent();
+      await for (var authEvent in authService.checkUser()) {
         if (authEvent != null) {
-          final user = await _authService.getCurrentUser(authEvent.uid);
-          emit(AuthSuccess(currentUser: user));
+          final userEvent = authService.getCurrentUser(authEvent.uid);
+          await for (var user in userEvent) {
+            emit(AuthSuccess(currentUser: await user));
+          }
         } else {
           emit(AuthFailure());
         }
@@ -39,10 +43,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _handleRegister(RegisterEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      final result = await _authService.registerUser(event.user);
+      final result = await authService.registerUser(event.user);
       // add(LoginEvent(user: event.user));
-
-      emit(AuthSuccess(currentUser: result));
+      await for (var event in result) {
+        emit(AuthSuccess(currentUser: await event));
+      }
     } catch (e) {
       emit(AuthFailure());
     }
@@ -51,8 +56,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _handleLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      final result = await _authService.login(event.user);
-      emit(AuthSuccess(currentUser: result));
+      final result = await authService.login(event.user);
+      await for (var event in result) {
+        emit(AuthSuccess(currentUser: await event));
+      }
     } catch (e) {
       emit(AuthFailure());
     }
@@ -61,7 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _handleLogout(LogoutEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      _authService.logout();
+      authService.logout();
       emit(LogoutState());
     } catch (e) {
       emit(AuthFailure());
@@ -70,8 +77,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   _handleLoginSuccess(LoginSuccess event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
-    final result = await _authService.getCurrentUser(event.user.uid);
-    emit(AuthSuccess(currentUser: result));
+    final result = await authService.getCurrentUser(event.user.uid);
+    await for (var event in result) {
+      emit(AuthSuccess(currentUser: await event));
+    }
   }
 
   _handleLoginFailure(AuthEvent event, Emitter<AuthState> emit) async {

@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
-import '../features/categories/screens/category_screen.dart';
-import '../features/categories/screens/choose_category_screen.dart';
-import '../features/channels/screens/channels_screen.dart';
-import '../features/news_feed/screens/discover_screen.dart';
-import '../features/news_feed/screens/my_feed.dart';
-import '../features/profile/screens/profile_screen.dart';
-
+import 'package:news_app/app/cubit/navigation_cubit.dart';
+import 'package:provider/src/provider.dart';
 import '../config/theme/theme.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
   const AppDrawer({Key? key}) : super(key: key);
+
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  late final NavigationCubit _navigationCubit;
+  @override
+  void initState() {
+    super.initState();
+    _navigationCubit = context.read<NavigationCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +51,7 @@ class AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed(MyFeedScreen.route);
+                    _navigationCubit.navigateToMyFeed();
                   },
                   child: Text(
                     "My Feed",
@@ -56,7 +63,7 @@ class AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed(ChooseCategoryScreen.route);
+                    // _navigationCubit.navigateToCategory(); todo
                   },
                   child: Text(
                     "Discover",
@@ -68,7 +75,7 @@ class AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed(CategoryScreen.route);
+                    _navigationCubit.navigateToCategory();
                   },
                   child: Text(
                     "Categories",
@@ -80,7 +87,7 @@ class AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed(ChannelScreen.route);
+                    _navigationCubit.navigateToChannels();
                   },
                   child: Text(
                     "Channels",
@@ -92,7 +99,7 @@ class AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed(ProfileScreen.route);
+                    _navigationCubit.navigateToProfile();
                   },
                   child: Text(
                     "Profile",

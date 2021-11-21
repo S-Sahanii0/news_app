@@ -11,9 +11,8 @@ import 'features/news_feed/services/news_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp();
-  // NewsService().addDataToFirebase();
+
   runApp(const MyApp());
 }
 

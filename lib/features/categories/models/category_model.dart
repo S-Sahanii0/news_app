@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../../news_feed/model/news_model.dart';
 
 class CategoryModel {
   final String categoryName;
-  final News news;
+  final List<News> news;
   CategoryModel({
     required this.categoryName,
     required this.news,
@@ -12,7 +14,7 @@ class CategoryModel {
 
   CategoryModel copyWith({
     String? categoryName,
-    News? news,
+    List<News>? news,
   }) {
     return CategoryModel(
       categoryName: categoryName ?? this.categoryName,
@@ -23,14 +25,14 @@ class CategoryModel {
   Map<String, dynamic> toMap() {
     return {
       'categoryName': categoryName,
-      'news': news.toMap(),
+      'news': news.map((x) => x.toMap()).toList(),
     };
   }
 
   factory CategoryModel.fromMap(Map<String, dynamic> map) {
     return CategoryModel(
       categoryName: map['categoryName'],
-      news: News.fromMap(map['news']),
+      news: List<News>.from(map['news']?.map((x) => News.fromMap(x))),
     );
   }
 
@@ -49,7 +51,7 @@ class CategoryModel {
 
     return other is CategoryModel &&
         other.categoryName == categoryName &&
-        other.news == news;
+        listEquals(other.news, news);
   }
 
   @override

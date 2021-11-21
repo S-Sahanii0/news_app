@@ -9,13 +9,14 @@ part 'news_event.dart';
 part 'news_state.dart';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
-  final _newsService = NewsService();
+  final NewsService newsService;
   List<News> _newsList = [];
-  NewsBloc() : super(NewsInitial()) {
+  NewsBloc({required this.newsService}) : super(NewsInitial()) {
     on<GetFirstNewsListEvent>((event, emit) async {
       emit(NewsLoading());
+
       try {
-        await for (var news in _newsService.getFirstNewsList()) {
+        await for (var news in newsService.getFirstNewsList()) {
           _newsList = List.from(news);
           emit(NewsLoadingSuccess(newsList: _newsList));
         }
@@ -26,7 +27,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<GetNextNewsListEvent>((event, emit) async {
       try {
         // emit(NewsLoading());
-        await for (var news in await _newsService.getNextNewsList()) {
+        await for (var news in await newsService.getNextNewsList()) {
           _newsList = List.from(news);
           emit(NewsLoadingSuccess(newsList: _newsList));
         }
@@ -37,7 +38,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<BookMarkNewsEvent>((event, emit) async {
       try {
         print(_newsList.length);
-        await _newsService.addToBookmarks(event.newsToBookmark, event.uid);
+        await newsService.addToBookmarks(event.newsToBookmark, event.uid);
         emit(NewsLoadingSuccess(newsList: _newsList));
       } catch (e) {
         emit(NewsLoadingFailure());
@@ -45,7 +46,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     });
     on<RemoveBookMarkNewsEvent>((event, emit) async {
       try {
-        await _newsService.removeFromBookmarks(event.newsToBookmark, event.uid);
+        await newsService.removeFromBookmarks(event.newsToBookmark, event.uid);
         emit(NewsLoadingSuccess(newsList: _newsList));
       } catch (e) {
         emit(NewsLoadingFailure());
@@ -53,7 +54,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     });
     on<AddToHistory>((event, emit) async {
       try {
-        await _newsService.addToHistory(event.newsModel, event.uid);
+        await newsService.addToHistory(event.newsModel, event.uid);
         emit(NewsLoadingSuccess(newsList: _newsList));
       } catch (e) {
         emit(NewsLoadingFailure());
@@ -61,7 +62,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     });
     on<RemoveFromHistory>((event, emit) async {
       try {
-        await _newsService.addToHistory(event.newsModel, event.uid);
+        await newsService.removeFromHistory(event.newsModel, event.uid);
         emit(NewsLoadingSuccess(newsList: _newsList));
       } catch (e) {
         emit(NewsLoadingFailure());

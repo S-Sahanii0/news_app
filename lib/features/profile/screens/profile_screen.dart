@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,8 +23,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TabController? _tabController;
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
+  late String uid;
+  late final AuthBloc _authBloc;
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    uid = FirebaseAuth.instance.currentUser!.uid;
+  }
+
   @override
   Widget build(BuildContext context) {
+    var userData = (_authBloc.state as AuthSuccess).currentUser;
     return SafeArea(
       child: Scaffold(
         key: _key,
@@ -38,8 +49,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const ProfileCard(
-                      username: "John", profileBio: "Get only what you want"),
+                  ProfileCard(
+                      username: '${userData.username}',
+                      profileBio: "Get only what you want"),
                   ColoredBox(
                     color: AppColors.appWhite,
                     child: TabBar(
@@ -63,10 +75,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         BlocProvider.value(
                           value: BlocProvider.of<AuthBloc>(context),
-                          child: Settings(),
+                          child: Settings(user: userData),
                         ),
-                        BookmarkTab(),
-                        History(),
+                        BookmarkTab(
+                          bookmarkList: userData.bookmarks ?? [],
+                        ),
+                        History(
+                          historyList: userData.history ?? [],
+                        ),
                       ],
                     ),
                   ),
