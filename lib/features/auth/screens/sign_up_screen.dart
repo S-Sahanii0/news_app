@@ -1,21 +1,16 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../base_screen.dart';
+import 'package:news_app/base_screen.dart';
 
 import '../../../config/theme/app_icons.dart';
 import '../../../config/theme/theme.dart';
-import '../bloc/auth_bloc.dart';
-import '../models/user_model.dart';
-import 'auth_test.dart';
-import 'login_screen.dart';
-import '../widgets/sign_up_form.dart';
-import '../../categories/screens/category_screen.dart';
 import '../../categories/screens/choose_category_screen.dart';
 import '../../news_feed/screens/my_feed.dart';
+import '../bloc/auth_bloc.dart';
+import '../models/user_model.dart';
+import '../widgets/sign_up_form.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -46,7 +41,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               .pushReplacementNamed(ChooseCategoryScreen.route);
         }
         if (state is LogoutState) {
-          Navigator.of(context).pushReplacementNamed(LoginScreen.route);
+          //changed this from LoginScreen to BaseScreen
+          Navigator.of(context).pushReplacementNamed(BaseScreen.route);
         }
       },
       builder: (context, state) => (state is AuthLoading)
@@ -110,12 +106,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 50),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          Image(
-                            image: AppIcons.facebook,
+                        children: [
+                          GestureDetector(
+                            onTap: () => BlocProvider.of<AuthBloc>(context)
+                                .add(FacebookSignInEvent()),
+                            child: const Image(
+                              image: AppIcons.facebook,
+                            ),
                           ),
-                          Image(
-                            image: AppIcons.google,
+                          GestureDetector(
+                            onTap: () => BlocProvider.of<AuthBloc>(context)
+                                .add(GoogleSignInEvent()),
+                            child: const Image(
+                              image: AppIcons.google,
+                            ),
                           ),
                         ],
                       ),

@@ -44,7 +44,6 @@ class _SettingsState extends State<Settings> {
             cardText: "Logout",
             onTap: () {
               BlocProvider.of<AuthBloc>(context).add(LogoutEvent());
-              Navigator.of(context).pop();
             },
           ),
           SizedBox(

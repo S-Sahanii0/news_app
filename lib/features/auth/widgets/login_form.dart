@@ -5,8 +5,8 @@ import '../../../components/app_form_field.dart';
 import '../../../components/buttons/form_button.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key, required this.onSubmit}) : super(key: key);
-  static final _formKey = GlobalKey<FormBuilderState>();
+  LoginForm({Key? key, required this.onSubmit}) : super(key: key);
+  final _formKey = GlobalKey<FormBuilderState>();
   final ValueSetter<GlobalKey<FormBuilderState>> onSubmit;
 
   @override
@@ -18,7 +18,7 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return FormBuilder(
-      key: LoginForm._formKey,
+      key: widget._formKey,
       child: Column(
         children: [
           AppFormField(
@@ -45,7 +45,7 @@ class _LoginFormState extends State<LoginForm> {
             height: 10.h,
           ),
           FormButton(
-            onTap: () => widget.onSubmit(LoginForm._formKey),
+            onTap: () => widget.onSubmit(widget._formKey),
           ),
           SizedBox(
             height: 15.h,

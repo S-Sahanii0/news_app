@@ -49,6 +49,8 @@ dependencies:
   shrink_sidemenu: ^2.0.0+1-null-safety
   uuid: ^3.0.5
   loading_indicator: ^3.0.2
+  google_sign_in: ^5.2.1
+  # flutter_facebook_auth: ^3.5.6
   # websafe_svg: ^2.0.0+1
 
 dev_dependencies:

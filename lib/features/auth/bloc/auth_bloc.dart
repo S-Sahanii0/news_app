@@ -15,6 +15,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({required this.authService}) : super(AuthInitial()) {
     on<AppStartedEvent>(_handleAppStarted);
     on<RegisterEvent>(_handleRegister);
+    on<GoogleSignInEvent>(_handleGoogleSignIn);
+    // on<FacebookSignInEvent>(_handleGoogleSignIn);
     on<LoginSuccess>(_handleLoginSuccess);
     on<LoginFailure>(_handleLoginFailure);
     on<LoginEvent>(_handleLogin);
@@ -52,6 +54,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure());
     }
   }
+
+  _handleGoogleSignIn(GoogleSignInEvent event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      final result = await authService.signInWithGoogle();
+      // add(LoginEvent(user: event.user));
+      await for (var event in result) {
+        emit(AuthSuccess(currentUser: await event));
+      }
+    } catch (e) {
+      emit(AuthFailure());
+    }
+  }
+
+  // _handleFacebookSignIn(
+  //     FacebookSignInEvent event, Emitter<AuthState> emit) async {
+  //   emit(AuthLoading());
+  //   try {
+  //     final result = await authService.signInWithFacebook();
+  //     // add(LoginEvent(user: event.user));
+  //     await for (var event in result) {
+  //       emit(AuthSuccess(currentUser: await event));
+  //     }
+  //   } catch (e) {
+  //     emit(AuthFailure());
+  //   }
+  // }
 
   _handleLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());

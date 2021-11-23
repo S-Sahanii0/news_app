@@ -9,6 +9,10 @@ class RegisterEvent extends AuthEvent {
   RegisterEvent({required this.user});
 }
 
+class GoogleSignInEvent extends AuthEvent {}
+
+class FacebookSignInEvent extends AuthEvent {}
+
 class LoginEvent extends AuthEvent {
   final UserModel user;
 

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../components/buttons/form_button.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_styles.dart';
-import '../../auth/bloc/auth_bloc.dart';
-import '../../auth/models/user_model.dart';
-import '../../news_feed/screens/my_feed.dart';
 
 class ChooseCategoryScreen extends StatefulWidget {
   const ChooseCategoryScreen({
@@ -58,7 +55,7 @@ class _ChooseCategoryScreenState extends State<ChooseCategoryScreen> {
                         .copyWith(color: AppColors.yellowShade1)),
               ),
               FormButton(onTap: () {
-                Navigator.of(context).pushReplacementNamed(MyFeedScreen.route);
+                Navigator.of(context).pop();
               })
             ],
           ),

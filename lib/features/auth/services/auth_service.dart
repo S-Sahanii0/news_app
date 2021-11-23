@@ -3,7 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:news_app/features/news_feed/model/news_model.dart';
 import '../models/user_model.dart';
+// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+
 import '../../news_feed/services/news_service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -52,6 +55,58 @@ class AuthService {
       return UserModel.fromMap(newUser);
     });
   }
+
+  Future<Stream<Future<UserModel>>> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    final result = await _firebaseAuth.signInWithCredential(credential);
+
+    users.doc(result.user!.uid).set({
+      "id": result.user!.uid,
+      "username": result.user!.displayName,
+      "email": result.user!.email,
+      "bookmark": [],
+      "chosenCategory": [],
+      "history": [],
+    });
+    // Once signed in, return the UserCredential
+    return getCurrentUser(result.user!.uid);
+  }
+
+  // Future<Stream<Future<UserModel>>> signInWithFacebook() async {
+  // Trigger the sign-in flow
+  // final LoginResult loginResult = await FacebookAuth.instance.login();
+
+  // // Create a credential from the access token
+  // final OAuthCredential facebookAuthCredential =
+  //     FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+  // // Once signed in, return the UserCredential
+  // final result =
+  //     await _firebaseAuth.signInWithCredential(facebookAuthCredential);
+
+  // users.doc(result.user!.uid).set({
+  //   "id": result.user!.uid,
+  //   "username": result.user!.displayName,
+  //   "email": result.user!.email,
+  //   "bookmark": [],
+  //   "chosenCategory": [],
+  //   "history": [],
+  // });
+  // // Once signed in, return the UserCredential
+  // return getCurrentUser(result.user!.uid);
+  // }
 
   void logout() async {
     await _firebaseAuth.signOut();

@@ -47,10 +47,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case SignUpScreen.route:
       return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _authBloc,
-                child: SignUpScreen(),
-              ));
+        builder: (context) =>
+            BlocProvider.value(value: _authBloc, child: const SignUpScreen()),
+      );
     case BaseScreen.route:
       return MaterialPageRoute(
           builder: (context) => MultiBlocProvider(
@@ -162,12 +161,16 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const SearchScreen());
 
     default:
-      return CupertinoPageRoute<void>(
-        builder: (_) => const Center(
-          child: Text('No Route Found',
-              style: TextStyle(color: AppColors.appWhite)),
-        ),
-        settings: settings,
-      );
+      return MaterialPageRoute(
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(value: _authBloc),
+                  BlocProvider.value(value: _newsBloc),
+                  BlocProvider.value(value: _categoryBloc),
+                  BlocProvider.value(value: _channelBloc),
+                  BlocProvider(create: (_) => NavigationCubit()),
+                ],
+                child: BaseScreen(),
+              ));
   }
 }
