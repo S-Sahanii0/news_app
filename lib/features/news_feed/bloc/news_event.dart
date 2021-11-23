@@ -11,11 +11,12 @@ class GetFirstNewsListEvent extends NewsEvent {}
 
 class GetNextNewsListEvent extends NewsEvent {}
 
-class BookMarkNewsEvent extends NewsEvent {
-  final News newsToBookmark;
-  final String uid;
+class LikeNewsEvent extends NewsEvent {
+  final News likedNews;
 
-  const BookMarkNewsEvent({required this.newsToBookmark, required this.uid});
+  const LikeNewsEvent({
+    required this.likedNews,
+  });
 }
 
 class RemoveBookMarkNewsEvent extends NewsEvent {

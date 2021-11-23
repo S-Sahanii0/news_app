@@ -10,23 +10,27 @@ class News {
   final String date;
   final String content;
   final String url;
+  final int? likes;
   News({
-    required this.id,
+    this.id,
     required this.newsImage,
     required this.title,
     required this.channel,
     required this.date,
     required this.content,
     required this.url,
+    this.likes,
   });
 
   News copyWith({
+    String? id,
     String? newsImage,
     String? title,
     Channel? channel,
     String? date,
     String? content,
     String? url,
+    int? likes,
   }) {
     return News(
       id: id ?? this.id,
@@ -36,6 +40,7 @@ class News {
       date: date ?? this.date,
       content: content ?? this.content,
       url: url ?? this.url,
+      likes: likes ?? this.likes,
     );
   }
 
@@ -48,18 +53,20 @@ class News {
       'date': date,
       'content': content,
       'url': url,
+      'likes': likes,
     };
   }
 
   factory News.fromMap(Map<String, dynamic> map) {
     return News(
-      id: map['id'],
+      id: map['id'] != null ? map['id'] : null,
       newsImage: map['newsImage'],
       title: map['title'],
       channel: Channel.fromMap(map['channel']),
       date: map['date'],
       content: map['content'],
       url: map['url'],
+      likes: map['likes'] ?? 0,
     );
   }
 
@@ -69,7 +76,7 @@ class News {
 
   @override
   String toString() {
-    return 'News(id: $id, newsImage: $newsImage, title: $title, date: $date, channel:$channel, content: $content, url: $url)';
+    return 'News(id: $id, newsImage: $newsImage, title: $title, channel: $channel, date: $date, content: $content, url: $url, likes: $likes)';
   }
 
   @override
@@ -83,16 +90,19 @@ class News {
         other.channel == channel &&
         other.date == date &&
         other.content == content &&
-        other.url == url;
+        other.url == url &&
+        other.likes == likes;
   }
 
   @override
   int get hashCode {
-    return newsImage.hashCode ^
+    return id.hashCode ^
+        newsImage.hashCode ^
         title.hashCode ^
         channel.hashCode ^
         date.hashCode ^
         content.hashCode ^
-        url.hashCode;
+        url.hashCode ^
+        likes.hashCode;
   }
 }

@@ -35,7 +35,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   late final NewsBloc _newsBloc;
-
+  late final AuthBloc _authBloc;
   late final ChannelBloc _channelBloc;
   late final User _currentUser;
 
@@ -45,6 +45,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
     _channelBloc = BlocProvider.of<ChannelBloc>(context)
       ..add(GetNewsByChannelEvent(channelName: widget.channelName));
     _currentUser = FirebaseAuth.instance.currentUser!;
+    _authBloc = BlocProvider.of<AuthBloc>(context);
     _newsBloc = BlocProvider.of<NewsBloc>(context);
   }
 
@@ -107,7 +108,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                     newsToBookmark: newsList[index],
                                     uid: _currentUser.uid));
                               } else {
-                                _newsBloc.add(BookMarkNewsEvent(
+                                _authBloc.add(AddToBookMarkEvent(
                                     newsToBookmark: newsList[index],
                                     uid: _currentUser.uid));
                               }

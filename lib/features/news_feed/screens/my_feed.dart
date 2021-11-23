@@ -44,83 +44,98 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
   @override
   Widget build(BuildContext context) {
     log(_authBloc.state.toString());
-    var userData = (_authBloc.state as AuthSuccess).currentUser;
+
     return SafeArea(
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
           appBar: CustomAppBar()
               .primaryAppBar(pageTitle: "My Feed", context: context),
-          body: BlocBuilder<NewsBloc, NewsState>(buildWhen: (current, prev) {
-            return current != prev;
-          }, builder: (context, state) {
-            if (state is NewsInitial || state is NewsLoading)
-              return const AppLoadingIndicator();
-            if (state is NewsLoadingSuccess) {
-              return ListView.builder(
-                controller: _scrollController,
-                itemCount: state.newsList.length + 1,
-                itemBuilder: (context, index) {
-                  return index >= state.newsList.length
-                      ? const AppLoadingIndicator()
-                      : GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                                SingleNewsScreen.route,
-                                arguments: state.newsList[index]);
-                          },
-                          child: NewsDetailCard(
-                            channelName: state.newsList[index].channel.channel,
-                            newsDescription: state.newsList[index].content,
-                            newsTime: state.newsList[index].date,
-                            numberOfLikes: "100",
-                            numberOfComments: "100",
-                            onTapHeart: () {
-                              if (userData.history!
-                                  .contains(state.newsList[index])) {
-                                _newsBloc.add(RemoveFromHistory(
-                                    newsModel: state.newsList[index],
-                                    uid: _currentUser.uid));
-                              } else {
-                                _newsBloc.add(AddToHistory(
-                                    newsModel: state.newsList[index],
-                                    uid: _currentUser.uid));
-                              }
-                            },
-                            onTapComment: () {
-                              Navigator.of(context).pushNamed(
-                                  CommentScreen.route,
-                                  arguments: state.newsList[index]);
-                            },
-                            onTapBookmark: () {
-                              if (userData.bookmarks!
-                                  .contains(state.newsList[index])) {
-                                _newsBloc.add(RemoveBookMarkNewsEvent(
-                                    newsToBookmark: state.newsList[index],
-                                    uid: _currentUser.uid));
-                              } else {
-                                _newsBloc.add(BookMarkNewsEvent(
-                                    newsToBookmark: state.newsList[index],
-                                    uid: _currentUser.uid));
-                              }
-                            },
-                            onTapShare: () {},
-                            onTapMenu: () {},
-                            isBookmark: userData.bookmarks!
-                                .contains(state.newsList[index]),
-                            isHeart: userData.history!
-                                .contains(state.newsList[index]),
-                            channelImage:
-                                state.newsList[index].channel.channelImage,
-                            imageUrl: state.newsList[index].newsImage,
-                          ),
-                        );
-                },
-              );
-            } else {
-              return const Center(child: Text("Error fetching news."));
-            }
-          }),
+          body: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, authState) {
+              var userData = (_authBloc.state as AuthSuccess).currentUser;
+              return BlocBuilder<NewsBloc, NewsState>(
+                  buildWhen: (current, prev) {
+                return current != prev;
+              }, builder: (context, state) {
+                if (state is NewsInitial || state is NewsLoading)
+                  return const AppLoadingIndicator();
+                if (state is NewsLoadingSuccess) {
+                  return ListView.builder(
+                    controller: _scrollController,
+                    itemCount: state.newsList.length + 1,
+                    itemBuilder: (context, index) {
+                      print(state.newsList[index].likes);
+                      return index >= state.newsList.length
+                          ? const AppLoadingIndicator()
+                          : GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                    SingleNewsScreen.route,
+                                    arguments: [index, state.newsList]);
+                              },
+                              child: NewsDetailCard(
+                                channelName:
+                                    state.newsList[index].channel.channel,
+                                newsDescription: state.newsList[index].content,
+                                newsTime: state.newsList[index].date,
+                                numberOfLikes:
+                                    state.newsList[index].likes.toString(),
+                                numberOfComments: "100",
+                                onTapHeart: () {
+                                  if (userData.history!
+                                      .contains(state.newsList[index])) {
+                                    _newsBloc.add(RemoveFromHistory(
+                                        newsModel: state.newsList[index],
+                                        uid: _currentUser.uid));
+                                  } else {
+                                    _newsBloc.add(AddToHistory(
+                                        newsModel: state.newsList[index],
+                                        uid: _currentUser.uid));
+                                    _newsBloc.add(LikeNewsEvent(
+                                        likedNews: state.newsList[index]
+                                            .copyWith(
+                                                likes: state.newsList[index]
+                                                        .likes! +
+                                                    1)));
+                                  }
+                                },
+                                onTapComment: () {
+                                  Navigator.of(context).pushNamed(
+                                      CommentScreen.route,
+                                      arguments: state.newsList[index]);
+                                },
+                                onTapBookmark: () {
+                                  if (userData.bookmarks!
+                                      .contains(state.newsList[index])) {
+                                    _newsBloc.add(RemoveBookMarkNewsEvent(
+                                        newsToBookmark: state.newsList[index],
+                                        uid: _currentUser.uid));
+                                  } else {
+                                    _authBloc.add(AddToBookMarkEvent(
+                                        newsToBookmark: state.newsList[index],
+                                        uid: _currentUser.uid));
+                                  }
+                                },
+                                onTapShare: () {},
+                                onTapMenu: () {},
+                                isBookmark: userData.bookmarks!
+                                    .contains(state.newsList[index]),
+                                isHeart: userData.history!.any(
+                                    (e) => state.newsList[index].id == e.id),
+                                channelImage:
+                                    state.newsList[index].channel.channelImage,
+                                imageUrl: state.newsList[index].newsImage,
+                              ),
+                            );
+                    },
+                  );
+                } else {
+                  return const Center(child: Text("Error fetching news."));
+                }
+              });
+            },
+          ),
           floatingActionButton: AppFloatingActionButton(
             scaffoldKey: _key,
           ),

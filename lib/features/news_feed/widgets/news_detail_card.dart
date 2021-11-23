@@ -35,7 +35,7 @@ class NewsDetailCard extends StatefulWidget {
       required this.imageUrl,
       required this.channelImage,
       this.commentTapped = false,
-      this.isHeart = false,
+      this.isHeart,
       this.isBookmark = false})
       : super(key: key);
 
@@ -44,6 +44,14 @@ class NewsDetailCard extends StatefulWidget {
 }
 
 class _NewsDetailCardState extends State<NewsDetailCard> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    // widget.isHeart = widget.isHeart;
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -125,13 +133,15 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                       Align(
                         alignment: Alignment.bottomLeft,
                         child: _feedIconRow(
-                            onTapHeart: widget.onTapHeart,
-                            onTapBookmark: widget.onTapBookmark,
-                            onTapComment: widget.onTapComment,
-                            onTapShare: widget.onTapShare,
-                            isHeart: widget.isHeart!,
-                            isBookmark: widget.isBookmark!,
-                            commentTapped: widget.commentTapped!),
+                          onTapHeart: widget.onTapHeart,
+                          onTapBookmark: widget.onTapBookmark,
+                          onTapComment: widget.onTapComment,
+                          onTapShare: widget.onTapShare,
+                          isHeart: widget.isHeart!,
+                          isBookmark: widget.isBookmark!,
+                          commentTapped: widget.commentTapped!,
+                          numberOfLikes: widget.numberOfLikes,
+                        ),
                       )
                     ],
                   ),
@@ -153,13 +163,15 @@ class _feedIconRow extends StatefulWidget {
       required this.onTapComment,
       required this.onTapShare,
       this.commentTapped = false,
-      this.isHeart = false,
-      this.isBookmark = false})
+      required this.isHeart,
+      this.isBookmark = false,
+      required this.numberOfLikes})
       : super(key: key);
   final VoidCallback onTapHeart;
   final VoidCallback onTapBookmark;
   final VoidCallback onTapComment;
   final VoidCallback onTapShare;
+  final String numberOfLikes;
   bool commentTapped;
   bool isHeart;
   bool isBookmark;
@@ -169,6 +181,12 @@ class _feedIconRow extends StatefulWidget {
 }
 
 class __feedIconRowState extends State<_feedIconRow> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    widget.isHeart = widget.isHeart == null ? false : widget.isHeart;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -189,7 +207,7 @@ class __feedIconRowState extends State<_feedIconRow> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Text(
-            "100",
+            widget.numberOfLikes,
             style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
           ),
         ),

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:news_app/app/cubit/navigation_cubit.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/auth/services/auth_service.dart';
@@ -12,7 +13,9 @@ import 'package:news_app/features/categories/services/category_service.dart';
 import 'package:news_app/features/channels/bloc/channel_bloc.dart';
 import 'package:news_app/features/channels/screens/news_by_channel.dart';
 import 'package:news_app/features/channels/services/channel_service.dart';
+import 'package:news_app/features/news_feed/bloc/tts/tts_cubit.dart';
 import 'package:news_app/features/news_feed/services/news_service.dart';
+import 'package:news_app/features/news_feed/services/tts_service.dart';
 import '../base_screen.dart';
 import '../features/auth/bloc/auth_bloc.dart';
 import '../features/auth/screens/login_screen.dart';
@@ -32,6 +35,8 @@ import '../features/profile/screens/profile_screen.dart';
 import 'theme/app_colors.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
+  final _ttsService = TtsService(flutterTts: FlutterTts());
+  final _ttsCubit = TtsCubit(ttsService: _ttsService);
   //Services instance
   final _newsService = NewsService();
   final _authService = AuthService(newsService: _newsService);
@@ -82,9 +87,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const DiscoverScreen());
 
     case SingleNewsScreen.route:
+      final args = settings.arguments as List;
       return MaterialPageRoute(
-          builder: (context) => SingleNewsScreen(
-                newsModel: settings.arguments as News,
+          builder: (context) => BlocProvider(
+                create: (context) => _ttsCubit,
+                child: SingleNewsScreen(
+                  currentNewsIndex: args.first as int,
+                  newsList: args.last as List<News>,
+                ),
               ));
     case ChannelScreen.route:
       return MaterialPageRoute(

@@ -3,13 +3,30 @@ import '../../../config/theme/app_icons.dart';
 import '../../../config/theme/theme.dart';
 
 class NewsDetailBottomSheet extends StatefulWidget {
-  const NewsDetailBottomSheet({Key? key}) : super(key: key);
+  const NewsDetailBottomSheet(
+      {Key? key, required this.onPlay, required this.shouldPlay})
+      : super(key: key);
+
+  final Function(bool) onPlay;
+  final bool shouldPlay;
 
   @override
   _NewsDetailBottomSheetState createState() => _NewsDetailBottomSheetState();
 }
 
-class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet> {
+class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    animationController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 500),
+        value: widget.shouldPlay ? 1 : null);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
@@ -24,17 +41,27 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet> {
         padding: const EdgeInsets.symmetric(vertical: 15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const [
-            Icon(Icons.bookmark_outline, color: AppColors.blueShade3),
-            Image(image: AppIcons.fontSize),
-            Image(
-              image: AppIcons.play,
-            ),
-            Image(
+          children: [
+            const Icon(Icons.bookmark_outline, color: AppColors.blueShade3),
+            const Image(image: AppIcons.fontSize),
+            InkWell(
+                onTap: () {
+                  final isPlaying = animationController.value == 0;
+                  widget.onPlay(!isPlaying);
+                  isPlaying
+                      ? animationController.forward()
+                      : animationController.reverse();
+                },
+                child: AnimatedIcon(
+                  icon: AnimatedIcons.play_pause,
+                  progress: animationController,
+                  color: AppColors.appWhite,
+                )),
+            const Image(
               image: AppIcons.share,
               color: AppColors.blueShade3,
             ),
-            Image(image: AppIcons.hamburger, color: AppColors.blueShade3),
+            const Image(image: AppIcons.hamburger, color: AppColors.blueShade3),
           ],
         ),
       ),

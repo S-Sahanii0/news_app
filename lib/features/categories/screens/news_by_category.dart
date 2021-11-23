@@ -46,6 +46,7 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
       ..add(GetNewsByCategory(category: widget.categoryName));
     _currentUser = FirebaseAuth.instance.currentUser!;
     _newsBloc = BlocProvider.of<NewsBloc>(context);
+    _authBloc = BlocProvider.of<AuthBloc>(context);
   }
 
   @override
@@ -107,7 +108,7 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                                     newsToBookmark: newsList[index],
                                     uid: _currentUser.uid));
                               } else {
-                                _newsBloc.add(BookMarkNewsEvent(
+                                _authBloc.add(AddToBookMarkEvent(
                                     newsToBookmark: newsList[index],
                                     uid: _currentUser.uid));
                               }

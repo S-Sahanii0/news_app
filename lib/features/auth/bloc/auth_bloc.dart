@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
+import 'package:news_app/features/news_feed/model/news_model.dart';
 import 'package:news_app/features/news_feed/services/news_service.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
@@ -21,6 +24,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginFailure>(_handleLoginFailure);
     on<LoginEvent>(_handleLogin);
     on<LogoutEvent>(_handleLogout);
+    on<AddToBookMarkEvent>(_handleAddToBookmark);
   }
 
   _handleAppStarted(AppStartedEvent event, Emitter<AuthState> emit) async {
@@ -46,6 +50,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       final result = await authService.registerUser(event.user);
+      // add(LoginEvent(user: event.user));
+      await for (var event in result) {
+        emit(AuthSuccess(currentUser: await event));
+      }
+    } catch (e) {
+      emit(AuthFailure());
+    }
+  }
+
+  _handleAddToBookmark(
+      AddToBookMarkEvent event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      final result =
+          await authService.addToBookmarks(event.newsToBookmark, event.uid);
       // add(LoginEvent(user: event.user));
       await for (var event in result) {
         emit(AuthSuccess(currentUser: await event));
@@ -89,7 +108,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await for (var event in result) {
         emit(AuthSuccess(currentUser: await event));
       }
-    } catch (e) {
+    } catch (e, stk) {
+      log(e.toString(), stackTrace: stk);
       emit(AuthFailure());
     }
   }

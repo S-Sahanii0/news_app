@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
@@ -58,6 +59,13 @@ class NewsService {
     });
   }
 
+  Future<News> updateLike(String newsId) async {
+    await news.doc(newsId).update({"likes": FieldValue.increment(1)});
+    print((await news.doc(newsId).get()).data());
+    print(await getNewsModel([newsId]));
+    return News.fromMap((await getNewsModel([newsId])).first);
+  }
+
   listenToChannelEvent() {
     listenToChannel().listen((event) {
       channelList.addAll(event);
@@ -75,6 +83,7 @@ class NewsService {
           "content": newsData['content'],
           "url": newsData['url'],
           "date": newsData['date'],
+          "likes": newsData['likes'],
           "channel": channelList
               .where((element) => element.channel == newsData['channel'])
               .first
@@ -103,6 +112,7 @@ class NewsService {
           "content": newsData['content'],
           "url": newsData['url'],
           "date": newsData['date'],
+          "likes": newsData['likes'],
           "channel": channelList
               .where((element) => element.channel == newsData['channel'])
               .first
@@ -113,7 +123,7 @@ class NewsService {
     });
   }
 
-  Future getNewsModel(List<String> idList) async {
+  Future<List> getNewsModel(List<String> idList) async {
     if (idList.isEmpty) {
       return [];
     } else {
@@ -129,6 +139,7 @@ class NewsService {
           "content": newsData['content'],
           "url": newsData['url'],
           "date": newsData['date'],
+          "likes": newsData['likes'],
           "channel": channelList
               .where((element) => element.channel == newsData['channel'])
               .first

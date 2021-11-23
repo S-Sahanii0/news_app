@@ -13,6 +13,13 @@ class GoogleSignInEvent extends AuthEvent {}
 
 class FacebookSignInEvent extends AuthEvent {}
 
+class AddToBookMarkEvent extends AuthEvent {
+  final News newsToBookmark;
+  final String uid;
+
+  AddToBookMarkEvent({required this.newsToBookmark, required this.uid});
+}
+
 class LoginEvent extends AuthEvent {
   final UserModel user;
 

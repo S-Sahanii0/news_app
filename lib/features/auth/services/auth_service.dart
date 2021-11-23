@@ -56,6 +56,17 @@ class AuthService {
     });
   }
 
+  Future<Stream<Future<UserModel>>> addToBookmarks(
+      News newsToBookmark, String uid) async {
+    final newsId = newsToBookmark.id!;
+    await (users.doc(uid).update(
+      {
+        'bookmark': FieldValue.arrayUnion([newsId])
+      },
+    ));
+    return getCurrentUser(uid);
+  }
+
   Future<Stream<Future<UserModel>>> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
