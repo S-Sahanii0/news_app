@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:news_app/features/news_feed/model/comment_model.dart';
 import '../model/news_model.dart';
 import '../services/news_service.dart';
 
@@ -55,28 +56,18 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       }
     });
 
-    on<RemoveBookMarkNewsEvent>((event, emit) async {
+    on<AddCommentEvent>((event, emit) async {
+      final currentState = (state as NewsLoadingSuccess).newsList;
+
       try {
-        await newsService.removeFromBookmarks(event.newsToBookmark, event.uid);
-        emit(NewsLoadingSuccess(newsList: _newsList));
-      } catch (e) {
-        emit(NewsLoadingFailure());
-      }
-    });
-    on<AddToHistory>((event, emit) async {
-      try {
-        await newsService.addToHistory(event.newsModel, event.uid);
-        print("history ma added");
-        emit(NewsLoadingSuccess(newsList: _newsList));
-      } catch (e) {
-        emit(NewsLoadingFailure());
-      }
-    });
-    on<RemoveFromHistory>((event, emit) async {
-      try {
-        await newsService.removeFromHistory(event.newsModel, event.uid);
-        emit(NewsLoadingSuccess(newsList: _newsList));
-      } catch (e) {
+        await newsService.addComments(event.comment, event.news.id!);
+        final updatedList = List<News>.from(currentState
+            .map((element) =>
+                element.id == event.news.id ? event.news.copyWith() : element)
+            .toList());
+        emit(NewsLoadingSuccess(newsList: updatedList));
+      } catch (e, stk) {
+        log(e.toString(), stackTrace: stk);
         emit(NewsLoadingFailure());
       }
     });

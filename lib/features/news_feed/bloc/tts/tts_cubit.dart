@@ -9,20 +9,20 @@ part 'tts_state.dart';
 
 class TtsCubit extends Cubit<TtsState> {
   final TtsService ttsService;
-  late final PageController pageController;
+  PageController? _pageController;
 
   TtsCubit({required this.ttsService}) : super(TtsState());
 
   void init(int index) {
-    pageController = PageController(initialPage: index);
-    emit(state.copyWith(pageController: pageController));
+    _pageController = PageController(initialPage: index);
+    emit(state.copyWith(pageController: _pageController));
   }
 
   void handlePlay(String text) async {
     log('Playing audio.');
     final result = await ttsService.readText(text);
     if (result == 1) {
-      pageController.nextPage(
+      _pageController?.nextPage(
           duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
       emit(state.copyWith(shouldAutoPlay: true));
     }

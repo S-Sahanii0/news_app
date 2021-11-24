@@ -2,13 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:loading_indicator/loading_indicator.dart';
+import 'package:news_app/components/app_loading.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
-import 'package:news_app/features/categories/bloc/category_bloc.dart';
 import 'package:news_app/features/categories/screens/news_by_category.dart';
 import 'package:news_app/features/channels/bloc/channel_bloc.dart';
 import 'package:news_app/features/channels/screens/news_by_channel.dart';
-import 'package:news_app/features/news_feed/screens/my_feed.dart';
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_card.dart';
 import '../../../components/app_drawer.dart';
@@ -54,7 +52,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
           child: BlocBuilder<ChannelBloc, ChannelState>(
             builder: (context, state) {
               if (state is ChannelInitial || state is ChannelLoading) {
-                return LoadingIndicator(indicatorType: Indicator.ballBeat);
+                return AppLoadingIndicator();
               }
 
               if (state is ChannelLoadSuccess) {
@@ -65,28 +63,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("My Interests",
-                          style: AppStyle.regularText14
-                              .copyWith(color: AppColors.darkBlueShade2)),
-                      SizedBox(
-                        height: 8.h,
-                      ),
-                      ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: 5,
-                          itemBuilder: (context, index) {
-                            return AppCard.hasHeart(
-                              cardText: "Interest #1",
-                              onTap: () {},
-                              isSaved: false,
-                              onTapheart: () {},
-                            );
-                          }),
-                      SizedBox(
-                        height: 8.h,
-                      ),
-                      Text("Other Topics",
+                      Text("Our Channels",
                           style: AppStyle.regularText14
                               .copyWith(color: AppColors.darkBlueShade2)),
                       SizedBox(
@@ -106,11 +83,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                       state.otherChannels[index].channel
                                     ]);
                               },
-                              child: AppCard.hasHeart(
+                              child: AppCard(
                                 cardText: state.otherChannels[index].channel,
                                 onTap: () {},
-                                isSaved: false,
-                                onTapheart: () {},
                               ),
                             );
                           })

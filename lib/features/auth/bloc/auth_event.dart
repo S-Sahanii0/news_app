@@ -15,9 +15,37 @@ class FacebookSignInEvent extends AuthEvent {}
 
 class AddToBookMarkEvent extends AuthEvent {
   final News newsToBookmark;
-  final String uid;
+  final UserModel user;
 
-  AddToBookMarkEvent({required this.newsToBookmark, required this.uid});
+  AddToBookMarkEvent({required this.newsToBookmark, required this.user});
+}
+
+class RemoveBookMarkEvent extends AuthEvent {
+  final News newsToBookmark;
+  final UserModel user;
+
+  RemoveBookMarkEvent({required this.newsToBookmark, required this.user});
+}
+
+class AddChosenCategoryEvent extends AuthEvent {
+  final List<String> categoryList;
+  final UserModel user;
+
+  AddChosenCategoryEvent({required this.categoryList, required this.user});
+}
+
+class AddToHistory extends AuthEvent {
+  final News newsModel;
+  final UserModel user;
+
+  AddToHistory({required this.newsModel, required this.user});
+}
+
+class RemoveFromHistory extends AuthEvent {
+  final News newsModel;
+  final UserModel user;
+
+  RemoveFromHistory({required this.newsModel, required this.user});
 }
 
 class LoginEvent extends AuthEvent {

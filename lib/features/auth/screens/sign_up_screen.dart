@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/base_screen.dart';
+import 'package:news_app/components/app_loading.dart';
 
 import '../../../config/theme/app_icons.dart';
 import '../../../config/theme/theme.dart';

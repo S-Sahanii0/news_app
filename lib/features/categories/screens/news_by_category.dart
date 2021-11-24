@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:news_app/components/app_loading.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/categories/bloc/category_bloc.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
@@ -87,13 +88,13 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                             onTapHeart: () {
                               if (widget.userData.history!
                                   .contains(newsList[index])) {
-                                _newsBloc.add(RemoveFromHistory(
+                                _authBloc.add(RemoveFromHistory(
                                     newsModel: newsList[index],
-                                    uid: _currentUser.uid));
+                                    user: widget.userData));
                               } else {
-                                _newsBloc.add(AddToHistory(
+                                _authBloc.add(AddToHistory(
                                     newsModel: newsList[index],
-                                    uid: _currentUser.uid));
+                                    user: widget.userData));
                               }
                             },
                             onTapComment: () {
@@ -104,13 +105,13 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                             onTapBookmark: () {
                               if (widget.userData.bookmarks!
                                   .contains(newsList[index])) {
-                                _newsBloc.add(RemoveBookMarkNewsEvent(
+                                _authBloc.add(RemoveBookMarkEvent(
                                     newsToBookmark: newsList[index],
-                                    uid: _currentUser.uid));
+                                    user: widget.userData));
                               } else {
                                 _authBloc.add(AddToBookMarkEvent(
                                     newsToBookmark: newsList[index],
-                                    uid: _currentUser.uid));
+                                    user: widget.userData));
                               }
                             },
                             onTapShare: () {},
@@ -133,28 +134,6 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
             scaffoldKey: _key,
           ),
           drawer: const AppDrawer()),
-    );
-  }
-}
-
-class AppLoadingIndicator extends StatelessWidget {
-  const AppLoadingIndicator({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: SizedBox(
-        height: 20,
-        width: 100,
-        child: LoadingIndicator(
-          indicatorType: Indicator.ballPulse,
-          colors: [
-            AppColors.yellowShade1,
-            AppColors.yellowShade2,
-          ],
-          strokeWidth: 2,
-        ),
-      ),
     );
   }
 }

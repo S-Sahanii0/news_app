@@ -9,6 +9,8 @@ abstract class NavigationState extends Equatable {
 
 class MyFeedState extends NavigationState {}
 
+class DiscoverState extends NavigationState {}
+
 class CategoryState extends NavigationState {}
 
 class ChannelsState extends NavigationState {}

@@ -130,4 +130,43 @@ class AuthService {
         email: userModel.email, password: userModel.password!);
     return getCurrentUser(result.user!.uid);
   }
+
+  Future<Stream<Future<UserModel>>> removeFromBookmarks(
+      News newsToBookmark, String uid) async {
+    final newsId = newsToBookmark.id!;
+    await (users.doc(uid).update(
+      {
+        'bookmark': FieldValue.arrayRemove([newsId])
+      },
+    ));
+    return getCurrentUser(uid);
+  }
+
+  Future<Stream<Future<UserModel>>> addToHistory(
+      News newsToAdd, String uid) async {
+    final newsId = newsToAdd.id!;
+    await users.doc(uid).update({
+      'history': FieldValue.arrayUnion([newsId])
+    });
+    return getCurrentUser(uid);
+  }
+
+  Future<Stream<Future<UserModel>>> removeFromHistory(
+      News newsToAdd, String uid) async {
+    final newsId = newsToAdd.id!;
+    await (users.doc(uid).update(
+      {
+        'history': FieldValue.arrayRemove([newsId])
+      },
+    ));
+    return getCurrentUser(uid);
+  }
+
+  Future<Stream<Future<UserModel>>> addChosenCategory(
+      List<String> categoryList, String uid) async {
+    await (users.doc(uid).update(
+      {'chosenCategory': FieldValue.arrayUnion(categoryList)},
+    ));
+    return getCurrentUser(uid);
+  }
 }

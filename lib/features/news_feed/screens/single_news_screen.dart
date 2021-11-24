@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/features/auth/bloc/auth_bloc.dart';
+import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,10 +14,14 @@ import '../widgets/news_detail_bottom_sheet.dart';
 
 class SingleNewsScreen extends StatefulWidget {
   const SingleNewsScreen(
-      {Key? key, required this.newsList, required this.currentNewsIndex})
+      {Key? key,
+      required this.newsList,
+      required this.currentNewsIndex,
+      required this.user})
       : super(key: key);
   final List<News> newsList;
   final int currentNewsIndex;
+  final UserModel user;
   static const String route = '/kRouteSingleNewsScreen';
 
   @override
@@ -24,10 +30,14 @@ class SingleNewsScreen extends StatefulWidget {
 
 class _SingleNewsScreenState extends State<SingleNewsScreen> {
   late final TtsCubit _ttsCubit;
+  late final NewsBloc _newsBloc;
+  late final AuthBloc _authBloc;
 
   @override
   void initState() {
+    _newsBloc = BlocProvider.of<NewsBloc>(context);
     _ttsCubit = context.read<TtsCubit>()..init(widget.currentNewsIndex);
+    _authBloc = BlocProvider.of<AuthBloc>(context);
     super.initState();
   }
 
@@ -39,6 +49,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var news = (_newsBloc.state as NewsLoadingSuccess).newsList;
     return SafeArea(
       child: BlocBuilder<TtsCubit, TtsState>(
         builder: (context, state) {
@@ -46,7 +57,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
               controller: state.pageController,
               scrollDirection: Axis.vertical,
               itemBuilder: (context, index) {
-                final _news = widget.newsList[index];
+                final _news = news[index];
                 final _shouldPlay = _ttsCubit.state.shouldAutoPlay;
                 if (_shouldPlay) _ttsCubit.handlePlay(_news.content);
                 return Scaffold(
@@ -154,14 +165,29 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                           child: Row(
                             children: [
                               InkWell(
-                                onTap: () {},
-                                child: Image(image: AppIcons.heartTapped),
+                                onTap: () {
+                                  if (widget.user.history!.contains(_news)) {
+                                    _authBloc.add(RemoveFromHistory(
+                                        newsModel: _news, user: widget.user));
+                                  } else {
+                                    _authBloc.add(AddToHistory(
+                                        newsModel: _news, user: widget.user));
+                                    _newsBloc.add(LikeNewsEvent(
+                                        likedNews: _news.copyWith(
+                                            likes: _news.likes! + 1)));
+                                  }
+                                },
+                                child: Image(
+                                    image: widget.user.history!
+                                            .any((element) => element == _news)
+                                        ? AppIcons.heartTapped
+                                        : AppIcons.heart),
                               ),
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: Text(
-                                  "100",
+                                  _news.likes.toString(),
                                   style: AppStyle.regularText12
                                       .copyWith(color: AppColors.greyShade2),
                                 ),
@@ -176,7 +202,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: Text(
-                                  "100",
+                                  _news.comment!.length.toString(),
                                   style: AppStyle.regularText12
                                       .copyWith(color: AppColors.greyShade2),
                                 ),

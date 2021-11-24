@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:news_app/components/app_loading.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
@@ -44,7 +45,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
   @override
   Widget build(BuildContext context) {
     log(_authBloc.state.toString());
-
+    var userData = (_authBloc.state as AuthSuccess).currentUser;
     return SafeArea(
       child: Scaffold(
           key: _key,
@@ -52,6 +53,9 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
           appBar: CustomAppBar()
               .primaryAppBar(pageTitle: "My Feed", context: context),
           body: BlocBuilder<AuthBloc, AuthState>(
+            buildWhen: (prevState, curState) {
+              return curState is NewsInitial;
+            },
             builder: (context, authState) {
               var userData = (_authBloc.state as AuthSuccess).currentUser;
               return BlocBuilder<NewsBloc, NewsState>(
@@ -72,7 +76,11 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                               onTap: () {
                                 Navigator.of(context).pushNamed(
                                     SingleNewsScreen.route,
-                                    arguments: [index, state.newsList]);
+                                    arguments: [
+                                      index,
+                                      state.newsList,
+                                      userData
+                                    ]);
                               },
                               child: NewsDetailCard(
                                 channelName:
@@ -81,17 +89,19 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                 newsTime: state.newsList[index].date,
                                 numberOfLikes:
                                     state.newsList[index].likes.toString(),
-                                numberOfComments: "100",
+                                numberOfComments: state
+                                    .newsList[index].comment!.length
+                                    .toString(),
                                 onTapHeart: () {
                                   if (userData.history!
                                       .contains(state.newsList[index])) {
-                                    _newsBloc.add(RemoveFromHistory(
+                                    _authBloc.add(RemoveFromHistory(
                                         newsModel: state.newsList[index],
-                                        uid: _currentUser.uid));
+                                        user: userData));
                                   } else {
-                                    _newsBloc.add(AddToHistory(
+                                    _authBloc.add(AddToHistory(
                                         newsModel: state.newsList[index],
-                                        uid: _currentUser.uid));
+                                        user: userData));
                                     _newsBloc.add(LikeNewsEvent(
                                         likedNews: state.newsList[index]
                                             .copyWith(
@@ -108,19 +118,19 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                 onTapBookmark: () {
                                   if (userData.bookmarks!
                                       .contains(state.newsList[index])) {
-                                    _newsBloc.add(RemoveBookMarkNewsEvent(
+                                    _authBloc.add(RemoveBookMarkEvent(
                                         newsToBookmark: state.newsList[index],
-                                        uid: _currentUser.uid));
+                                        user: userData));
                                   } else {
                                     _authBloc.add(AddToBookMarkEvent(
                                         newsToBookmark: state.newsList[index],
-                                        uid: _currentUser.uid));
+                                        user: userData));
                                   }
                                 },
                                 onTapShare: () {},
                                 onTapMenu: () {},
-                                isBookmark: userData.bookmarks!
-                                    .contains(state.newsList[index]),
+                                isBookmark: userData.bookmarks!.any(
+                                    (e) => state.newsList[index].id == e.id),
                                 isHeart: userData.history!.any(
                                     (e) => state.newsList[index].id == e.id),
                                 channelImage:
@@ -160,27 +170,5 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.offset;
     return currentScroll >= maxScroll && !_scrollController.position.outOfRange;
-  }
-}
-
-class AppLoadingIndicator extends StatelessWidget {
-  const AppLoadingIndicator({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: SizedBox(
-        height: 20,
-        width: 100,
-        child: LoadingIndicator(
-          indicatorType: Indicator.ballPulse,
-          colors: [
-            AppColors.yellowShade1,
-            AppColors.yellowShade2,
-          ],
-          strokeWidth: 2,
-        ),
-      ),
-    );
   }
 }

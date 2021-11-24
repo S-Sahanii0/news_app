@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/app/screens/navigation_screen.dart';
+import 'package:news_app/components/app_loading.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/screens/auth_test.dart';
 import 'features/auth/screens/login_screen.dart';

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:news_app/features/news_feed/model/comment_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../channels/models/channel_model.dart';
@@ -84,6 +85,7 @@ class NewsService {
           "url": newsData['url'],
           "date": newsData['date'],
           "likes": newsData['likes'],
+          "comment": newsData['comments'],
           "channel": channelList
               .where((element) => element.channel == newsData['channel'])
               .first
@@ -113,6 +115,7 @@ class NewsService {
           "url": newsData['url'],
           "date": newsData['date'],
           "likes": newsData['likes'],
+          "comment": newsData['comments'],
           "channel": channelList
               .where((element) => element.channel == newsData['channel'])
               .first
@@ -140,6 +143,7 @@ class NewsService {
           "url": newsData['url'],
           "date": newsData['date'],
           "likes": newsData['likes'],
+          "comment": newsData['comments'],
           "channel": channelList
               .where((element) => element.channel == newsData['channel'])
               .first
@@ -150,41 +154,33 @@ class NewsService {
     }
   }
 
+  Future<News> addComments(CommentModel commentModel, String newsId) async {
+    news.doc(newsId).update({
+      "comments": FieldValue.arrayUnion([commentModel.toMap()])
+    });
+    final newsDoc = await news.where("id", isEqualTo: newsId).get();
+    final newsData = newsDoc.docs.first.data() as Map<String, dynamic>;
+    return News.fromMap({
+      "id": newsData['id'],
+      "title": newsData['title'],
+      "newsImage": newsData['newsImage'],
+      "content": newsData['content'],
+      "url": newsData['url'],
+      "date": newsData['date'],
+      "likes": newsData['likes'],
+      "comment": newsData['comments'],
+      "channel": channelList
+          .where((element) => element.channel == newsData['channel'])
+          .first
+          .toMap()
+    });
+  }
+
   Future<void> addToBookmarks(News newsToBookmark, String uid) {
     final newsId = newsToBookmark.id!;
     return (userRef.doc(uid).update(
       {
         'bookmark': FieldValue.arrayUnion([newsId])
-      },
-    ));
-  }
-
-  Future<void> removeFromBookmarks(News newsToBookmark, String uid) {
-    final newsId = newsToBookmark.id!;
-    return (userRef.doc(uid).update(
-      {
-        'bookmark': FieldValue.arrayRemove([newsId])
-      },
-    ));
-  }
-
-  Future<List> getAllBookmarks(String uid) async {
-    return ((await userRef.where('id', isEqualTo: uid).get()).docs.first.data()
-        as Map<String, dynamic>)['bookmark'];
-  }
-
-  Future<void> addToHistory(News newsToAdd, String uid) {
-    final newsId = newsToAdd.id!;
-    return userRef.doc(uid).update({
-      'history': FieldValue.arrayUnion([newsId])
-    });
-  }
-
-  Future<void> removeFromHistory(News newsToAdd, String uid) {
-    final newsId = newsToAdd.id!;
-    return (userRef.doc(uid).update(
-      {
-        'history': FieldValue.arrayRemove([newsId])
       },
     ));
   }

@@ -4,6 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
+import 'package:news_app/features/categories/bloc/category_bloc.dart';
+import 'package:news_app/features/categories/services/category_service.dart';
+import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/model/news_model.dart';
 import 'package:news_app/features/news_feed/services/news_service.dart';
 import '../models/user_model.dart';
@@ -25,6 +28,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginEvent>(_handleLogin);
     on<LogoutEvent>(_handleLogout);
     on<AddToBookMarkEvent>(_handleAddToBookmark);
+    on<RemoveBookMarkEvent>(_handleRemoveFromBookMark);
+    on<AddToHistory>(_handleAddToHistory);
+    on<RemoveFromHistory>(_handleRemoveFromHistory);
+    on<AddChosenCategoryEvent>(_handleChosenCatgoryEvent);
   }
 
   _handleAppStarted(AppStartedEvent event, Emitter<AuthState> emit) async {
@@ -59,16 +66,74 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  _handleChosenCatgoryEvent(
+      AddChosenCategoryEvent event, Emitter<AuthState> emit) async {
+    // emit(AuthLoading());
+    try {
+      final result = await authService.addChosenCategory(
+          event.categoryList, event.user.id!);
+      emit(AuthSuccess(
+          currentUser: event.user.copyWith(
+              chosenCategories: event.user.chosenCategories!
+                ..addAll(event.categoryList))));
+    } catch (e, stk) {
+      log('Exception', error: e, stackTrace: stk);
+      emit(AuthFailure());
+    }
+  }
+
   _handleAddToBookmark(
       AddToBookMarkEvent event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
+    // emit(AuthLoading());
+    try {
+      final result = await authService.addToBookmarks(
+          event.newsToBookmark, event.user.id!);
+      emit(AuthSuccess(
+          currentUser: event.user.copyWith(
+              bookmarks: event.user.bookmarks!..add(event.newsToBookmark))));
+    } catch (e) {
+      emit(AuthFailure());
+    }
+  }
+
+  _handleRemoveFromBookMark(
+      RemoveBookMarkEvent event, Emitter<AuthState> emit) async {
+    // emit(AuthLoading());
+    try {
+      final result = await authService.addToBookmarks(
+          event.newsToBookmark, event.user.id!);
+      emit(AuthSuccess(
+          currentUser: event.user.copyWith(
+              bookmarks: event.user.bookmarks!..remove(event.newsToBookmark))));
+    } catch (e) {
+      emit(AuthFailure());
+    }
+  }
+
+  _handleAddToHistory(AddToHistory event, Emitter<AuthState> emit) async {
+    // emit(AuthLoading());
     try {
       final result =
-          await authService.addToBookmarks(event.newsToBookmark, event.uid);
+          await authService.addToHistory(event.newsModel, event.user.id!);
       // add(LoginEvent(user: event.user));
-      await for (var event in result) {
-        emit(AuthSuccess(currentUser: await event));
-      }
+      emit(AuthSuccess(
+          currentUser: event.user
+              .copyWith(bookmarks: event.user.history!..add(event.newsModel))));
+    } catch (e) {
+      emit(AuthFailure());
+    }
+  }
+
+  _handleRemoveFromHistory(
+      RemoveFromHistory event, Emitter<AuthState> emit) async {
+    // emit(AuthLoading());
+    try {
+      final result =
+          await authService.removeFromHistory(event.newsModel, event.user.id!);
+      // add(LoginEvent(user: event.user));
+      emit(AuthSuccess(
+          currentUser: event.user.copyWith(
+              bookmarks: event.user.history!..remove(event.newsModel))));
     } catch (e) {
       emit(AuthFailure());
     }

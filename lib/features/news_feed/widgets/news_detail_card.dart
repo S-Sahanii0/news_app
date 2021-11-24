@@ -141,6 +141,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                           isBookmark: widget.isBookmark!,
                           commentTapped: widget.commentTapped!,
                           numberOfLikes: widget.numberOfLikes,
+                          numberOfComments: widget.numberOfComments,
                         ),
                       )
                     ],
@@ -165,13 +166,15 @@ class _feedIconRow extends StatefulWidget {
       this.commentTapped = false,
       required this.isHeart,
       this.isBookmark = false,
-      required this.numberOfLikes})
+      required this.numberOfLikes,
+      required this.numberOfComments})
       : super(key: key);
   final VoidCallback onTapHeart;
   final VoidCallback onTapBookmark;
   final VoidCallback onTapComment;
   final VoidCallback onTapShare;
   final String numberOfLikes;
+  final String numberOfComments;
   bool commentTapped;
   bool isHeart;
   bool isBookmark;
@@ -223,7 +226,7 @@ class __feedIconRowState extends State<_feedIconRow> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Text(
-            "100",
+            widget.numberOfComments,
             style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
           ),
         ),

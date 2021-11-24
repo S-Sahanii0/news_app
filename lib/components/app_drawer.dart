@@ -63,7 +63,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                   onTap: () {
-                    // _navigationCubit.navigateToCategory(); todo
+                    _navigationCubit.navigateToDiscover();
                   },
                   child: Text(
                     "Discover",

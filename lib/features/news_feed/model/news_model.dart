@@ -1,5 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
+import 'package:news_app/features/news_feed/model/comment_model.dart';
+
 import '../../channels/models/channel_model.dart';
 
 class News {
@@ -11,6 +15,7 @@ class News {
   final String content;
   final String url;
   final int? likes;
+  final List<CommentModel>? comment;
   News({
     this.id,
     required this.newsImage,
@@ -20,6 +25,7 @@ class News {
     required this.content,
     required this.url,
     this.likes,
+    this.comment,
   });
 
   News copyWith({
@@ -31,6 +37,7 @@ class News {
     String? content,
     String? url,
     int? likes,
+    List<CommentModel>? comment,
   }) {
     return News(
       id: id ?? this.id,
@@ -41,6 +48,7 @@ class News {
       content: content ?? this.content,
       url: url ?? this.url,
       likes: likes ?? this.likes,
+      comment: comment ?? this.comment,
     );
   }
 
@@ -54,19 +62,24 @@ class News {
       'content': content,
       'url': url,
       'likes': likes,
+      'comment': comment?.map((x) => x.toMap()).toList(),
     };
   }
 
   factory News.fromMap(Map<String, dynamic> map) {
     return News(
-      id: map['id'] != null ? map['id'] : null,
+      id: map['id'] != "" ? map['id'] : "",
       newsImage: map['newsImage'],
       title: map['title'],
       channel: Channel.fromMap(map['channel']),
       date: map['date'],
       content: map['content'],
       url: map['url'],
-      likes: map['likes'] ?? 0,
+      likes: map['likes'] ?? "0",
+      comment: map['comment'] != null
+          ? List<CommentModel>.from(
+              map['comment']?.map((x) => CommentModel.fromMap(x)))
+          : [],
     );
   }
 
@@ -76,7 +89,7 @@ class News {
 
   @override
   String toString() {
-    return 'News(id: $id, newsImage: $newsImage, title: $title, channel: $channel, date: $date, content: $content, url: $url, likes: $likes)';
+    return 'News(id: $id, newsImage: $newsImage, title: $title, channel: $channel, date: $date, content: $content, url: $url, likes: $likes, comment: $comment)';
   }
 
   @override
@@ -91,7 +104,8 @@ class News {
         other.date == date &&
         other.content == content &&
         other.url == url &&
-        other.likes == likes;
+        other.likes == likes &&
+        listEquals(other.comment, comment);
   }
 
   @override
@@ -103,6 +117,7 @@ class News {
         date.hashCode ^
         content.hashCode ^
         url.hashCode ^
-        likes.hashCode;
+        likes.hashCode ^
+        comment.hashCode;
   }
 }

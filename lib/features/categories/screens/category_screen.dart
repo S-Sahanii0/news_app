@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:news_app/components/app_loading.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/categories/bloc/category_bloc.dart';
 import 'package:news_app/features/categories/screens/news_by_category.dart';
@@ -52,7 +53,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           child: BlocBuilder<CategoryBloc, CategoryState>(
             builder: (context, state) {
               if (state is CategoryInitial || state is CategoryLoading) {
-                return LoadingIndicator(indicatorType: Indicator.ballBeat);
+                return AppLoadingIndicator();
               }
 
               if (state is CategoryLoadSuccess) {

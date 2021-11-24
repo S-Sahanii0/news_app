@@ -13,4 +13,6 @@ class NavigationCubit extends Cubit<NavigationState> {
   void navigateToChannels() => emit(ChannelsState());
 
   void navigateToProfile() => emit(ProfileState());
+
+  void navigateToDiscover() => emit(DiscoverState());
 }

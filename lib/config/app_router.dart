@@ -34,21 +34,21 @@ import '../features/profile/screens/profile_screen.dart';
 
 import 'theme/app_colors.dart';
 
+final _ttsService = TtsService(flutterTts: FlutterTts());
+final _ttsCubit = TtsCubit(ttsService: _ttsService);
+//Services instance
+final _newsService = NewsService();
+final _authService = AuthService(newsService: _newsService);
+final _categoryService = CategoryService(newsService: _newsService);
+final _channelService = ChannelService(newsService: _newsService);
+
+//Bloc Instances
+final _authBloc = AuthBloc(authService: _authService);
+final _newsBloc = NewsBloc(newsService: _newsService);
+final _categoryBloc = CategoryBloc(catgoryService: _categoryService);
+final _channelBloc = ChannelBloc(channelService: _channelService);
+
 Route<dynamic> generateRoute(RouteSettings settings) {
-  final _ttsService = TtsService(flutterTts: FlutterTts());
-  final _ttsCubit = TtsCubit(ttsService: _ttsService);
-  //Services instance
-  final _newsService = NewsService();
-  final _authService = AuthService(newsService: _newsService);
-  final _categoryService = CategoryService(newsService: _newsService);
-  final _channelService = ChannelService(newsService: _newsService);
-
-  //Bloc Instances
-  final _authBloc = AuthBloc(authService: _authService);
-  final _newsBloc = NewsBloc(newsService: _newsService);
-  final _categoryBloc = CategoryBloc(catgoryService: _categoryService);
-  final _channelBloc = ChannelBloc(channelService: _channelService);
-
   switch (settings.name) {
     case SignUpScreen.route:
       return MaterialPageRoute(
@@ -89,11 +89,22 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case SingleNewsScreen.route:
       final args = settings.arguments as List;
       return MaterialPageRoute(
-          builder: (context) => BlocProvider(
-                create: (context) => _ttsCubit,
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => _ttsCubit,
+                  ),
+                  BlocProvider.value(
+                    value: _authBloc,
+                  ),
+                  BlocProvider.value(
+                    value: _newsBloc,
+                  ),
+                ],
                 child: SingleNewsScreen(
                   currentNewsIndex: args.first as int,
-                  newsList: args.last as List<News>,
+                  newsList: args[1] as List<News>,
+                  user: args.last as UserModel,
                 ),
               ));
     case ChannelScreen.route:
@@ -155,7 +166,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) => BlocProvider.value(
                 value: _authBloc,
-                child: const ChooseCategoryScreen(),
+                child: ChooseCategoryScreen(
+                  categoryService: _categoryService,
+                ),
               ));
     case ProfileScreen.route:
       return MaterialPageRoute(
@@ -165,8 +178,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ));
     case CommentScreen.route:
       return MaterialPageRoute(
-          builder: (context) =>
-              CommentScreen(newsModel: settings.arguments as News));
+          builder: (context) => BlocProvider.value(
+                value: _newsBloc,
+                child: CommentScreen(
+                  newsModel: settings.arguments as News,
+                ),
+              ));
     case SearchScreen.route:
       return MaterialPageRoute(builder: (context) => const SearchScreen());
 

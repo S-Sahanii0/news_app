@@ -19,24 +19,17 @@ class LikeNewsEvent extends NewsEvent {
   });
 }
 
-class RemoveBookMarkNewsEvent extends NewsEvent {
-  final News newsToBookmark;
-  final String uid;
+class UnlikeNewsEvent extends NewsEvent {
+  final News unlikedNews;
 
-  const RemoveBookMarkNewsEvent(
-      {required this.newsToBookmark, required this.uid});
+  const UnlikeNewsEvent({
+    required this.unlikedNews,
+  });
 }
 
-class AddToHistory extends NewsEvent {
-  final News newsModel;
-  final String uid;
+class AddCommentEvent extends NewsEvent {
+  final CommentModel comment;
+  final News news;
 
-  const AddToHistory({required this.newsModel, required this.uid});
-}
-
-class RemoveFromHistory extends NewsEvent {
-  final News newsModel;
-  final String uid;
-
-  const RemoveFromHistory({required this.newsModel, required this.uid});
+  const AddCommentEvent({required this.comment, required this.news});
 }
