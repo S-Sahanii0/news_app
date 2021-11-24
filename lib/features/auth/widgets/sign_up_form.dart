@@ -26,8 +26,10 @@ class _SignUpFormState extends State<SignUpForm> {
             hintText: "Username",
             suffixIcon: Icons.person_outline_outlined,
             textInputAction: TextInputAction.next,
-            validators: FormBuilderValidators.compose(
-                [FormBuilderValidators.required(context)]),
+            validators: FormBuilderValidators.compose([
+              FormBuilderValidators.required(context,
+                  errorText: "You must enter the username to continue")
+            ]),
           ),
           AppFormField(
             fieldTitle: "Email",
@@ -35,6 +37,12 @@ class _SignUpFormState extends State<SignUpForm> {
             hintText: "Email",
             suffixIcon: Icons.mail_outline_outlined,
             textInputAction: TextInputAction.next,
+            validators: FormBuilderValidators.compose([
+              FormBuilderValidators.required(context,
+                  errorText: "You must enter the email to continue"),
+              FormBuilderValidators.email(context,
+                  errorText: "Please enter a valid email address"),
+            ]),
           ),
           AppFormField(
             isObscure: isObscure,
@@ -48,6 +56,12 @@ class _SignUpFormState extends State<SignUpForm> {
             },
             suffixIcon: Icons.remove_red_eye_outlined,
             textInputAction: TextInputAction.done,
+            validators: FormBuilderValidators.compose([
+              FormBuilderValidators.required(context,
+                  errorText: "You must enter the password to continue"),
+              FormBuilderValidators.minLength(context, 8,
+                  errorText: "Your password is too short")
+            ]),
           ),
           SizedBox(
             height: 10.h,

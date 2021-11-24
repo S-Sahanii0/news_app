@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/news_feed/model/comment_model.dart';
 import '../model/news_model.dart';
 import '../services/news_service.dart';
@@ -20,7 +22,8 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       emit(NewsLoading());
 
       try {
-        await for (var news in newsService.getFirstNewsList()) {
+        await for (var news in newsService
+            .getFirstNewsList(event.user?.chosenCategories ?? [])) {
           _newsList = List.from(news);
           emit(NewsLoadingSuccess(newsList: _newsList));
         }

@@ -19,7 +19,11 @@ class AuthSuccess extends AuthState {
   List<Object?> get props => [currentUser];
 }
 
-class AuthFailure extends AuthState {}
+class AuthFailure extends AuthState {
+  final String errorMessage;
+
+  AuthFailure({required this.errorMessage});
+}
 
 class LogoutState extends AuthState {}
 

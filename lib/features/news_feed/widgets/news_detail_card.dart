@@ -137,7 +137,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                           onTapBookmark: widget.onTapBookmark,
                           onTapComment: widget.onTapComment,
                           onTapShare: widget.onTapShare,
-                          isHeart: widget.isHeart!,
+                          isHeart: widget.isHeart ?? false,
                           isBookmark: widget.isBookmark!,
                           commentTapped: widget.commentTapped!,
                           numberOfLikes: widget.numberOfLikes,

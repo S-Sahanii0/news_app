@@ -8,9 +8,6 @@ class CategoryService {
   CollectionReference categoryRef =
       FirebaseFirestore.instance.collection('category');
   CollectionReference newsRef = FirebaseFirestore.instance.collection('news');
-  final NewsService newsService;
-
-  CategoryService({required this.newsService});
 
   Future<List<CategoryModel>> getCategoryList() async {
     final categoryList = <CategoryModel>[];
@@ -22,19 +19,5 @@ class CategoryService {
     });
 
     return categoryList;
-  }
-
-  Future<List<News>> getNewsByCategory(String category) async {
-    final categoryDocument = await categoryRef.doc(category).get();
-    final categoryData = categoryDocument.data() as Map<String, dynamic>;
-    final listOfNews = await newsService.getNewsModel(
-        (categoryData["news"] as List<dynamic>)
-            .map((e) => e.toString())
-            .toList());
-    final result = <News>[];
-    for (var i in listOfNews) {
-      result.add(News.fromMap(i));
-    }
-    return result;
   }
 }

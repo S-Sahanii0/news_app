@@ -45,11 +45,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             emit(AuthSuccess(currentUser: await user));
           }
         } else {
-          emit(AuthFailure());
+          emit(AuthFailure(errorMessage: "No user"));
         }
       }
     } catch (e) {
-      emit(AuthFailure());
+      emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
@@ -61,8 +61,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await for (var event in result) {
         emit(AuthSuccess(currentUser: await event));
       }
-    } catch (e) {
-      emit(AuthFailure());
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        emit(AuthFailure(errorMessage: "Email already in use"));
+      }
     }
   }
 
@@ -78,7 +80,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                 ..addAll(event.categoryList))));
     } catch (e, stk) {
       log('Exception', error: e, stackTrace: stk);
-      emit(AuthFailure());
+      emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
@@ -92,7 +94,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           currentUser: event.user.copyWith(
               bookmarks: event.user.bookmarks!..add(event.newsToBookmark))));
     } catch (e) {
-      emit(AuthFailure());
+      emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
@@ -106,7 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           currentUser: event.user.copyWith(
               bookmarks: event.user.bookmarks!..remove(event.newsToBookmark))));
     } catch (e) {
-      emit(AuthFailure());
+      emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
@@ -120,7 +122,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           currentUser: event.user
               .copyWith(bookmarks: event.user.history!..add(event.newsModel))));
     } catch (e) {
-      emit(AuthFailure());
+      emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
@@ -135,7 +137,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           currentUser: event.user.copyWith(
               bookmarks: event.user.history!..remove(event.newsModel))));
     } catch (e) {
-      emit(AuthFailure());
+      emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
@@ -148,7 +150,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthSuccess(currentUser: await event));
       }
     } catch (e) {
-      emit(AuthFailure());
+      emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
@@ -173,9 +175,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await for (var event in result) {
         emit(AuthSuccess(currentUser: await event));
       }
-    } catch (e, stk) {
+    } on FirebaseAuthException catch (e, stk) {
       log(e.toString(), stackTrace: stk);
-      emit(AuthFailure());
+      if (e.code == "user-not-found") {
+        emit(AuthFailure(
+            errorMessage: "No account with given email address exists"));
+      } else {
+        emit(AuthFailure(errorMessage: "Incorrect credentials were provided"));
+      }
     }
   }
 
@@ -185,7 +192,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       authService.logout();
       emit(LogoutState());
     } catch (e) {
-      emit(AuthFailure());
+      emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
@@ -198,6 +205,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   _handleLoginFailure(AuthEvent event, Emitter<AuthState> emit) async {
-    return emit(AuthFailure());
+    return emit(AuthFailure(errorMessage: "Login Failed"));
   }
 }

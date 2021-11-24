@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:news_app/features/categories/services/category_service.dart';
 import 'package:news_app/features/news_feed/model/comment_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,7 +12,7 @@ import '../../channels/models/channel_model.dart';
 import '../model/news_model.dart';
 
 class NewsService {
-  NewsService() {
+  NewsService({required this.categoryService}) {
     listenToChannelEvent();
   }
   CollectionReference userRef = FirebaseFirestore.instance.collection('users');
@@ -22,8 +23,22 @@ class NewsService {
   CollectionReference news = FirebaseFirestore.instance.collection('news');
   List<Channel> channelList = [];
   List<News> newsList = [];
-
+  final CategoryService categoryService;
   var uuid = Uuid();
+
+  Future<List<News>> getNewsByCategory(String category) async {
+    final categoryDocument = await this.category.doc(category).get();
+    final categoryData = categoryDocument.data() as Map<String, dynamic>;
+    final listOfNews = await getNewsModel(
+        (categoryData["news"] as List<dynamic>)
+            .map((e) => e.toString())
+            .toList());
+    final result = <News>[];
+    for (var i in listOfNews) {
+      result.add(News.fromMap(i));
+    }
+    return result;
+  }
 
   Future<void> addDataToFirebase() async {
     final String response =
@@ -73,10 +88,12 @@ class NewsService {
     });
   }
 
-  Stream<List<News>> getFirstNewsList() {
+  Stream<List<News>> getFirstNewsList(List<String> userCategories) {
+    var tempList = <News>[];
     return news.limit(20).snapshots().map((event) {
-      newsList.addAll(event.docs.map((e) {
+      tempList.addAll(event.docs.map((e) {
         final newsData = e.data() as Map<String, dynamic>;
+
         return News.fromMap({
           "id": newsData['id'],
           "title": newsData['title'],
@@ -91,10 +108,19 @@ class NewsService {
               .first
               .toMap()
         });
-      }).toList());
+      }));
+
+      newsList = tempList;
+
       return newsList;
     });
   }
+
+  // Future<bool> checkIfNewsExists(String id, List<String> categoryName) async {
+  //   final categoryDocument = await category.doc(categoryName).get();
+  //   return (((categoryDocument.data() as Map<String, dynamic>)['news'] as List)
+  //       .contains(id));
+  // }
 
   Future<Stream<List<News>>> getNextNewsList() async {
     final prevDocument = await news

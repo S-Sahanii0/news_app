@@ -25,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: CustomAppBar().appBarWithBack(context: context, pageTitle: ""),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return SingleChildScrollView(
@@ -71,12 +70,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 50),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: const [
+                    children: [
                       Image(
                         image: AppIcons.facebook,
                       ),
-                      Image(
-                        image: AppIcons.google,
+                      GestureDetector(
+                        onTap: () {
+                          BlocProvider.of<AuthBloc>(context)
+                              .add(GoogleSignInEvent());
+                        },
+                        child: Image(
+                          image: AppIcons.google,
+                        ),
                       ),
                     ],
                   ),

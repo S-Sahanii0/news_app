@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_loading.dart';
+import 'package:news_app/features/auth/models/user_model.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
@@ -30,6 +31,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
   late final User _currentUser;
+  late final UserModel userData;
   final _scrollController = ScrollController();
 
   @override
@@ -38,14 +40,14 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
     _scrollController.addListener(_onScroll);
     _currentUser = FirebaseAuth.instance.currentUser!;
     _authBloc = BlocProvider.of<AuthBloc>(context);
+    userData = (_authBloc.state as AuthSuccess).currentUser;
     _newsBloc = BlocProvider.of<NewsBloc>(context)
-      ..add(GetFirstNewsListEvent());
+      ..add(GetFirstNewsListEvent(user: userData));
   }
 
   @override
   Widget build(BuildContext context) {
     log(_authBloc.state.toString());
-    var userData = (_authBloc.state as AuthSuccess).currentUser;
     return SafeArea(
       child: Scaffold(
           key: _key,

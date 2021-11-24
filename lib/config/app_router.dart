@@ -37,15 +37,16 @@ import 'theme/app_colors.dart';
 final _ttsService = TtsService(flutterTts: FlutterTts());
 final _ttsCubit = TtsCubit(ttsService: _ttsService);
 //Services instance
-final _newsService = NewsService();
 final _authService = AuthService(newsService: _newsService);
-final _categoryService = CategoryService(newsService: _newsService);
+final _categoryService = CategoryService();
+final _newsService = NewsService(categoryService: _categoryService);
 final _channelService = ChannelService(newsService: _newsService);
 
 //Bloc Instances
 final _authBloc = AuthBloc(authService: _authService);
 final _newsBloc = NewsBloc(newsService: _newsService);
-final _categoryBloc = CategoryBloc(catgoryService: _categoryService);
+final _categoryBloc =
+    CategoryBloc(catgoryService: _categoryService, newsService: _newsService);
 final _channelBloc = ChannelBloc(channelService: _channelService);
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -69,7 +70,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ));
 
     case LoginScreen.route:
-      return MaterialPageRoute(builder: (context) => const LoginScreen());
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _authBloc,
+                child: LoginScreen(),
+              ));
 
     case MyFeedScreen.route:
       log('routing to Feed Screen');

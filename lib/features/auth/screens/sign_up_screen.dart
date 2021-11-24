@@ -23,6 +23,8 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   late final _authState;
 
   @override
@@ -45,6 +47,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           //changed this from LoginScreen to BaseScreen
           Navigator.of(context).pushReplacementNamed(BaseScreen.route);
         }
+        if (state is AuthFailure) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+        }
       },
       builder: (context, state) => (state is AuthLoading)
           ? const Scaffold(
@@ -53,6 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             )
           : Scaffold(
+              key: _scaffoldKey,
               resizeToAvoidBottomInset: true,
               appBar: AppBar(
                 elevation: 0,
@@ -89,13 +96,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             .copyWith(color: AppColors.darkBlueShade1),
                       ),
                     ),
-                    SignUpForm(
-                      onSubmit: (value) {
-                        value.currentState!.save();
-                        final result = value.currentState!.value;
-                        BlocProvider.of<AuthBloc>(context).add(
-                            RegisterEvent(user: UserModel.fromMap(result)));
-                      },
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 65.w),
+                      child: SignUpForm(
+                        onSubmit: (value) {
+                          if (value.currentState!.validate()) {
+                            value.currentState!.save();
+                            final result = value.currentState!.value;
+                            BlocProvider.of<AuthBloc>(context).add(
+                                RegisterEvent(user: UserModel.fromMap(result)));
+                          }
+                        },
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),

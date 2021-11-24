@@ -4,13 +4,16 @@ import 'package:equatable/equatable.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/categories/models/category_model.dart';
 import 'package:news_app/features/categories/services/category_service.dart';
+import 'package:news_app/features/news_feed/services/news_service.dart';
 
 part 'category_event.dart';
 part 'category_state.dart';
 
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryService catgoryService;
-  CategoryBloc({required this.catgoryService}) : super(CategoryInitial()) {
+  final NewsService newsService;
+  CategoryBloc({required this.catgoryService, required this.newsService})
+      : super(CategoryInitial()) {
     on<GetCategoryEvent>(_handleGetCategoryEvent);
     on<GetNewsByCategory>(_handleGetNewsByCategory);
   }
@@ -32,7 +35,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     try {
       print("eta pugyo");
       final categoryList = await catgoryService.getCategoryList();
-      final news = await catgoryService.getNewsByCategory(event.category);
+      final news = await newsService.getNewsByCategory(event.category);
 
       emit(CategoryLoadSuccess(likedCategoryList: const [], otherCategoryList: [
         categoryList
