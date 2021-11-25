@@ -27,6 +27,12 @@ class _LoginFormState extends State<LoginForm> {
             hintText: "Email",
             suffixIcon: Icons.mail_outline_outlined,
             textInputAction: TextInputAction.next,
+            validators: FormBuilderValidators.compose([
+              FormBuilderValidators.required(context,
+                  errorText: "You must enter the email to continue"),
+              FormBuilderValidators.email(context,
+                  errorText: "Please enter a valid email address"),
+            ]),
           ),
           AppFormField(
             isObscure: isObscure,
@@ -40,6 +46,10 @@ class _LoginFormState extends State<LoginForm> {
             },
             suffixIcon: Icons.remove_red_eye_outlined,
             textInputAction: TextInputAction.done,
+            validators: FormBuilderValidators.compose([
+              FormBuilderValidators.required(context,
+                  errorText: "You must enter the password to continue"),
+            ]),
           ),
           SizedBox(
             height: 10.h,

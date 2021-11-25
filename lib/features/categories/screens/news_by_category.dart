@@ -13,6 +13,7 @@ import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/screens/comments_screen.dart';
 import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
 import 'package:news_app/features/news_feed/widgets/news_detail_card.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
@@ -120,7 +121,10 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                                     user: widget.userData));
                               }
                             },
-                            onTapShare: () {},
+                            onTapShare: () {
+                              Share.share(
+                                  'check out this ${newsList[index].url}');
+                            },
                             onTapMenu: () {},
                             isBookmark: widget.userData.bookmarks!
                                 .contains(newsList[index]),

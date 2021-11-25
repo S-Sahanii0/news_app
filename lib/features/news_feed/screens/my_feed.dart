@@ -8,6 +8,7 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_loading.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/news_feed/screens/search_screen.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
@@ -133,7 +134,10 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                         user: userData));
                                   }
                                 },
-                                onTapShare: () {},
+                                onTapShare: () {
+                                  Share.share(
+                                      'check out this ${state.newsList[index].url}');
+                                },
                                 onTapMenu: () {},
                                 isBookmark: userData.bookmarks!.any(
                                     (e) => state.newsList[index].id == e.id),

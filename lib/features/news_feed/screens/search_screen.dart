@@ -4,6 +4,7 @@ import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/widgets/news_detail_card.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../config/theme/theme.dart';
@@ -99,7 +100,10 @@ class _SearchScreenState extends State<SearchScreen> {
                               user: user));
                         }
                       },
-                      onTapShare: () {},
+                      onTapShare: () {
+                        Share.share(
+                            'check out this ${state.newsList[index].url}');
+                      },
                       onTapMenu: () {},
                       isBookmark: user.bookmarks!
                           .any((e) => state.newsList[index].id == e.id),

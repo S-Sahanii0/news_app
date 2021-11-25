@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/features/news_feed/model/news_model.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/services/auth_service.dart';
 import '../../news_feed/screens/my_feed.dart';
@@ -38,7 +39,9 @@ class _HistoryState extends State<History> {
                 onTapHeart: () {},
                 onTapComment: () {},
                 onTapBookmark: () {},
-                onTapShare: () {},
+                onTapShare: () {
+                  Share.share('check out this ${historyList[index].url}');
+                },
                 isBookmark: false,
                 isHeart: true,
                 onTapMenu: () {},

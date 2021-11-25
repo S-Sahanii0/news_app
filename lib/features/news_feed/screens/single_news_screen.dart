@@ -32,12 +32,14 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
   late final TtsCubit _ttsCubit;
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
+  late final UserModel userData;
 
   @override
   void initState() {
     _newsBloc = BlocProvider.of<NewsBloc>(context);
     _ttsCubit = context.read<TtsCubit>()..init(widget.currentNewsIndex);
     _authBloc = BlocProvider.of<AuthBloc>(context);
+    userData = (_authBloc.state as AuthSuccess).currentUser;
     super.initState();
   }
 
@@ -51,173 +53,201 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
   Widget build(BuildContext context) {
     var news = (_newsBloc.state as NewsLoadingSuccess).newsList;
     return SafeArea(
-      child: BlocBuilder<TtsCubit, TtsState>(
-        builder: (context, state) {
-          return PageView.builder(
-              controller: state.pageController,
-              scrollDirection: Axis.vertical,
-              itemBuilder: (context, index) {
-                final _news = news[index];
-                final _shouldPlay = _ttsCubit.state.shouldAutoPlay;
-                if (_shouldPlay) _ttsCubit.handlePlay(_news.content);
-                return Scaffold(
-                  appBar: CustomAppBar()
-                      .appBarWithBack(context: context, pageTitle: ""),
-                  bottomSheet: NewsDetailBottomSheet(
-                    onPlay: (isPlaying) => isPlaying
-                        ? _ttsCubit.stop()
-                        : _ttsCubit.handlePlay(_news.content),
-                    shouldPlay: _shouldPlay,
-                  ),
-                  body: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 15),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: AppColors.yellowShade2,
-                              radius: 15,
-                              child: Image(
-                                fit: BoxFit.contain,
-                                image: NetworkImage(_news.channel.channelImage),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                _news.channel.channel,
-                                style: AppStyle.regularText14
-                                    .copyWith(color: AppColors.darkBlueShade2),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        SizedBox(
-                          height: 150,
-                          width: double.infinity,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(_news.newsImage),
-                                fit: BoxFit.cover,
-                              ),
-                              border: Border.all(
-                                width: 2,
-                                color: AppColors.yellowShade4,
-                                style: BorderStyle.solid,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+      child: BlocBuilder<NewsBloc, NewsState>(
+        builder: (context, newsState) {
+          return BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, authState) {
+              return BlocBuilder<TtsCubit, TtsState>(
+                builder: (context, state) {
+                  return PageView.builder(
+                      controller: state.pageController,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        final _news = news[index];
+                        final _shouldPlay = _ttsCubit.state.shouldAutoPlay;
+                        if (_shouldPlay) _ttsCubit.handlePlay(_news.content);
+                        return Scaffold(
+                          appBar: CustomAppBar()
+                              .appBarWithBack(context: context, pageTitle: ""),
+                          bottomSheet: NewsDetailBottomSheet(
+                            onPlay: (isPlaying) => isPlaying
+                                ? _ttsCubit.stop()
+                                : _ttsCubit.handlePlay(_news.content),
+                            shouldPlay: _shouldPlay,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            _news.title,
-                            style: AppStyle.regularText14
-                                .copyWith(color: AppColors.darkBlueShade3),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
-                          ),
-                        ),
-                        Text(
-                          _news.content,
-                          style: AppStyle.regularText18
-                              .copyWith(color: AppColors.darkBlueShade1),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 4,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Row(
-                            children: [
-                              InkWell(
-                                // todo add cofig for iOS
-                                onTap: () => launch(_news.url),
-                                child: Text(
-                                  "Read more",
-                                  style: AppStyle.semiBoldText12.copyWith(
-                                      color: AppColors.darkBlueShade2),
+                          body: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 15),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundColor: AppColors.yellowShade2,
+                                      radius: 15,
+                                      child: Image(
+                                        fit: BoxFit.contain,
+                                        image: NetworkImage(
+                                            _news.channel.channelImage),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Text(
+                                        _news.channel.channel,
+                                        style: AppStyle.regularText14.copyWith(
+                                            color: AppColors.darkBlueShade2),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Spacer(
-                                flex: 6,
-                              ),
-                              Text(
-                                _news.date,
-                                style: AppStyle.regularText12
-                                    .copyWith(color: AppColors.darkBlueShade2),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Divider(
-                          thickness: 2,
-                        ),
-                        Flexible(
-                          flex: 4,
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  if (widget.user.history!.contains(_news)) {
-                                    _authBloc.add(RemoveFromHistory(
-                                        newsModel: _news, user: widget.user));
-                                  } else {
-                                    _authBloc.add(AddToHistory(
-                                        newsModel: _news, user: widget.user));
-                                    _newsBloc.add(LikeNewsEvent(
-                                        likedNews: _news.copyWith(
-                                            likes: _news.likes! + 1)));
-                                  }
-                                },
-                                child: Image(
-                                    image: widget.user.history!
-                                            .any((element) => element == _news)
-                                        ? AppIcons.heartTapped
-                                        : AppIcons.heart),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: Text(
-                                  _news.likes.toString(),
-                                  style: AppStyle.regularText12
-                                      .copyWith(color: AppColors.greyShade2),
+                                SizedBox(
+                                  height: 10.h,
                                 ),
-                              ),
-                              SizedBox(
-                                width: 4.w,
-                              ),
-                              InkWell(
-                                  onTap: () {},
-                                  child: const Image(image: AppIcons.comment)),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: Text(
-                                  _news.comment!.length.toString(),
-                                  style: AppStyle.regularText12
-                                      .copyWith(color: AppColors.greyShade2),
+                                SizedBox(
+                                  height: 150,
+                                  width: double.infinity,
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(_news.newsImage),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      border: Border.all(
+                                        width: 2,
+                                        color: AppColors.yellowShade4,
+                                        style: BorderStyle.solid,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Text(
+                                    _news.title,
+                                    style: AppStyle.regularText14.copyWith(
+                                        color: AppColors.darkBlueShade3),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 3,
+                                  ),
+                                ),
+                                Text(
+                                  _news.content,
+                                  style: AppStyle.regularText18.copyWith(
+                                      color: AppColors.darkBlueShade1),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 4,
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 5),
+                                  child: Row(
+                                    children: [
+                                      InkWell(
+                                        // todo add cofig for iOS
+                                        onTap: () => launch(_news.url),
+                                        child: Text(
+                                          "Read more",
+                                          style: AppStyle.semiBoldText12
+                                              .copyWith(
+                                                  color:
+                                                      AppColors.darkBlueShade2),
+                                        ),
+                                      ),
+                                      Spacer(
+                                        flex: 6,
+                                      ),
+                                      Text(
+                                        _news.date,
+                                        style: AppStyle.regularText12.copyWith(
+                                            color: AppColors.darkBlueShade2),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Divider(
+                                  thickness: 2,
+                                ),
+                                Flexible(
+                                  flex: 4,
+                                  child: Row(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          if (widget.user.history!
+                                              .contains(_news)) {
+                                            _authBloc.add(RemoveFromHistory(
+                                                newsModel: _news,
+                                                user: widget.user));
+                                          } else {
+                                            _authBloc.add(AddToHistory(
+                                                newsModel: _news,
+                                                user: widget.user));
+                                            _newsBloc.add(LikeNewsEvent(
+                                                likedNews: _news.copyWith(
+                                                    likes: _news.likes! + 1)));
+                                          }
+                                        },
+                                        child: Image(
+                                            image: (authState as AuthSuccess)
+                                                    .currentUser
+                                                    .history!
+                                                    .any((element) =>
+                                                        element == _news)
+                                                ? AppIcons.heartTapped
+                                                : AppIcons.heart),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8),
+                                        child: Text(
+                                          (newsState as NewsLoadingSuccess)
+                                              .newsList
+                                              .where((element) =>
+                                                  element.id == _news.id)
+                                              .first
+                                              .likes
+                                              .toString(),
+                                          style: AppStyle.regularText12
+                                              .copyWith(
+                                                  color: AppColors.greyShade2),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 4.w,
+                                      ),
+                                      InkWell(
+                                          onTap: () {},
+                                          child: const Image(
+                                              image: AppIcons.comment)),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8),
+                                        child: Text(
+                                          _news.comment!.length.toString(),
+                                          style: AppStyle.regularText12
+                                              .copyWith(
+                                                  color: AppColors.greyShade2),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20.h,
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 20.h,
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              });
+                        );
+                      });
+                },
+              );
+            },
+          );
         },
       ),
     );

@@ -19,13 +19,22 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   bool isObscure = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
-      body: BlocBuilder<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthFailure) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+          }
+        },
         builder: (context, state) {
           return SingleChildScrollView(
             child: Column(
@@ -52,11 +61,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 65),
                   child: LoginForm(
                     onSubmit: (value) {
-                      value.currentState!.save();
-                      final result = value.currentState!.value;
-                      print(result);
-                      BlocProvider.of<AuthBloc>(context)
-                          .add(LoginEvent(user: UserModel.fromMap(result)));
+                      if (value.currentState!.validate()) {
+                        value.currentState!.save();
+                        final result = value.currentState!.value;
+                        print(result);
+                        BlocProvider.of<AuthBloc>(context)
+                            .add(LoginEvent(user: UserModel.fromMap(result)));
+                      }
                     },
                   ),
                 ),
@@ -71,8 +82,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Image(
-                        image: AppIcons.facebook,
+                      GestureDetector(
+                        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Coming soon"))),
+                        child: Image(
+                          image: AppIcons.facebook,
+                        ),
                       ),
                       GestureDetector(
                         onTap: () {

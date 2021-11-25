@@ -47,7 +47,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     var currentState = state as CategoryLoadSuccess;
     try {
       print("eta pugyo");
-      emit(CategoryLoading());
+
       final result = await catgoryService.getCategoryList();
       final likedCategory =
           List<CategoryModel>.from(currentState.likedCategoryList)

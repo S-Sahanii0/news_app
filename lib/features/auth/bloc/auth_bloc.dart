@@ -32,6 +32,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AddToHistory>(_handleAddToHistory);
     on<RemoveFromHistory>(_handleRemoveFromHistory);
     on<AddChosenCategoryEvent>(_handleChosenCatgoryEvent);
+    on<ResetPasswordEvent>(_handleResetPasswordEvent);
   }
 
   _handleAppStarted(AppStartedEvent event, Emitter<AuthState> emit) async {
@@ -64,6 +65,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         emit(AuthFailure(errorMessage: "Email already in use"));
+      }
+      if (e.code == 'network-request-failed') {
+        emit(AuthFailure(
+            errorMessage: "Please check your internet connection."));
       }
     }
   }
@@ -112,6 +117,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  _handleResetPasswordEvent(
+      ResetPasswordEvent event, Emitter<AuthState> emit) async {
+    // emit(AuthLoading());
+    try {
+      if (event.confirmPassword == event.password) {
+        await authService.resetPassword(event.password);
+        emit(AuthSuccess(currentUser: event.user));
+      }
+    } on FirebaseAuthException catch (e) {
+      emit(AuthFailure(errorMessage: e.toString()));
+    }
+  }
+
   _handleAddToHistory(AddToHistory event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
     try {
@@ -149,8 +167,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await for (var event in result) {
         emit(AuthSuccess(currentUser: await event));
       }
-    } catch (e) {
-      emit(AuthFailure(errorMessage: e.toString()));
+    } on FirebaseAuthException catch (e, stk) {
+      log(e.toString(), stackTrace: stk);
+      if (e.code == "network-request-failed") {
+        emit(AuthFailure(errorMessage: "Please Check your network connection"));
+      }
     }
   }
 
@@ -177,10 +198,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } on FirebaseAuthException catch (e, stk) {
       log(e.toString(), stackTrace: stk);
+      if (e.code == "network-request-failed") {
+        emit(AuthFailure(errorMessage: "Please Check your network connection"));
+      }
       if (e.code == "user-not-found") {
         emit(AuthFailure(
             errorMessage: "No account with given email address exists"));
-      } else {
+      }
+      if (e.code == "wrong-password") {
         emit(AuthFailure(errorMessage: "Incorrect credentials were provided"));
       }
     }

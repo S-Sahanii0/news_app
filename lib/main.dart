@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/bloc_observer.dart';
+import 'package:news_app/features/categories/services/category_service.dart';
 import 'base_screen.dart';
 import 'config/app_router.dart' as router;
 import 'features/auth/screens/auth_test.dart';
@@ -15,7 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Bloc.observer = AppBlocObserver();
-  // NewsService().addDataToFirebase();
+  // NewsService(categoryService: CategoryService()).addDataToFirebase();
   runApp(const MyApp());
 }
 

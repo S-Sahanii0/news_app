@@ -121,8 +121,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           GestureDetector(
-                            onTap: () => BlocProvider.of<AuthBloc>(context)
-                                .add(FacebookSignInEvent()),
+                            onTap: () => ScaffoldMessenger.of(context)
+                                .showSnackBar(
+                                    SnackBar(content: Text("Coming soon"))),
                             child: const Image(
                               image: AppIcons.facebook,
                             ),

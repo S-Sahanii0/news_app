@@ -169,4 +169,8 @@ class AuthService {
     ));
     return getCurrentUser(uid);
   }
+
+  Future<void> resetPassword(String password) async {
+    await _firebaseAuth.currentUser!.updatePassword(password);
+  }
 }

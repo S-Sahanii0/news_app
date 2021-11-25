@@ -252,7 +252,10 @@ class __feedIconRowState extends State<_feedIconRow> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: InkWell(
-                  onTap: () {}, child: const Image(image: AppIcons.share)),
+                  onTap: () {
+                    widget.onTapShare();
+                  },
+                  child: const Image(image: AppIcons.share)),
             ),
             InkWell(
                 onTap: () {}, child: const Image(image: AppIcons.hamburger)),

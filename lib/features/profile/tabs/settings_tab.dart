@@ -25,71 +25,80 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
-      child: ListView(
-        children: [
-          SettingsCard.text(
-              cardText: "Username",
-              onTap: () {},
-              text: widget.user.username.toString()),
-          EmailCard(email: widget.user.email.toString()),
-          SettingsCard(
-              cardText: "Change Password",
-              onTap: () {
-                showModalBottomSheet(
-                    useRootNavigator: false,
-                    isDismissible: true,
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.r),
-                      topRight: Radius.circular(10.r),
-                    )),
-                    backgroundColor: Colors.transparent,
-                    context: context,
-                    builder: (contex) {
-                      return _ChangePasswordBottomSheet(
-                        authBloc: BlocProvider.of<AuthBloc>(context),
-                      );
-                    });
-              }),
-          // SettingsCard.toggle(
-          //     cardText: "Dark mode", isToggled: false, onTapToggle: (val) {}),
-          // SettingsCard.toggle(
-          //     cardText: "Notifications",
-          //     isToggled: false,
-          //     onTapToggle: (val) {}),
-          SettingsCard.hasNumber(
-              cardText: "Following",
-              onTap: () {},
-              number: widget.user.chosenCategories!.length),
-          // SettingsCard.hasNumber(cardText: "Blocked", onTap: () {}, number: 1),
-          // SettingsCard(cardText: "Help", onTap: () {}),
-          // SettingsCard(cardText: "Feedback", onTap: () {}),
-          // SettingsCard(cardText: "About us", onTap: () {}),
-          SettingsCard.logout(
-              cardText: "Logout",
-              onTap: () {
-                showModalBottomSheet(
-                    useRootNavigator: false,
-                    isDismissible: true,
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.r),
-                      topRight: Radius.circular(10.r),
-                    )),
-                    backgroundColor: Colors.transparent,
-                    context: context,
-                    builder: (contex) {
-                      return _LogoutBottomSheet(
-                        authBloc: BlocProvider.of<AuthBloc>(context),
-                      );
-                    });
-              }),
-          SizedBox(
-            height: 200.h,
-          ),
-        ],
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthFailure) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("Password didn't match")));
+          }
+        },
+        child: ListView(
+          children: [
+            SettingsCard.text(
+                cardText: "Username",
+                onTap: () {},
+                text: widget.user.username.toString()),
+            EmailCard(email: widget.user.email.toString()),
+            SettingsCard(
+                cardText: "Change Password",
+                onTap: () {
+                  showModalBottomSheet(
+                      useRootNavigator: false,
+                      isDismissible: true,
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.r),
+                        topRight: Radius.circular(10.r),
+                      )),
+                      backgroundColor: Colors.transparent,
+                      context: context,
+                      builder: (contex) {
+                        return _ChangePasswordBottomSheet(
+                          authBloc: BlocProvider.of<AuthBloc>(context),
+                          user: widget.user,
+                        );
+                      });
+                }),
+            // SettingsCard.toggle(
+            //     cardText: "Dark mode", isToggled: false, onTapToggle: (val) {}),
+            // SettingsCard.toggle(
+            //     cardText: "Notifications",
+            //     isToggled: false,
+            //     onTapToggle: (val) {}),
+            SettingsCard.hasNumber(
+                cardText: "Following",
+                onTap: () {},
+                number: widget.user.chosenCategories!.length),
+            // SettingsCard.hasNumber(cardText: "Blocked", onTap: () {}, number: 1),
+            // SettingsCard(cardText: "Help", onTap: () {}),
+            // SettingsCard(cardText: "Feedback", onTap: () {}),
+            // SettingsCard(cardText: "About us", onTap: () {}),
+            SettingsCard.logout(
+                cardText: "Logout",
+                onTap: () {
+                  showModalBottomSheet(
+                      useRootNavigator: false,
+                      isDismissible: true,
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.r),
+                        topRight: Radius.circular(10.r),
+                      )),
+                      backgroundColor: Colors.transparent,
+                      context: context,
+                      builder: (contex) {
+                        return _LogoutBottomSheet(
+                          authBloc: BlocProvider.of<AuthBloc>(context),
+                        );
+                      });
+                }),
+            SizedBox(
+              height: 200.h,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -146,7 +155,9 @@ class _LogoutBottomSheet extends StatelessWidget {
 
 class _ChangePasswordBottomSheet extends StatelessWidget {
   final AuthBloc authBloc;
-  const _ChangePasswordBottomSheet({Key? key, required this.authBloc})
+  final UserModel user;
+  const _ChangePasswordBottomSheet(
+      {Key? key, required this.authBloc, required this.user})
       : super(key: key);
 
   @override
@@ -168,7 +179,17 @@ class _ChangePasswordBottomSheet extends StatelessWidget {
                   .copyWith(color: AppColors.darkBlueShade2),
             ),
           ),
-          ChangePasswordForm(onSubmit: (val) {}),
+          ChangePasswordForm(onSubmit: (val) {
+            if (val.currentState!.validate()) {
+              val.currentState!.save();
+              var result = val.currentState!.value;
+              authBloc.add(ResetPasswordEvent(
+                  user: user,
+                  password: result['password'],
+                  confirmPassword: result['confirm']));
+              Navigator.of(context).pop();
+            }
+          }),
         ],
       ),
     );

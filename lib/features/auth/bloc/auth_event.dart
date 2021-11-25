@@ -62,6 +62,16 @@ class LoginSuccess extends AuthEvent {
   LoginSuccess({required this.user});
 }
 
+class ResetPasswordEvent extends AuthEvent {
+  final UserModel user;
+  final String password;
+  final String confirmPassword;
+  ResetPasswordEvent(
+      {required this.user,
+      required this.password,
+      required this.confirmPassword});
+}
+
 class AppStartedEvent extends AuthEvent {}
 
 class LoginFailure extends AuthEvent {}

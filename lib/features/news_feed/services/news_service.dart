@@ -45,26 +45,30 @@ class NewsService {
         await rootBundle.loadString('assets/data/news_data.json');
     final data = await json.decode(response);
 
-    List.from(data.keys).forEach((element) {
+    for (var element in List.from(data.keys)) {
       final listOfNewsReference = [];
-      List.from(data[element]).forEach((e) {
-        final newsId = uuid.v4();
-        listOfNewsReference.add(newsId);
-        news.doc(newsId).set({
-          "id": newsId,
-          "title": e['title'],
-          "newsImage": e['newsImage'],
-          "date": e['date'],
-          "content": e['content'],
-          "url": e['url'],
-          "channel": e['channel'],
-          "likes": 0,
-          "comments": [],
-        });
-      });
+      final listOfNewsTitle = []; //To avoid duplicate titles
+      for (var e in List.from(data[element])) {
+        if (!listOfNewsTitle.contains(e['title'])) {
+          final newsId = uuid.v4();
+          listOfNewsTitle.add(e['title']);
+          listOfNewsReference.add(newsId);
+          news.doc(newsId).set({
+            "id": newsId,
+            "title": e['title'],
+            "newsImage": e['newsImage'],
+            "date": e['date'],
+            "content": e['content'],
+            "url": e['url'],
+            "channel": e['channel'],
+            "likes": 0,
+            "comments": [],
+          });
+        }
+      }
 
       category.doc(element).set({"name": element, "news": listOfNewsReference});
-    });
+    }
   }
 
   Stream<List<Channel>> listenToChannel() {
@@ -93,7 +97,6 @@ class NewsService {
     return news.limit(20).snapshots().map((event) {
       tempList.addAll(event.docs.map((e) {
         final newsData = e.data() as Map<String, dynamic>;
-
         return News.fromMap({
           "id": newsData['id'],
           "title": newsData['title'],
