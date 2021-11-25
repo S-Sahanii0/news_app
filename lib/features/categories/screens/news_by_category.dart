@@ -8,6 +8,7 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_loading.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/categories/bloc/category_bloc.dart';
+import 'package:news_app/features/categories/models/category_model.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/screens/comments_screen.dart';
 import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
@@ -21,9 +22,9 @@ import '../../auth/bloc/auth_bloc.dart';
 
 class NewsByCategoryScreen extends StatefulWidget {
   final UserModel userData;
-  final String categoryName;
+  final CategoryModel category;
   const NewsByCategoryScreen(
-      {Key? key, required this.userData, required this.categoryName})
+      {Key? key, required this.userData, required this.category})
       : super(key: key);
   static const String route = '/kRouteNewsByCategory';
 
@@ -44,7 +45,7 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
   void initState() {
     super.initState();
     _categoryBloc = BlocProvider.of<CategoryBloc>(context)
-      ..add(GetNewsByCategory(category: widget.categoryName));
+      ..add(GetNewsByCategory(category: widget.category));
     _currentUser = FirebaseAuth.instance.currentUser!;
     _newsBloc = BlocProvider.of<NewsBloc>(context);
     _authBloc = BlocProvider.of<AuthBloc>(context);
@@ -65,7 +66,12 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
             if (state is CategoryInitial || state is CategoryLoading)
               return const AppLoadingIndicator();
             if (state is CategoryLoadSuccess) {
-              final newsList = state.otherCategoryList.first.news;
+              final newsList = List.from(
+                      state.otherCategoryList..addAll(state.likedCategoryList))
+                  .where((element) =>
+                      element.categoryName == widget.category.categoryName)
+                  .first
+                  .news;
               return newsList.isEmpty
                   ? const Center(
                       child: Text("No news of this category available"),

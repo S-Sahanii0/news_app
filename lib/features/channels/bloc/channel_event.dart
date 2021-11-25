@@ -10,6 +10,8 @@ abstract class ChannelEvent extends Equatable {
 class GetChannelEvent extends ChannelEvent {}
 
 class GetNewsByChannelEvent extends ChannelEvent {
-  const GetNewsByChannelEvent({required this.channelName});
+  const GetNewsByChannelEvent({
+    required this.channelName,
+  });
   final String channelName;
 }

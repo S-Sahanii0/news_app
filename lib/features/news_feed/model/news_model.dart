@@ -75,7 +75,7 @@ class News {
       date: map['date'],
       content: map['content'],
       url: map['url'],
-      likes: map['likes'] ?? "0",
+      likes: map['likes'] ?? 0,
       comment: map['comment'] != null
           ? List<CommentModel>.from(
               map['comment']?.map((x) => CommentModel.fromMap(x)))

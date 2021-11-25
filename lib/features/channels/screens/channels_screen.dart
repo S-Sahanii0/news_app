@@ -43,7 +43,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
       child: Scaffold(
         key: _key,
         appBar: CustomAppBar()
-            .primaryAppBarNoFilter(pageTitle: "Category", context: context),
+            .primaryAppBarNoFilter(pageTitle: "Channel", context: context),
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),

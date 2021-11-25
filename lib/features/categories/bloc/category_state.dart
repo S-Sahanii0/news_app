@@ -17,6 +17,10 @@ class CategoryLoadSuccess extends CategoryState {
 
   const CategoryLoadSuccess(
       {required this.likedCategoryList, required this.otherCategoryList});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [likedCategoryList, otherCategoryList];
 }
 
 class CategoryLoadFailure extends CategoryState {}

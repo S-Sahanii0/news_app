@@ -156,26 +156,29 @@ class NewsService {
     if (idList.isEmpty) {
       return [];
     } else {
-      final result = await news.where('id', whereIn: idList).get();
       var resultNewsList = <Map<String, dynamic>>[];
-      var listOfNewsSnapshot = result.docs;
-      for (var e in listOfNewsSnapshot) {
-        final newsData = e.data() as Map<String, dynamic>;
-        resultNewsList.add(News.fromMap({
-          "id": newsData['id'],
-          "title": newsData['title'],
-          "newsImage": newsData['newsImage'],
-          "content": newsData['content'],
-          "url": newsData['url'],
-          "date": newsData['date'],
-          "likes": newsData['likes'],
-          "comment": newsData['comments'],
-          "channel": channelList
-              .where((element) => element.channel == newsData['channel'])
-              .first
-              .toMap()
-        }).toMap());
+      for (var element in idList) {
+        final result = await news.where('id', isEqualTo: element).get();
+        var listOfNewsSnapshot = result.docs;
+        for (var e in listOfNewsSnapshot) {
+          final newsData = e.data() as Map<String, dynamic>;
+          resultNewsList.add(News.fromMap({
+            "id": newsData['id'],
+            "title": newsData['title'],
+            "newsImage": newsData['newsImage'],
+            "content": newsData['content'],
+            "url": newsData['url'],
+            "date": newsData['date'],
+            "likes": newsData['likes'],
+            "comment": newsData['comments'],
+            "channel": channelList
+                .where((element) => element.channel == newsData['channel'])
+                .first
+                .toMap()
+          }).toMap());
+        }
       }
+
       return resultNewsList;
     }
   }

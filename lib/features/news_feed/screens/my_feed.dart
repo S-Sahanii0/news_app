@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_loading.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/news_feed/screens/search_screen.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
@@ -52,8 +53,11 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
-          appBar: CustomAppBar()
-              .primaryAppBar(pageTitle: "My Feed", context: context),
+          appBar: CustomAppBar().primaryAppBar(
+              pageTitle: "My Feed",
+              context: context,
+              onPressSearch: () => Navigator.of(context)
+                  .pushNamed(SearchScreen.route, arguments: userData)),
           body: BlocBuilder<AuthBloc, AuthState>(
             buildWhen: (prevState, curState) {
               return curState is NewsInitial;

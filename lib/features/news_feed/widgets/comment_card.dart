@@ -44,31 +44,33 @@ class _CommentCardState extends State<CommentCard> {
               ),
               Text(
                 widget.commentor,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
                 style: AppStyle.regularText14
                     .copyWith(color: AppColors.darkBlueShade2),
               ),
-              Spacer(
-                flex: 6,
-              ),
-              Text(
-                widget.noOfLikes.toString(),
-                style: AppStyle.regularText12
-                    .copyWith(color: AppColors.darkBlueShade3),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    widget.isLiked = !widget.isLiked;
-                  });
-                  widget.onTapHeart;
-                },
-                child: Image(
-                    image:
-                        widget.isLiked ? AppIcons.heartTapped : AppIcons.heart),
-              )
+              // Spacer(
+              //   flex: 2,
+              // ),
+              // Text(
+              //   widget.noOfLikes.toString(),
+              //   style: AppStyle.regularText12
+              //       .copyWith(color: AppColors.darkBlueShade3),
+              // ),
+              // SizedBox(
+              //   width: 10.w,
+              // ),
+              // GestureDetector(
+              //   onTap: () {
+              //     setState(() {
+              //       widget.isLiked = !widget.isLiked;
+              //     });
+              //     widget.onTapHeart;
+              // //   },
+              //   child: Image(
+              //       image:
+              //           widget.isLiked ? AppIcons.heartTapped : AppIcons.heart),
+              // )
             ],
           ),
           Padding(

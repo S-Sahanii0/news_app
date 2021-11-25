@@ -13,6 +13,7 @@ import 'package:news_app/features/categories/services/category_service.dart';
 import 'package:news_app/features/channels/bloc/channel_bloc.dart';
 import 'package:news_app/features/channels/screens/news_by_channel.dart';
 import 'package:news_app/features/channels/services/channel_service.dart';
+import 'package:news_app/features/news_feed/bloc/search/search_cubit.dart';
 import 'package:news_app/features/news_feed/bloc/tts/tts_cubit.dart';
 import 'package:news_app/features/news_feed/services/news_service.dart';
 import 'package:news_app/features/news_feed/services/tts_service.dart';
@@ -120,8 +121,15 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ));
     case CategoryScreen.route:
       return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _categoryBloc,
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(
+                    value: _categoryBloc,
+                  ),
+                  BlocProvider.value(
+                    value: _authBloc,
+                  ),
+                ],
                 child: CategoryScreen(),
               ));
     case NewsByChannelScreen.route:
@@ -136,6 +144,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ),
               BlocProvider.value(
                 value: _newsBloc,
+              ),
+              BlocProvider.value(
+                value: _authBloc,
               ),
             ],
             child: NewsByChannelScreen(
@@ -159,10 +170,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               BlocProvider.value(
                 value: _categoryBloc,
               ),
+              BlocProvider.value(
+                value: _authBloc,
+              ),
             ],
             child: NewsByCategoryScreen(
               userData: args.first as UserModel,
-              categoryName: args[1],
+              category: args[1],
             ),
           ),
         );
@@ -190,7 +204,20 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                 ),
               ));
     case SearchScreen.route:
-      return MaterialPageRoute(builder: (context) => const SearchScreen());
+      final user = settings.arguments as UserModel;
+      return MaterialPageRoute(
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => SearchCubit(newsService: _newsService),
+                  ),
+                  BlocProvider.value(value: _newsBloc),
+                  BlocProvider.value(value: _authBloc),
+                ],
+                child: SearchScreen(
+                  user: user,
+                ),
+              ));
 
     default:
       return MaterialPageRoute(

@@ -18,8 +18,10 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
   _handleGetChannelEvent(
       GetChannelEvent event, Emitter<ChannelState> emit) async {
     try {
+      emit(ChannelLoading());
       final result = await channelService.getChannelList();
-      emit(ChannelLoadSuccess(otherChannels: result, likedChannels: []));
+      emit(ChannelLoadSuccess(
+          otherChannels: result, likedChannels: [], news: []));
     } catch (e) {
       emit(ChannelLoadFailure());
     }
@@ -27,9 +29,12 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
   _handleGetNewsByChannelEvent(
       GetNewsByChannelEvent event, Emitter<ChannelState> emit) async {
+    final currentChannelList = (state as ChannelLoadSuccess).otherChannels;
     try {
+      emit(ChannelLoading());
       final result = await channelService.getNewsByChannel(event.channelName);
-      emit(NewsByChannel(newsList: result));
+      emit(ChannelLoadSuccess(
+          otherChannels: currentChannelList, likedChannels: [], news: result));
     } catch (e) {
       emit(ChannelLoadFailure());
     }

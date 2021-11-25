@@ -27,7 +27,9 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
           _newsList = List.from(news);
           emit(NewsLoadingSuccess(newsList: _newsList));
         }
-      } catch (e) {
+      } catch (e, stk) {
+        log(e.toString());
+        log(stk.toString());
         emit(NewsLoadingFailure());
       }
     });

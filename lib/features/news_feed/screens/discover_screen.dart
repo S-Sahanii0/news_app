@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_loading.dart';
+import 'package:news_app/features/news_feed/screens/search_screen.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
@@ -50,8 +51,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
-          appBar: CustomAppBar()
-              .primaryAppBar(pageTitle: "Discover", context: context),
+          appBar: CustomAppBar().primaryAppBar(
+              pageTitle: "Discover",
+              context: context,
+              onPressSearch: () => Navigator.of(context)
+                  .pushNamed(SearchScreen.route, arguments: userData)),
           body: BlocBuilder<AuthBloc, AuthState>(
             buildWhen: (prevState, curState) {
               return curState is NewsInitial;
@@ -65,43 +69,44 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 if (state is NewsInitial || state is NewsLoading)
                   return const AppLoadingIndicator();
                 if (state is NewsLoadingSuccess) {
+                  var newListDiscover = state.newsList..reversed;
                   return ListView.builder(
                     controller: _scrollController,
-                    itemCount: state.newsList.length + 1,
+                    itemCount: newListDiscover.length + 1,
                     itemBuilder: (context, index) {
-                      print(state.newsList[index].likes);
-                      return index >= state.newsList.length
+                      print(newListDiscover[index].likes);
+                      return index >= newListDiscover.length
                           ? const AppLoadingIndicator()
                           : GestureDetector(
                               onTap: () {
                                 Navigator.of(context).pushNamed(
                                     SingleNewsScreen.route,
-                                    arguments: [index, state.newsList]);
+                                    arguments: [index, newListDiscover]);
                               },
                               child: NewsDetailCard(
                                 channelName:
-                                    state.newsList[index].channel.channel,
-                                newsDescription: state.newsList[index].content,
-                                newsTime: state.newsList[index].date,
+                                    newListDiscover[index].channel.channel,
+                                newsDescription: newListDiscover[index].content,
+                                newsTime: newListDiscover[index].date,
                                 numberOfLikes:
-                                    state.newsList[index].likes.toString(),
+                                    newListDiscover[index].likes.toString(),
                                 numberOfComments: state
                                     .newsList[index].comment!.length
                                     .toString(),
                                 onTapHeart: () {
                                   if (userData.history!
-                                      .contains(state.newsList[index])) {
+                                      .contains(newListDiscover[index])) {
                                     _authBloc.add(RemoveFromHistory(
-                                        newsModel: state.newsList[index],
+                                        newsModel: newListDiscover[index],
                                         user: userData));
                                   } else {
                                     _authBloc.add(AddToHistory(
-                                        newsModel: state.newsList[index],
+                                        newsModel: newListDiscover[index],
                                         user: userData));
                                     _newsBloc.add(LikeNewsEvent(
-                                        likedNews: state.newsList[index]
+                                        likedNews: newListDiscover[index]
                                             .copyWith(
-                                                likes: state.newsList[index]
+                                                likes: newListDiscover[index]
                                                         .likes! +
                                                     1)));
                                   }
@@ -109,29 +114,29 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                 onTapComment: () {
                                   Navigator.of(context).pushNamed(
                                       CommentScreen.route,
-                                      arguments: state.newsList[index]);
+                                      arguments: newListDiscover[index]);
                                 },
                                 onTapBookmark: () {
                                   if (userData.bookmarks!
-                                      .contains(state.newsList[index])) {
+                                      .contains(newListDiscover[index])) {
                                     _authBloc.add(RemoveBookMarkEvent(
-                                        newsToBookmark: state.newsList[index],
+                                        newsToBookmark: newListDiscover[index],
                                         user: userData));
                                   } else {
                                     _authBloc.add(AddToBookMarkEvent(
-                                        newsToBookmark: state.newsList[index],
+                                        newsToBookmark: newListDiscover[index],
                                         user: userData));
                                   }
                                 },
                                 onTapShare: () {},
                                 onTapMenu: () {},
                                 isBookmark: userData.bookmarks!.any(
-                                    (e) => state.newsList[index].id == e.id),
+                                    (e) => newListDiscover[index].id == e.id),
                                 isHeart: userData.history!.any(
-                                    (e) => state.newsList[index].id == e.id),
+                                    (e) => newListDiscover[index].id == e.id),
                                 channelImage:
-                                    state.newsList[index].channel.channelImage,
-                                imageUrl: state.newsList[index].newsImage,
+                                    newListDiscover[index].channel.channelImage,
+                                imageUrl: newListDiscover[index].newsImage,
                               ),
                             );
                     },

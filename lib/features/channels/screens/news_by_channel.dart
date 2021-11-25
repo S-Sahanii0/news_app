@@ -65,11 +65,11 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
           }, builder: (context, state) {
             if (state is ChannelInitial || state is ChannelLoading)
               return const AppLoadingIndicator();
-            if (state is NewsByChannel) {
-              final newsList = state.newsList;
+            if (state is ChannelLoadSuccess) {
+              final newsList = state.news;
               return newsList.isEmpty
                   ? const Center(
-                      child: Text("No news of this category available"),
+                      child: Text("No news of this channel is available"),
                     )
                   : ListView.builder(
                       itemCount: newsList.length,

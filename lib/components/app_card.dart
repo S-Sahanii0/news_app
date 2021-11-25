@@ -81,7 +81,7 @@ class _AppCardState extends State<AppCard> {
                   widget.isSaved = !widget.isSaved!;
                 });
 
-                widget.onTapheart;
+                widget.onTapheart!();
               },
               child: Image(
                   image:

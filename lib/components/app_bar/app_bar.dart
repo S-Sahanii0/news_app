@@ -6,7 +6,9 @@ import '../../features/news_feed/screens/search_screen.dart';
 
 class CustomAppBar {
   AppBar primaryAppBar(
-      {required String pageTitle, required BuildContext context}) {
+      {required String pageTitle,
+      required BuildContext context,
+      required VoidCallback onPressSearch}) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
       title: Center(
@@ -18,9 +20,7 @@ class CustomAppBar {
       ),
       actions: [
         GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushNamed(SearchScreen.route);
-          },
+          onTap: onPressSearch,
           child: Icon(
             Icons.search_outlined,
             size: 20,
@@ -86,7 +86,9 @@ class CustomAppBar {
     );
   }
 
-  AppBar appBarSearch({required BuildContext context}) {
+  AppBar appBarSearch(
+      {required BuildContext context,
+      required void Function(String?) onChanged}) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
       leading: GestureDetector(
@@ -108,6 +110,7 @@ class CustomAppBar {
             child: FormBuilderTextField(
               name: "search",
               textAlign: TextAlign.center,
+              onChanged: onChanged,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                   isDense: true,
