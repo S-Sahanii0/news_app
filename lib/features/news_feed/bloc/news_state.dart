@@ -13,8 +13,9 @@ class NewsLoading extends NewsState {}
 
 class NewsLoadingSuccess extends NewsState {
   final List<News> newsList;
+  final bool hasReachedMax;
 
-  const NewsLoadingSuccess({required this.newsList});
+  const NewsLoadingSuccess({required this.newsList, this.hasReachedMax = false});
 
   @override
   List<Object> get props => [newsList];

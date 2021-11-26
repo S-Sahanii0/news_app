@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/app/cubit/navigation_cubit.dart';
+import 'package:news_app/app/cubit/navigation/navigation_cubit.dart';
 import 'package:news_app/features/categories/screens/category_screen.dart';
 import 'package:news_app/features/channels/screens/channels_screen.dart';
 import 'package:news_app/features/news_feed/screens/discover_screen.dart';

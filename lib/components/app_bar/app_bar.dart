@@ -5,29 +5,42 @@ import '../../config/theme/theme.dart';
 import '../../features/news_feed/screens/search_screen.dart';
 
 class CustomAppBar {
-  AppBar primaryAppBar(
-      {required String pageTitle,
-      required BuildContext context,
-      required VoidCallback onPressSearch}) {
+  AppBar primaryAppBar({
+    required String pageTitle,
+    required BuildContext context,
+    required VoidCallback onPressSearch,
+    required VoidCallback onAscendingSort,
+    required VoidCallback onDescendingSort,
+    required VoidCallback onTrendingSort,
+    required VoidCallback onChannelFilter,
+    required VoidCallback onReadFilter,
+    required VoidCallback onUnreadFilter,
+  }) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
       title: Center(
         child: Text(
           pageTitle,
-          style:
-              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+          style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
         ),
       ),
       actions: [
         GestureDetector(
           onTap: onPressSearch,
-          child: Icon(
+          child: const Icon(
             Icons.search_outlined,
             size: 20,
             color: AppColors.darkBlueShade3,
           ),
         ),
-        AppPopUp(),
+        AppPopUp(
+          onAscending: onAscendingSort,
+          onDescending: onDescendingSort,
+          onTrending: onTrendingSort,
+          onChannel: onChannelFilter,
+          onRead: onReadFilter,
+          onUnread: onUnreadFilter,
+        ),
       ],
     );
   }
@@ -39,8 +52,7 @@ class CustomAppBar {
       title: Center(
         child: Text(
           pageTitle,
-          style:
-              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+          style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
         ),
       ),
       actions: [
@@ -48,7 +60,7 @@ class CustomAppBar {
           onTap: () {
             Navigator.of(context).pushNamed(SearchScreen.route);
           },
-          child: Padding(
+          child: const Padding(
             padding: EdgeInsets.symmetric(horizontal: 17),
             child: Icon(
               Icons.search_outlined,
@@ -61,16 +73,14 @@ class CustomAppBar {
     );
   }
 
-  AppBar appBarWithBack(
-      {required String pageTitle, required BuildContext context}) {
+  AppBar appBarWithBack({required String pageTitle, required BuildContext context}) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 80),
         child: Text(
           pageTitle,
-          style:
-              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+          style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
         ),
       ),
       leading: GestureDetector(
@@ -87,8 +97,7 @@ class CustomAppBar {
   }
 
   AppBar appBarSearch(
-      {required BuildContext context,
-      required void Function(String?) onChanged}) {
+      {required BuildContext context, required void Function(String?) onChanged}) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
       leading: GestureDetector(
@@ -105,8 +114,7 @@ class CustomAppBar {
         Flexible(
           flex: 3,
           child: Padding(
-            padding:
-                const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 15),
+            padding: const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 15),
             child: FormBuilderTextField(
               name: "search",
               textAlign: TextAlign.center,
@@ -114,16 +122,14 @@ class CustomAppBar {
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                   isDense: true,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   suffixIcon: const Icon(
                     Icons.search,
                     color: AppColors.greyShade2,
                     size: 20,
                   ),
                   hintText: "Search",
-                  hintStyle: AppStyle.lightText12
-                      .copyWith(color: AppColors.greyShade1)),
+                  hintStyle: AppStyle.lightText12.copyWith(color: AppColors.greyShade1)),
             ),
           ),
         ),

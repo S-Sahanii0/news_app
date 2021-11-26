@@ -89,7 +89,7 @@ class _SettingsState extends State<Settings> {
                       backgroundColor: Colors.transparent,
                       context: context,
                       builder: (contex) {
-                        return _LogoutBottomSheet(
+                        return LogoutBottomSheet(
                           authBloc: BlocProvider.of<AuthBloc>(context),
                         );
                       });
@@ -104,10 +104,9 @@ class _SettingsState extends State<Settings> {
   }
 }
 
-class _LogoutBottomSheet extends StatelessWidget {
+class LogoutBottomSheet extends StatelessWidget {
   final AuthBloc authBloc;
-  const _LogoutBottomSheet({Key? key, required this.authBloc})
-      : super(key: key);
+  const LogoutBottomSheet({Key? key, required this.authBloc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -124,8 +123,7 @@ class _LogoutBottomSheet extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 20.h),
             child: Text(
               'Are you sure you want to logout?',
-              style: AppStyle.semiBoldText16
-                  .copyWith(color: AppColors.darkBlueShade2),
+              style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
             ),
           ),
           Padding(
@@ -156,8 +154,7 @@ class _LogoutBottomSheet extends StatelessWidget {
 class _ChangePasswordBottomSheet extends StatelessWidget {
   final AuthBloc authBloc;
   final UserModel user;
-  const _ChangePasswordBottomSheet(
-      {Key? key, required this.authBloc, required this.user})
+  const _ChangePasswordBottomSheet({Key? key, required this.authBloc, required this.user})
       : super(key: key);
 
   @override
@@ -175,19 +172,22 @@ class _ChangePasswordBottomSheet extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 20.h),
             child: Text(
               'Change Password',
-              style: AppStyle.semiBoldText16
-                  .copyWith(color: AppColors.darkBlueShade2),
+              style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
             ),
           ),
           ChangePasswordForm(onSubmit: (val) {
             if (val.currentState!.validate()) {
               val.currentState!.save();
               var result = val.currentState!.value;
-              authBloc.add(ResetPasswordEvent(
-                  user: user,
-                  password: result['password'],
-                  confirmPassword: result['confirm']));
-              Navigator.of(context).pop();
+              authBloc.add(
+                ResetPasswordEvent(
+                    user: user,
+                    password: result['password'],
+                    confirmPassword: result['confirm']),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Password changed successfully"),
+              ));
             }
           }),
         ],

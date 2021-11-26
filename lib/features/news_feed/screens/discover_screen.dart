@@ -40,8 +40,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _scrollController.addListener(_onScroll);
     _currentUser = FirebaseAuth.instance.currentUser!;
     _authBloc = BlocProvider.of<AuthBloc>(context);
-    _newsBloc = BlocProvider.of<NewsBloc>(context)
-      ..add(GetFirstNewsListEvent());
+    _newsBloc = BlocProvider.of<NewsBloc>(context)..add(GetFirstNewsListEvent());
   }
 
   @override
@@ -53,18 +52,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           key: _key,
           resizeToAvoidBottomInset: true,
           appBar: CustomAppBar().primaryAppBar(
-              pageTitle: "Discover",
-              context: context,
-              onPressSearch: () => Navigator.of(context)
-                  .pushNamed(SearchScreen.route, arguments: userData)),
+            pageTitle: "Discover",
+            context: context,
+            onPressSearch: () =>
+                Navigator.of(context).pushNamed(SearchScreen.route, arguments: userData),
+            onAscendingSort: () {},
+            onDescendingSort: () {},
+            onTrendingSort: () {},
+            onChannelFilter: () {},
+            onReadFilter: () {},
+            onUnreadFilter: () {},
+          ),
           body: BlocBuilder<AuthBloc, AuthState>(
             buildWhen: (prevState, curState) {
               return curState is NewsInitial;
             },
             builder: (context, authState) {
               var userData = (_authBloc.state as AuthSuccess).currentUser;
-              return BlocBuilder<NewsBloc, NewsState>(
-                  buildWhen: (current, prev) {
+              return BlocBuilder<NewsBloc, NewsState>(buildWhen: (current, prev) {
                 return current != prev;
               }, builder: (context, state) {
                 if (state is NewsInitial || state is NewsLoading)
@@ -80,20 +85,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           ? const AppLoadingIndicator()
                           : GestureDetector(
                               onTap: () {
-                                Navigator.of(context).pushNamed(
-                                    SingleNewsScreen.route,
+                                Navigator.of(context).pushNamed(SingleNewsScreen.route,
                                     arguments: [index, newListDiscover]);
                               },
                               child: NewsDetailCard(
-                                channelName:
-                                    newListDiscover[index].channel.channel,
+                                channelName: newListDiscover[index].channel.channel,
                                 newsDescription: newListDiscover[index].content,
                                 newsTime: newListDiscover[index].date,
-                                numberOfLikes:
-                                    newListDiscover[index].likes.toString(),
-                                numberOfComments: state
-                                    .newsList[index].comment!.length
-                                    .toString(),
+                                numberOfLikes: newListDiscover[index].likes.toString(),
+                                numberOfComments:
+                                    state.newsList[index].comment!.length.toString(),
                                 onTapHeart: () {
                                   if (userData.history!
                                       .contains(newListDiscover[index])) {
@@ -105,16 +106,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                         newsModel: newListDiscover[index],
                                         user: userData));
                                     _newsBloc.add(LikeNewsEvent(
-                                        likedNews: newListDiscover[index]
-                                            .copyWith(
-                                                likes: newListDiscover[index]
-                                                        .likes! +
-                                                    1)));
+                                        likedNews: newListDiscover[index].copyWith(
+                                            likes: newListDiscover[index].likes! + 1)));
                                   }
                                 },
                                 onTapComment: () {
-                                  Navigator.of(context).pushNamed(
-                                      CommentScreen.route,
+                                  Navigator.of(context).pushNamed(CommentScreen.route,
                                       arguments: newListDiscover[index]);
                                 },
                                 onTapBookmark: () {
@@ -134,12 +131,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                       'check out this ${state.newsList[index].url}');
                                 },
                                 onTapMenu: () {},
-                                isBookmark: userData.bookmarks!.any(
-                                    (e) => newListDiscover[index].id == e.id),
-                                isHeart: userData.history!.any(
-                                    (e) => newListDiscover[index].id == e.id),
-                                channelImage:
-                                    newListDiscover[index].channel.channelImage,
+                                isBookmark: userData.bookmarks!
+                                    .any((e) => newListDiscover[index].id == e.id),
+                                isHeart: userData.history!
+                                    .any((e) => newListDiscover[index].id == e.id),
+                                channelImage: newListDiscover[index].channel.channelImage,
                                 imageUrl: newListDiscover[index].newsImage,
                               ),
                             );

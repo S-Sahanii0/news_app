@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/app/cubit/navigation_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/app/cubit/navigation/navigation_cubit.dart';
+import 'package:news_app/features/auth/bloc/auth_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:news_app/features/profile/tabs/settings_tab.dart';
 import 'package:provider/src/provider.dart';
 import '../config/theme/theme.dart';
 
@@ -109,12 +113,30 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
               Spacer(),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 child: Row(children: [
                   Icon(Icons.close),
                   Spacer(),
-                  Text("Login/SignUp", style: AppStyle.regularText14)
+                  InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                            useRootNavigator: false,
+                            isDismissible: true,
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10.r),
+                              topRight: Radius.circular(10.r),
+                            )),
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (contex) {
+                              return LogoutBottomSheet(
+                                authBloc: BlocProvider.of<AuthBloc>(context),
+                              );
+                            });
+                      },
+                      child: Text("Logout", style: AppStyle.regularText14))
                 ]),
               ),
             ],

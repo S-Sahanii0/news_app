@@ -42,3 +42,8 @@ class AddCommentEvent extends NewsEvent {
 
   const AddCommentEvent({required this.comment, required this.news});
 }
+
+class SortNewsEvent extends NewsEvent {
+  const SortNewsEvent({required this.isAscending});
+  final bool isAscending;
+}

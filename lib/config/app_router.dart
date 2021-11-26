@@ -4,7 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:news_app/app/cubit/navigation_cubit.dart';
+import 'package:news_app/app/cubit/navigation/navigation_cubit.dart';
+import 'package:news_app/app/cubit/network/network_cubit.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/auth/services/auth_service.dart';
 import 'package:news_app/features/categories/bloc/category_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:news_app/features/categories/services/category_service.dart';
 import 'package:news_app/features/channels/bloc/channel_bloc.dart';
 import 'package:news_app/features/channels/screens/news_by_channel.dart';
 import 'package:news_app/features/channels/services/channel_service.dart';
+import 'package:news_app/features/news_feed/bloc/filter/cubit/filter_cubit.dart';
 import 'package:news_app/features/news_feed/bloc/search/search_cubit.dart';
 import 'package:news_app/features/news_feed/bloc/tts/tts_cubit.dart';
 import 'package:news_app/features/news_feed/services/news_service.dart';
@@ -46,6 +48,7 @@ final _channelService = ChannelService(newsService: _newsService);
 //Bloc Instances
 final _authBloc = AuthBloc(authService: _authService);
 final _newsBloc = NewsBloc(newsService: _newsService);
+final _filerBloc = FilterCubit(newsBloc: _newsBloc);
 final _categoryBloc =
     CategoryBloc(catgoryService: _categoryService, newsService: _newsService);
 final _channelBloc = ChannelBloc(channelService: _channelService);
@@ -84,6 +87,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           providers: [
             BlocProvider.value(value: _authBloc),
             BlocProvider.value(value: _newsBloc),
+            BlocProvider.value(value: _filerBloc),
           ],
           child: MyFeedScreen(),
         ),
@@ -227,6 +231,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                   BlocProvider.value(value: _newsBloc),
                   BlocProvider.value(value: _categoryBloc),
                   BlocProvider.value(value: _channelBloc),
+                  BlocProvider.value(value: _filerBloc),
+                  BlocProvider.value(value: NetworkCubit()),
                   BlocProvider(create: (_) => NavigationCubit()),
                 ],
                 child: BaseScreen(),
