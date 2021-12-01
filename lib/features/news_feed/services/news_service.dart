@@ -81,8 +81,11 @@ class NewsService {
 
   Future<News> updateLike(String newsId) async {
     await news.doc(newsId).update({"likes": FieldValue.increment(1)});
-    print((await news.doc(newsId).get()).data());
-    print(await getNewsModel([newsId]));
+    return News.fromMap((await getNewsModel([newsId])).first);
+  }
+
+  Future<News> unlikeNews(String newsId) async {
+    await news.doc(newsId).update({"likes": FieldValue.increment(-1)});
     return News.fromMap((await getNewsModel([newsId])).first);
   }
 

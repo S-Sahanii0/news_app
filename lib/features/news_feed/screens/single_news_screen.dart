@@ -11,6 +11,7 @@ import '../../../config/theme/app_icons.dart';
 import '../../../config/theme/theme.dart';
 import '../model/news_model.dart';
 import '../widgets/news_detail_bottom_sheet.dart';
+import 'comments_screen.dart';
 
 class SingleNewsScreen extends StatefulWidget {
   const SingleNewsScreen(
@@ -157,7 +158,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                                       AppColors.darkBlueShade2),
                                         ),
                                       ),
-                                      Spacer(
+                                      const Spacer(
                                         flex: 6,
                                       ),
                                       Text(
@@ -168,7 +169,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                     ],
                                   ),
                                 ),
-                                Divider(
+                                const Divider(
                                   thickness: 2,
                                 ),
                                 Flexible(
@@ -220,7 +221,16 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                         width: 4.w,
                                       ),
                                       InkWell(
-                                          onTap: () {},
+                                          onTap: () {
+                                            Navigator.of(context).pushNamed(
+                                                CommentScreen.route,
+                                                arguments: (newsState
+                                                        as NewsLoadingSuccess)
+                                                    .newsList
+                                                    .where((element) =>
+                                                        element.id == _news.id)
+                                                    .first);
+                                          },
                                           child: const Image(
                                               image: AppIcons.comment)),
                                       Padding(

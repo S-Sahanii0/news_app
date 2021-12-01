@@ -4,11 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
-import 'package:news_app/features/categories/bloc/category_bloc.dart';
-import 'package:news_app/features/categories/services/category_service.dart';
-import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
-import 'package:news_app/features/news_feed/model/news_model.dart';
-import 'package:news_app/features/news_feed/services/news_service.dart';
+
+import '../../news_feed/model/news_model.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 
@@ -32,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AddToHistory>(_handleAddToHistory);
     on<RemoveFromHistory>(_handleRemoveFromHistory);
     on<AddChosenCategoryEvent>(_handleChosenCatgoryEvent);
+    on<RemoveChosenCategoryEvent>(_handleRemoveChosenCatgoryEvent);
     on<ResetPasswordEvent>(_handleResetPasswordEvent);
   }
 
@@ -67,16 +65,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthFailure(errorMessage: "Email already in use"));
       }
       if (e.code == 'network-request-failed') {
-        emit(AuthFailure(errorMessage: "Please check your internet connection."));
+        emit(AuthFailure(
+            errorMessage: "Please check your internet connection."));
       }
     }
   }
 
-  _handleChosenCatgoryEvent(AddChosenCategoryEvent event, Emitter<AuthState> emit) async {
-    // emit(AuthLoading());
+  _handleChosenCatgoryEvent(
+      AddChosenCategoryEvent event, Emitter<AuthState> emit) async {
     try {
-      final result =
-          await authService.addChosenCategory(event.categoryList, event.user.id!);
+      await authService.addChosenCategory(event.categoryList, event.user.id!);
       emit(AuthSuccess(
           currentUser: event.user.copyWith(
               chosenCategories: event.user.chosenCategories!
@@ -87,33 +85,50 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  _handleAddToBookmark(AddToBookMarkEvent event, Emitter<AuthState> emit) async {
+  _handleRemoveChosenCatgoryEvent(
+      RemoveChosenCategoryEvent event, Emitter<AuthState> emit) async {
+    try {
+      await authService.removeChosenCategory(event.category, event.user.id!);
+      emit(AuthSuccess(
+          currentUser: event.user.copyWith(
+              chosenCategories: event.user.chosenCategories!
+                ..remove(event.category))));
+    } catch (e, stk) {
+      log('Exception', error: e, stackTrace: stk);
+      emit(AuthFailure(errorMessage: e.toString()));
+    }
+  }
+
+  _handleAddToBookmark(
+      AddToBookMarkEvent event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
     try {
-      final result =
-          await authService.addToBookmarks(event.newsToBookmark, event.user.id!);
+      final result = await authService.addToBookmarks(
+          event.newsToBookmark, event.user.id!);
       emit(AuthSuccess(
-          currentUser: event.user
-              .copyWith(bookmarks: event.user.bookmarks!..add(event.newsToBookmark))));
+          currentUser: event.user.copyWith(
+              bookmarks: event.user.bookmarks!..add(event.newsToBookmark))));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
-  _handleRemoveFromBookMark(RemoveBookMarkEvent event, Emitter<AuthState> emit) async {
+  _handleRemoveFromBookMark(
+      RemoveBookMarkEvent event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
     try {
-      final result =
-          await authService.addToBookmarks(event.newsToBookmark, event.user.id!);
+      final result = await authService.addToBookmarks(
+          event.newsToBookmark, event.user.id!);
       emit(AuthSuccess(
-          currentUser: event.user
-              .copyWith(bookmarks: event.user.bookmarks!..remove(event.newsToBookmark))));
+          currentUser: event.user.copyWith(
+              bookmarks: event.user.bookmarks!..remove(event.newsToBookmark))));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
-  _handleResetPasswordEvent(ResetPasswordEvent event, Emitter<AuthState> emit) async {
+  _handleResetPasswordEvent(
+      ResetPasswordEvent event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
     try {
       if (event.confirmPassword == event.password) {
@@ -127,24 +142,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   _handleAddToHistory(AddToHistory event, Emitter<AuthState> emit) async {
     try {
-      final result = await authService.addToHistory(event.newsModel, event.user.id!);
+      final result =
+          await authService.addToHistory(event.newsModel, event.user.id!);
       // add(LoginEvent(user: event.user));
       emit(AuthSuccess(
-          currentUser:
-              event.user.copyWith(bookmarks: event.user.history!..add(event.newsModel))));
+          currentUser: event.user
+              .copyWith(bookmarks: event.user.history!..add(event.newsModel))));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
-  _handleRemoveFromHistory(RemoveFromHistory event, Emitter<AuthState> emit) async {
+  _handleRemoveFromHistory(
+      RemoveFromHistory event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
     try {
-      final result = await authService.removeFromHistory(event.newsModel, event.user.id!);
+      final result =
+          await authService.removeFromHistory(event.newsModel, event.user.id!);
       // add(LoginEvent(user: event.user));
       emit(AuthSuccess(
-          currentUser: event.user
-              .copyWith(bookmarks: event.user.history!..remove(event.newsModel))));
+          currentUser: event.user.copyWith(
+              bookmarks: event.user.history!..remove(event.newsModel))));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
@@ -193,7 +211,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthFailure(errorMessage: "Please Check your network connection"));
       }
       if (e.code == "user-not-found") {
-        emit(AuthFailure(errorMessage: "No account with given email address exists"));
+        emit(AuthFailure(
+            errorMessage: "No account with given email address exists"));
       }
       if (e.code == "wrong-password") {
         emit(AuthFailure(errorMessage: "Incorrect credentials were provided"));

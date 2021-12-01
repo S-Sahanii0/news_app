@@ -1,53 +1,111 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/features/news_feed/model/news_model.dart';
+import 'package:news_app/components/app_loading.dart';
+import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
+import 'package:news_app/features/news_feed/screens/comments_screen.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../../auth/bloc/auth_bloc.dart';
-import '../../auth/services/auth_service.dart';
-import '../../news_feed/screens/my_feed.dart';
-import '../../news_feed/services/news_service.dart';
+import '../../news_feed/model/news_model.dart';
 import '../../news_feed/widgets/news_detail_card.dart';
 
 class BookmarkTab extends StatefulWidget {
-  final List<News> bookmarkList;
-  const BookmarkTab({Key? key, required this.bookmarkList}) : super(key: key);
+  const BookmarkTab({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<BookmarkTab> createState() => _BookmarkTabState();
 }
 
 class _BookmarkTabState extends State<BookmarkTab> {
+  late final AuthBloc _authBloc;
+  late final NewsBloc _newsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    _newsBloc = BlocProvider.of<NewsBloc>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    var bookmarks = widget.bookmarkList;
-    return bookmarks.isEmpty
-        ? const Center(
-            child: Text("You dont have any bookmarks"),
-          )
-        : ListView.builder(
-            itemCount: bookmarks.length,
-            itemBuilder: (BuildContext context, int index) {
-              return NewsDetailCard(
-                channelName: bookmarks[index].channel.channel,
-                newsDescription: bookmarks[index].content,
-                newsTime: bookmarks[index].date,
-                numberOfLikes: 10.toString(),
-                numberOfComments: 10.toString(),
-                onTapHeart: () {},
-                onTapComment: () {},
-                onTapBookmark: () {},
-                onTapShare: () {
-                  Share.share('check out this ${bookmarks[index].url}');
-                },
-                isBookmark: true,
-                onTapMenu: () {},
-                channelImage: bookmarks[index].channel.channelImage,
-                imageUrl: bookmarks[index].newsImage,
-              );
-            },
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        if (state is AuthInitial || state is AuthLoading) {
+          return const AppLoadingIndicator();
+        }
+        if (state is AuthSuccess) {
+          final bookmarks = state.currentUser.bookmarks;
+          return bookmarks!.isEmpty
+              ? const Center(
+                  child: Text("You dont have any bookmarks"),
+                )
+              : ListView.builder(
+                  itemCount: bookmarks.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return NewsDetailCard(
+                      channelName: bookmarks[index].channel.channel,
+                      newsDescription: bookmarks[index].content,
+                      newsTime: bookmarks[index].date,
+                      numberOfLikes: bookmarks[index].likes.toString(),
+                      numberOfComments:
+                          bookmarks[index].comment!.length.toString(),
+                      onTapHeart: () {
+                        if (state.currentUser.history!
+                            .contains(bookmarks[index])) {
+                          _authBloc.add(RemoveFromHistory(
+                              newsModel: bookmarks[index],
+                              user: state.currentUser));
+                          _newsBloc.add(UnlikeNewsEvent(
+                              unlikedNews: bookmarks[index].copyWith(
+                                  likes: bookmarks[index].likes! - 1)));
+                        } else {
+                          _authBloc.add(AddToHistory(
+                              newsModel: bookmarks[index],
+                              user: state.currentUser));
+                          _newsBloc.add(LikeNewsEvent(
+                              likedNews: bookmarks[index].copyWith(
+                                  likes: bookmarks[index].likes! + 1)));
+                        }
+                      },
+                      onTapComment: () {
+                        Navigator.of(context).pushNamed(CommentScreen.route,
+                            arguments: bookmarks[index]);
+                      },
+                      onTapBookmark: () {
+                        if (state.currentUser.bookmarks!
+                            .contains(bookmarks[index])) {
+                          _authBloc.add(RemoveBookMarkEvent(
+                              newsToBookmark: bookmarks[index],
+                              user: state.currentUser));
+                        } else {
+                          _authBloc.add(AddToBookMarkEvent(
+                              newsToBookmark: bookmarks[index],
+                              user: state.currentUser));
+                        }
+                      },
+                      onTapShare: () {
+                        Share.share('check out this ${bookmarks[index].url}');
+                      },
+                      isBookmark: state.currentUser.bookmarks!
+                          .any((element) => element.id == bookmarks[index].id),
+                      isHeart: state.currentUser.history!
+                          .any((element) => element.id == bookmarks[index].id),
+                      onTapMenu: () {},
+                      channelImage: bookmarks[index].channel.channelImage,
+                      imageUrl: bookmarks[index].newsImage,
+                    );
+                  },
+                );
+        } else {
+          return Center(
+            child: Text("Oops something went wrong"),
           );
+        }
+      },
+    );
   }
 }

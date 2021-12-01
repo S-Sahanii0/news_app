@@ -22,8 +22,8 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       emit(NewsLoading());
 
       try {
-        await for (var news
-            in newsService.getFirstNewsList(event.user?.chosenCategories ?? [])) {
+        await for (var news in newsService
+            .getFirstNewsList(event.user?.chosenCategories ?? [])) {
           _newsList = List.from(news);
           emit(NewsLoadingSuccess(newsList: _newsList));
         }
@@ -38,7 +38,8 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         // emit(NewsLoading());
         await for (var news in await newsService.getNextNewsList()) {
           _newsList = List.from(news);
-          emit(NewsLoadingSuccess(newsList: _newsList, hasReachedMax: _newsList.isEmpty));
+          emit(NewsLoadingSuccess(
+              newsList: _newsList, hasReachedMax: _newsList.isEmpty));
         }
       } catch (e) {
         emit(NewsLoadingFailure());
@@ -48,10 +49,27 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       final currentState = (state as NewsLoadingSuccess).newsList;
 
       try {
-        print(_newsList.length);
         final updatedNews = await newsService.updateLike(event.likedNews.id!);
         final updatedList = List<News>.from(currentState
-            .map((element) => element.id == event.likedNews.id ? updatedNews : element)
+            .map((element) =>
+                element.id == event.likedNews.id ? event.likedNews : element)
+            .toList());
+        emit(NewsLoadingSuccess(newsList: updatedList));
+      } catch (e, stk) {
+        log(e.toString(), stackTrace: stk);
+        emit(NewsLoadingFailure());
+      }
+    });
+
+    on<UnlikeNewsEvent>((event, emit) async {
+      final currentState = (state as NewsLoadingSuccess).newsList;
+
+      try {
+        final updatedNews = await newsService.unlikeNews(event.unlikedNews.id!);
+        final updatedList = List<News>.from(currentState
+            .map((element) => element.id == event.unlikedNews.id
+                ? event.unlikedNews
+                : element)
             .toList());
         emit(NewsLoadingSuccess(newsList: updatedList));
       } catch (e, stk) {
@@ -81,8 +99,9 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       emit(NewsLoading());
       try {
         final listByDate = List<News>.from(currentState)
-          ..sort((a, b) =>
-              event.isAscending ? a.date.compareTo(b.date) : b.date.compareTo(a.date));
+          ..sort((a, b) => event.isAscending
+              ? a.date.compareTo(b.date)
+              : b.date.compareTo(a.date));
         emit(NewsLoadingSuccess(newsList: listByDate));
       } catch (e, stk) {
         log(e.toString(), stackTrace: stk);

@@ -43,7 +43,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
       child: Scaffold(
         key: _key,
         appBar: CustomAppBar()
-            .primaryAppBarNoFilter(pageTitle: "Channel", context: context),
+            .appBarWithBack(pageTitle: "Channel", context: context),
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),
@@ -78,10 +78,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
                               onTap: () {
                                 Navigator.of(context).pushNamed(
                                     NewsByChannelScreen.route,
-                                    arguments: [
-                                      userData,
-                                      state.otherChannels[index].channel
-                                    ]);
+                                    arguments:
+                                        state.otherChannels[index].channel);
                               },
                               child: AppCard(
                                 cardText: state.otherChannels[index].channel,

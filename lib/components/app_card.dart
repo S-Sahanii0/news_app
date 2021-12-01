@@ -11,6 +11,8 @@ class AppCard extends StatefulWidget {
   }) : super(key: key) {
     canBeSaved = true;
     hasNumber = false;
+    canBeRemoved = false;
+    hasArrow = true;
   }
   AppCard.hasNumber(
       {Key? key,
@@ -20,6 +22,19 @@ class AppCard extends StatefulWidget {
       : super(key: key) {
     canBeSaved = false;
     hasNumber = true;
+    canBeRemoved = false;
+    hasArrow = true;
+  }
+
+  AppCard.hasRemoveButton({
+    Key? key,
+    required this.cardText,
+    required this.onTapRemove,
+  }) : super(key: key) {
+    canBeSaved = false;
+    hasNumber = false;
+    canBeRemoved = true;
+    hasArrow = false;
   }
   AppCard({
     Key? key,
@@ -28,14 +43,19 @@ class AppCard extends StatefulWidget {
   }) : super(key: key) {
     canBeSaved = false;
     hasNumber = false;
+    canBeRemoved = false;
+    hasArrow = true;
   }
 
   final String cardText;
   bool? canBeSaved;
   bool? isSaved;
   bool? hasNumber;
+  bool? canBeRemoved;
   int? number;
-  final VoidCallback onTap;
+  bool? hasArrow;
+  VoidCallback? onTap;
+  VoidCallback? onTapRemove;
   VoidCallback? onTapheart;
 
   @override
@@ -74,6 +94,11 @@ class _AppCardState extends State<AppCard> {
                     .copyWith(color: AppColors.darkBlueShade1),
               ),
             ),
+          if (widget.canBeRemoved!)
+            GestureDetector(
+                onTap: () => widget.onTapRemove!(),
+                child:
+                    const Icon(Icons.remove_circle_outline_rounded, size: 24)),
           if (widget.canBeSaved!)
             GestureDetector(
               onTap: () {
@@ -87,14 +112,15 @@ class _AppCardState extends State<AppCard> {
                   image:
                       widget.isSaved! ? AppIcons.heartTapped : AppIcons.heart),
             ),
-          GestureDetector(
-            onTap: widget.onTap,
-            child: const Icon(
-              Icons.chevron_right_outlined,
-              color: AppColors.darkBlueShade2,
-              size: 24,
+          if (widget.hasArrow!)
+            GestureDetector(
+              onTap: widget.onTap,
+              child: const Icon(
+                Icons.chevron_right_outlined,
+                color: AppColors.darkBlueShade2,
+                size: 24,
+              ),
             ),
-          ),
         ],
       ),
     );

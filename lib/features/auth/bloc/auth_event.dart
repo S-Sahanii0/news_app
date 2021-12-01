@@ -34,6 +34,13 @@ class AddChosenCategoryEvent extends AuthEvent {
   AddChosenCategoryEvent({required this.categoryList, required this.user});
 }
 
+class RemoveChosenCategoryEvent extends AuthEvent {
+  final String category;
+  final UserModel user;
+
+  RemoveChosenCategoryEvent({required this.category, required this.user});
+}
+
 class AddToHistory extends AuthEvent {
   final News newsModel;
   final UserModel user;

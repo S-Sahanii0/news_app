@@ -140,9 +140,6 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
               return const Center(child: Text("Error fetching news."));
             }
           }),
-          floatingActionButton: AppFloatingActionButton(
-            scaffoldKey: _key,
-          ),
           drawer: const AppDrawer()),
     );
   }

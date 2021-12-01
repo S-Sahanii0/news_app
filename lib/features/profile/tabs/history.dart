@@ -1,54 +1,111 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/features/news_feed/model/news_model.dart';
+import 'package:news_app/components/app_loading.dart';
+import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
+import 'package:news_app/features/news_feed/screens/comments_screen.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../../auth/bloc/auth_bloc.dart';
-import '../../auth/services/auth_service.dart';
-import '../../news_feed/screens/my_feed.dart';
-import '../../news_feed/services/news_service.dart';
+import '../../news_feed/model/news_model.dart';
 import '../../news_feed/widgets/news_detail_card.dart';
 
 class History extends StatefulWidget {
-  final List<News> historyList;
-  const History({Key? key, required this.historyList}) : super(key: key);
+  const History({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<History> createState() => _HistoryState();
 }
 
 class _HistoryState extends State<History> {
+  late final AuthBloc _authBloc;
+  late final NewsBloc _newsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    _newsBloc = BlocProvider.of<NewsBloc>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final historyList = widget.historyList;
-    return historyList.isEmpty
-        ? const Center(
-            child: Text("You dont liked news"),
-          )
-        : ListView.builder(
-            itemCount: historyList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return NewsDetailCard(
-                channelName: historyList[index].channel.channel,
-                newsDescription: historyList[index].content,
-                newsTime: historyList[index].date,
-                numberOfLikes: 10.toString(),
-                numberOfComments: 10.toString(),
-                onTapHeart: () {},
-                onTapComment: () {},
-                onTapBookmark: () {},
-                onTapShare: () {
-                  Share.share('check out this ${historyList[index].url}');
-                },
-                isBookmark: false,
-                isHeart: true,
-                onTapMenu: () {},
-                channelImage: historyList[index].channel.channelImage,
-                imageUrl: historyList[index].newsImage,
-              );
-            },
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        if (state is AuthInitial || state is AuthLoading) {
+          return const AppLoadingIndicator();
+        }
+        if (state is AuthSuccess) {
+          final history = state.currentUser.history;
+          return history!.isEmpty
+              ? const Center(
+                  child: Text("You dont have any history"),
+                )
+              : ListView.builder(
+                  itemCount: history.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return NewsDetailCard(
+                      channelName: history[index].channel.channel,
+                      newsDescription: history[index].content,
+                      newsTime: history[index].date,
+                      numberOfLikes: history[index].likes.toString(),
+                      numberOfComments:
+                          history[index].comment!.length.toString(),
+                      onTapHeart: () {
+                        if (state.currentUser.history!
+                            .contains(history[index])) {
+                          _authBloc.add(RemoveFromHistory(
+                              newsModel: history[index],
+                              user: state.currentUser));
+                          _newsBloc.add(UnlikeNewsEvent(
+                              unlikedNews: history[index]
+                                  .copyWith(likes: history[index].likes! - 1)));
+                        } else {
+                          _authBloc.add(AddToHistory(
+                              newsModel: history[index],
+                              user: state.currentUser));
+                          _newsBloc.add(LikeNewsEvent(
+                              likedNews: history[index]
+                                  .copyWith(likes: history[index].likes! + 1)));
+                        }
+                      },
+                      onTapComment: () {
+                        Navigator.of(context).pushNamed(CommentScreen.route,
+                            arguments: history[index]);
+                      },
+                      onTapBookmark: () {
+                        if (state.currentUser.history!
+                            .contains(history[index])) {
+                          _authBloc.add(RemoveBookMarkEvent(
+                              newsToBookmark: history[index],
+                              user: state.currentUser));
+                        } else {
+                          _authBloc.add(AddToBookMarkEvent(
+                              newsToBookmark: history[index],
+                              user: state.currentUser));
+                        }
+                      },
+                      onTapShare: () {
+                        Share.share('check out this ${history[index].url}');
+                      },
+                      isBookmark: state.currentUser.bookmarks!
+                          .any((element) => element.id == history[index].id),
+                      isHeart: state.currentUser.history!
+                          .any((element) => element.id == history[index].id),
+                      onTapMenu: () {},
+                      channelImage: history[index].channel.channelImage,
+                      imageUrl: history[index].newsImage,
+                    );
+                  },
+                );
+        } else {
+          return Center(
+            child: Text("Oops something went wrong"),
           );
+        }
+      },
+    );
   }
 }

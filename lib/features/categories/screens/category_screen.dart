@@ -48,7 +48,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
       child: Scaffold(
         key: _key,
         appBar: CustomAppBar()
-            .primaryAppBarNoFilter(pageTitle: "Category", context: context),
+            .appBarWithBack(pageTitle: "Category", context: context),
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),

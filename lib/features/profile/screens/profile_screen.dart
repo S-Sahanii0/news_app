@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../components/app_drawer.dart';
 import '../../../components/app_floating_button.dart';
 import '../../../config/theme/theme.dart';
 import '../../auth/bloc/auth_bloc.dart';
-import '../../news_feed/screens/my_feed.dart';
 import '../tabs/bookmark_tab.dart';
 import '../tabs/history.dart';
 import '../tabs/settings_tab.dart';
@@ -55,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ColoredBox(
                     color: AppColors.appWhite,
                     child: TabBar(
-                      padding: EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       overlayColor:
                           MaterialStateProperty.all(AppColors.appWhite),
                       controller: _tabController,
@@ -71,18 +69,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Expanded(
                     child: TabBarView(
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       children: [
                         BlocProvider.value(
                           value: BlocProvider.of<AuthBloc>(context),
                           child: Settings(user: userData),
                         ),
-                        BookmarkTab(
-                          bookmarkList: userData.bookmarks ?? [],
-                        ),
-                        History(
-                          historyList: userData.history ?? [],
-                        ),
+                        const BookmarkTab(),
+                        const History(),
                       ],
                     ),
                   ),

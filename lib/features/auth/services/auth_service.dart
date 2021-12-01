@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:news_app/features/news_feed/model/news_model.dart';
 import '../models/user_model.dart';
 // import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -166,6 +165,16 @@ class AuthService {
       List<String> categoryList, String uid) async {
     await (users.doc(uid).update(
       {'chosenCategory': FieldValue.arrayUnion(categoryList)},
+    ));
+    return getCurrentUser(uid);
+  }
+
+  Future<Stream<Future<UserModel>>> removeChosenCategory(
+      String categoryList, String uid) async {
+    await (users.doc(uid).update(
+      {
+        'chosenCategory': FieldValue.arrayRemove([categoryList])
+      },
     ));
     return getCurrentUser(uid);
   }

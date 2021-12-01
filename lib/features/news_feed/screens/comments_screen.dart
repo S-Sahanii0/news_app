@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:news_app/features/auth/bloc/auth_bloc.dart';
+import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/model/comment_model.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_form_field.dart';
@@ -24,15 +27,17 @@ class CommentScreen extends StatefulWidget {
 }
 
 class _CommentScreenState extends State<CommentScreen> {
-  bool isHeart = false;
-  bool isBookmark = false;
-
+  late final AuthBloc _authBloc;
+  late final UserModel userData;
+  late final NewsBloc _newsBloc;
   late final User _currentUser;
 
   @override
   void initState() {
-    // TODO: implement initState
     _currentUser = FirebaseAuth.instance.currentUser!;
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    _newsBloc = BlocProvider.of<NewsBloc>(context);
+    userData = (_authBloc.state as AuthSuccess).currentUser;
     super.initState();
   }
 
@@ -46,31 +51,50 @@ class _CommentScreenState extends State<CommentScreen> {
           child: BlocBuilder<NewsBloc, NewsState>(
             bloc: BlocProvider.of<NewsBloc>(context),
             builder: (context, state) {
+              final currentNews = (state as NewsLoadingSuccess)
+                  .newsList
+                  .where((element) => element.id == widget.newsModel.id)
+                  .first;
               return Column(
                 children: [
                   NewsDetailCard(
                     channelName: widget.newsModel.channel.channel,
                     newsDescription: widget.newsModel.content,
                     newsTime: widget.newsModel.date,
-                    numberOfLikes: widget.newsModel.likes.toString(),
-                    numberOfComments: "100",
+                    numberOfLikes: currentNews.likes.toString(),
+                    numberOfComments: currentNews.comment!.length.toString(),
                     commentTapped: true,
-                    isHeart: isHeart,
-                    isBookmark: isBookmark,
+                    isHeart:
+                        userData.history!.any((e) => currentNews.id == e.id),
+                    isBookmark:
+                        userData.bookmarks!.any((e) => currentNews.id == e.id),
                     onTapHeart: () {
-                      setState(() {
-                        isHeart = !isHeart;
-                      });
+                      if (userData.history!.contains(widget.newsModel)) {
+                        _authBloc.add(RemoveFromHistory(
+                            newsModel: widget.newsModel, user: userData));
+                      } else {
+                        _authBloc.add(AddToHistory(
+                            newsModel: widget.newsModel, user: userData));
+                        _newsBloc.add(LikeNewsEvent(
+                            likedNews: currentNews.copyWith(
+                                likes: currentNews.likes! + 1)));
+                      }
                     },
                     onTapComment: () {},
                     onTapBookmark: () {
-                      setState(() {
-                        isBookmark = !isBookmark;
-                      });
+                      if (userData.bookmarks!.contains(currentNews)) {
+                        _authBloc.add(RemoveBookMarkEvent(
+                            newsToBookmark: currentNews, user: userData));
+                      } else {
+                        _authBloc.add(AddToBookMarkEvent(
+                            newsToBookmark: currentNews, user: userData));
+                      }
                     },
-                    onTapShare: () {},
+                    onTapShare: () {
+                      Share.share('check out this ${widget.newsModel.url}');
+                    },
                     onTapMenu: () {},
-                    channelImage: '',
+                    channelImage: widget.newsModel.channel.channelImage,
                     imageUrl: widget.newsModel.newsImage,
                   ),
                   Divider(
@@ -85,25 +109,32 @@ class _CommentScreenState extends State<CommentScreen> {
                           fieldName: "comment",
                           hintText: "Add your comment",
                           suffixIcon: Icons.send,
+                          validators: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(context,
+                                errorText: ("You cant comment empty"))
+                          ]),
                           onTap: () {
-                            CommentScreen._formKey.currentState!.save();
-                            final result =
-                                CommentScreen._formKey.currentState!.value;
-                            BlocProvider.of<NewsBloc>(context).add(
-                                AddCommentEvent(
-                                    comment: CommentModel.fromMap({
-                                      "userId": _currentUser.uid,
-                                      "comment": result['comment']
-                                    }),
-                                    news: widget.newsModel.copyWith(
-                                        comment: widget.newsModel.comment!
-                                          ..add(
-                                            CommentModel.fromMap({
-                                              "userId": _currentUser.uid,
-                                              "comment": result['comment']
-                                            }),
-                                          ))));
-                            CommentScreen._formKey.currentState!.reset();
+                            if (CommentScreen._formKey.currentState!
+                                .validate()) {
+                              CommentScreen._formKey.currentState!.save();
+                              final result =
+                                  CommentScreen._formKey.currentState!.value;
+                              BlocProvider.of<NewsBloc>(context).add(
+                                  AddCommentEvent(
+                                      comment: CommentModel.fromMap({
+                                        "userId": _currentUser.uid,
+                                        "comment": result['comment']
+                                      }),
+                                      news: widget.newsModel.copyWith(
+                                          comment: widget.newsModel.comment!
+                                            ..add(
+                                              CommentModel.fromMap({
+                                                "userId": _currentUser.uid,
+                                                "comment": result['comment']
+                                              }),
+                                            ))));
+                              CommentScreen._formKey.currentState!.reset();
+                            }
                           },
                           textInputAction: TextInputAction.done),
                     ),

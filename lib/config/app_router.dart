@@ -9,6 +9,7 @@ import 'package:news_app/app/cubit/network/network_cubit.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/auth/services/auth_service.dart';
 import 'package:news_app/features/categories/bloc/category_bloc.dart';
+import 'package:news_app/features/categories/screens/follwing_category_screen.dart';
 import 'package:news_app/features/categories/screens/news_by_category.dart';
 import 'package:news_app/features/categories/services/category_service.dart';
 import 'package:news_app/features/channels/bloc/channel_bloc.dart';
@@ -77,7 +78,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) => BlocProvider.value(
                 value: _authBloc,
-                child: LoginScreen(),
+                child: const LoginScreen(),
+              ));
+    case FollowingCategoryScreen.route:
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _authBloc,
+                child: const FollowingCategoryScreen(),
               ));
 
     case MyFeedScreen.route:
@@ -138,7 +145,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ));
     case NewsByChannelScreen.route:
       return MaterialPageRoute(builder: (context) {
-        final args = settings.arguments as List;
+        final args = settings.arguments as String;
         return BlocProvider.value(
           value: _categoryBloc,
           child: MultiBlocProvider(
@@ -154,8 +161,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ),
             ],
             child: NewsByChannelScreen(
-              userData: args.first as UserModel,
-              channelName: args[1],
+              channelName: args,
             ),
           ),
         );
@@ -195,14 +201,28 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ));
     case ProfileScreen.route:
       return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _authBloc,
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(
+                    value: _authBloc,
+                  ),
+                  BlocProvider.value(
+                    value: _newsBloc,
+                  ),
+                ],
                 child: const ProfileScreen(),
               ));
     case CommentScreen.route:
       return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: _newsBloc,
+          builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(
+                    value: _newsBloc,
+                  ),
+                  BlocProvider.value(
+                    value: _authBloc,
+                  ),
+                ],
                 child: CommentScreen(
                   newsModel: settings.arguments as News,
                 ),

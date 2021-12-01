@@ -59,9 +59,10 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
           appBar: CustomAppBar().primaryAppBar(
             pageTitle: "My Feed",
             context: context,
-            onPressSearch: () =>
-                Navigator.of(context).pushNamed(SearchScreen.route, arguments: userData),
-            onAscendingSort: () => _newsBloc.add(const SortNewsEvent(isAscending: true)),
+            onPressSearch: () => Navigator.of(context)
+                .pushNamed(SearchScreen.route, arguments: userData),
+            onAscendingSort: () =>
+                _newsBloc.add(const SortNewsEvent(isAscending: true)),
             onDescendingSort: () =>
                 _newsBloc.add(const SortNewsEvent(isAscending: false)),
             onTrendingSort: () => ScaffoldMessenger.of(context).showSnackBar(
@@ -69,11 +70,13 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
             ),
             onUnreadFilter: () {
               final allNews = (_newsBloc.state as NewsLoadingSuccess).newsList;
-              _filterBloc.applyFilter(allNews, FilterType.unread, userData.history ?? []);
+              _filterBloc.applyFilter(
+                  allNews, FilterType.unread, userData.history ?? []);
             },
             onReadFilter: () {
               final allNews = (_newsBloc.state as NewsLoadingSuccess).newsList;
-              _filterBloc.applyFilter(allNews, FilterType.read, userData.history ?? []);
+              _filterBloc.applyFilter(
+                  allNews, FilterType.read, userData.history ?? []);
             },
             onChannelFilter: () {},
           ),
@@ -83,11 +86,14 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
             },
             builder: (context, authState) {
               var userData = (_authBloc.state as AuthSuccess).currentUser;
-              return BlocBuilder<FilterCubit, FilterState>(buildWhen: (current, prev) {
+              return BlocBuilder<FilterCubit, FilterState>(
+                  buildWhen: (current, prev) {
                 return current != prev;
               }, builder: (context, state) {
-                if (state is FilterInitailState || state is FilterLoadInProgress)
+                if (state is FilterInitailState ||
+                    state is FilterLoadInProgress) {
                   return const AppLoadingIndicator();
+                }
                 if (state is FilterLoadSuccess) {
                   return state.news.isEmpty
                       ? const Center(child: Text('Could not find any news.'))
@@ -103,28 +109,45 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                     onTap: () {
                                       Navigator.of(context).pushNamed(
                                           SingleNewsScreen.route,
-                                          arguments: [index, state.news, userData]);
+                                          arguments: [
+                                            index,
+                                            state.news,
+                                            userData
+                                          ]);
                                     },
                                     child: NewsDetailCard(
-                                      channelName: state.news[index].channel.channel,
-                                      newsDescription: state.news[index].content,
+                                      channelName:
+                                          state.news[index].channel.channel,
+                                      newsDescription:
+                                          state.news[index].content,
                                       newsTime: state.news[index].date,
-                                      numberOfLikes: state.news[index].likes.toString(),
-                                      numberOfComments:
-                                          state.news[index].comment!.length.toString(),
+                                      numberOfLikes:
+                                          state.news[index].likes.toString(),
+                                      numberOfComments: state
+                                          .news[index].comment!.length
+                                          .toString(),
                                       onTapHeart: () {
-                                        if (userData.history!
-                                            .contains(state.news[index])) {
+                                        if (userData.history!.any((e) =>
+                                            state.news[index].id == e.id)) {
                                           _authBloc.add(RemoveFromHistory(
                                               newsModel: state.news[index],
                                               user: userData));
+                                          _newsBloc.add(UnlikeNewsEvent(
+                                              unlikedNews: state.news[index]
+                                                  .copyWith(
+                                                      likes: state.news[index]
+                                                              .likes! -
+                                                          1)));
                                         } else {
                                           _authBloc.add(AddToHistory(
                                               newsModel: state.news[index],
                                               user: userData));
                                           _newsBloc.add(LikeNewsEvent(
-                                              likedNews: state.news[index].copyWith(
-                                                  likes: state.news[index].likes! + 1)));
+                                              likedNews: state.news[index]
+                                                  .copyWith(
+                                                      likes: state.news[index]
+                                                              .likes! +
+                                                          1)));
                                         }
                                       },
                                       onTapComment: () {
@@ -149,12 +172,12 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                             'check out this ${state.news[index].url}');
                                       },
                                       onTapMenu: () {},
-                                      isBookmark: userData.bookmarks!
-                                          .any((e) => state.news[index].id == e.id),
-                                      isHeart: userData.history!
-                                          .any((e) => state.news[index].id == e.id),
-                                      channelImage:
-                                          state.news[index].channel.channelImage,
+                                      isBookmark: userData.bookmarks!.any(
+                                          (e) => state.news[index].id == e.id),
+                                      isHeart: userData.history!.any(
+                                          (e) => state.news[index].id == e.id),
+                                      channelImage: state
+                                          .news[index].channel.channelImage,
                                       imageUrl: state.news[index].newsImage,
                                     ),
                                   );
