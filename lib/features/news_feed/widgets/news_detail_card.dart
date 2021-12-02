@@ -142,6 +142,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                           commentTapped: widget.commentTapped!,
                           numberOfLikes: widget.numberOfLikes,
                           numberOfComments: widget.numberOfComments,
+                          onTapMenu: widget.onTapMenu,
                         ),
                       )
                     ],
@@ -167,13 +168,15 @@ class _feedIconRow extends StatefulWidget {
       required this.isHeart,
       this.isBookmark = false,
       required this.numberOfLikes,
-      required this.numberOfComments})
+      required this.numberOfComments,
+      required this.onTapMenu})
       : super(key: key);
   final VoidCallback onTapHeart;
   final VoidCallback onTapBookmark;
   final VoidCallback onTapComment;
-  final VoidCallback onTapShare;
   final String numberOfLikes;
+  final VoidCallback onTapShare;
+  final VoidCallback onTapMenu;
   final String numberOfComments;
   bool commentTapped;
   bool isHeart;
@@ -257,7 +260,10 @@ class __feedIconRowState extends State<_feedIconRow> {
                   child: const Image(image: AppIcons.share)),
             ),
             InkWell(
-                onTap: () {}, child: const Image(image: AppIcons.hamburger)),
+                onTap: () {
+                  widget.onTapMenu;
+                },
+                child: const Image(image: AppIcons.hamburger)),
           ],
         ),
       ],

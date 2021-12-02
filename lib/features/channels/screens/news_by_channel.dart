@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import '../../../components/app_loading.dart';
 import '../bloc/channel_bloc.dart';
@@ -64,7 +65,15 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                       ? const Center(
                           child: Text("No news of this channel is available"),
                         )
-                      : ListView.builder(
+                      : ListView.separated(
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const ColoredBox(
+                                color: AppColors.appWhite,
+                                child: Divider(
+                                  thickness: 1.5,
+                                  height: 14,
+                                ));
+                          },
                           itemCount: newsList.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
@@ -73,65 +82,74 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                     SingleNewsScreen.route,
                                     arguments: newsList[index]);
                               },
-                              child: NewsDetailCard(
-                                channelName: newsList[index].channel.channel,
-                                newsDescription: newsList[index].content,
-                                newsTime: newsList[index].date,
-                                numberOfLikes:
-                                    newsList[index].likes!.toString(),
-                                numberOfComments:
-                                    newsList[index].comment!.length.toString(),
-                                onTapHeart: () {
-                                  if (userData.history!.any(
-                                      (e) => state.news[index].id == e.id)) {
-                                    _authBloc.add(RemoveFromHistory(
-                                        newsModel: newsList[index],
-                                        user: userData.copyWith(
-                                            history: userData.history!
-                                              ..remove(newsList[index].id))));
-                                    _channelBloc.add(UnlikeNewsChannelEvent(
-                                        unlikedNews: newsList[index].copyWith(
-                                            likes:
-                                                newsList[index].likes! - 1)));
-                                  } else {
-                                    _authBloc.add(AddToHistory(
-                                        newsModel: newsList[index],
-                                        user: userData));
-                                    _channelBloc.add(LikeNewsChannelEvent(
-                                        likedNews: newsList[index].copyWith(
-                                            likes:
-                                                newsList[index].likes! + 1)));
-                                  }
-                                },
-                                onTapComment: () {
+                              child: GestureDetector(
+                                onTap: () {
                                   Navigator.of(context).pushNamed(
-                                      CommentScreen.route,
-                                      arguments: newsList[index]);
+                                      SingleNewsScreen.route,
+                                      arguments: [index, newsList, userData]);
                                 },
-                                onTapBookmark: () {
-                                  if (userData.bookmarks!
-                                      .contains(newsList[index])) {
-                                    _authBloc.add(RemoveBookMarkEvent(
-                                        newsToBookmark: newsList[index],
-                                        user: userData));
-                                  } else {
-                                    _authBloc.add(AddToBookMarkEvent(
-                                        newsToBookmark: newsList[index],
-                                        user: userData));
-                                  }
-                                },
-                                onTapShare: () {
-                                  Share.share(
-                                      'check out this ${newsList[index].url}');
-                                },
-                                onTapMenu: () {},
-                                isBookmark: userData.bookmarks!
-                                    .any((e) => newsList[index].id == e.id),
-                                isHeart: userData.history!
-                                    .any((e) => newsList[index].id == e.id),
-                                channelImage:
-                                    newsList[index].channel.channelImage,
-                                imageUrl: newsList[index].newsImage,
+                                child: NewsDetailCard(
+                                  channelName: newsList[index].channel.channel,
+                                  newsDescription: newsList[index].content,
+                                  newsTime: newsList[index].date,
+                                  numberOfLikes:
+                                      newsList[index].likes!.toString(),
+                                  numberOfComments: newsList[index]
+                                      .comment!
+                                      .length
+                                      .toString(),
+                                  onTapHeart: () {
+                                    if (userData.history!.any(
+                                        (e) => state.news[index].id == e.id)) {
+                                      _authBloc.add(RemoveFromHistory(
+                                          newsModel: newsList[index],
+                                          user: userData.copyWith(
+                                              history: userData.history!
+                                                ..remove(newsList[index].id))));
+                                      _channelBloc.add(UnlikeNewsChannelEvent(
+                                          unlikedNews: newsList[index].copyWith(
+                                              likes:
+                                                  newsList[index].likes! - 1)));
+                                    } else {
+                                      _authBloc.add(AddToHistory(
+                                          newsModel: newsList[index],
+                                          user: userData));
+                                      _channelBloc.add(LikeNewsChannelEvent(
+                                          likedNews: newsList[index].copyWith(
+                                              likes:
+                                                  newsList[index].likes! + 1)));
+                                    }
+                                  },
+                                  onTapComment: () {
+                                    Navigator.of(context).pushNamed(
+                                        CommentScreen.route,
+                                        arguments: newsList[index]);
+                                  },
+                                  onTapBookmark: () {
+                                    if (userData.bookmarks!
+                                        .contains(newsList[index])) {
+                                      _authBloc.add(RemoveBookMarkEvent(
+                                          newsToBookmark: newsList[index],
+                                          user: userData));
+                                    } else {
+                                      _authBloc.add(AddToBookMarkEvent(
+                                          newsToBookmark: newsList[index],
+                                          user: userData));
+                                    }
+                                  },
+                                  onTapShare: () {
+                                    Share.share(
+                                        'check out this ${newsList[index].url}');
+                                  },
+                                  onTapMenu: () {},
+                                  isBookmark: userData.bookmarks!
+                                      .any((e) => newsList[index].id == e.id),
+                                  isHeart: userData.history!
+                                      .any((e) => newsList[index].id == e.id),
+                                  channelImage:
+                                      newsList[index].channel.channelImage,
+                                  imageUrl: newsList[index].newsImage,
+                                ),
                               ),
                             );
                           },

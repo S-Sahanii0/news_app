@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/components/app_loading.dart';
+import 'package:news_app/config/theme/app_colors.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/screens/comments_screen.dart';
+import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../auth/bloc/auth_bloc.dart';
@@ -43,60 +45,74 @@ class _BookmarkTabState extends State<BookmarkTab> {
               ? const Center(
                   child: Text("You dont have any bookmarks"),
                 )
-              : ListView.builder(
+              : ListView.separated(
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const ColoredBox(
+                        color: AppColors.appWhite,
+                        child: Divider(
+                          thickness: 1.5,
+                          height: 14,
+                        ));
+                  },
                   itemCount: bookmarks.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return NewsDetailCard(
-                      channelName: bookmarks[index].channel.channel,
-                      newsDescription: bookmarks[index].content,
-                      newsTime: bookmarks[index].date,
-                      numberOfLikes: bookmarks[index].likes.toString(),
-                      numberOfComments:
-                          bookmarks[index].comment!.length.toString(),
-                      onTapHeart: () {
-                        if (state.currentUser.history!
-                            .contains(bookmarks[index])) {
-                          _authBloc.add(RemoveFromHistory(
-                              newsModel: bookmarks[index],
-                              user: state.currentUser));
-                          _newsBloc.add(UnlikeNewsEvent(
-                              unlikedNews: bookmarks[index].copyWith(
-                                  likes: bookmarks[index].likes! - 1)));
-                        } else {
-                          _authBloc.add(AddToHistory(
-                              newsModel: bookmarks[index],
-                              user: state.currentUser));
-                          _newsBloc.add(LikeNewsEvent(
-                              likedNews: bookmarks[index].copyWith(
-                                  likes: bookmarks[index].likes! + 1)));
-                        }
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(SingleNewsScreen.route,
+                            arguments: [index, bookmarks, state.currentUser]);
                       },
-                      onTapComment: () {
-                        Navigator.of(context).pushNamed(CommentScreen.route,
-                            arguments: bookmarks[index]);
-                      },
-                      onTapBookmark: () {
-                        if (state.currentUser.bookmarks!
-                            .contains(bookmarks[index])) {
-                          _authBloc.add(RemoveBookMarkEvent(
-                              newsToBookmark: bookmarks[index],
-                              user: state.currentUser));
-                        } else {
-                          _authBloc.add(AddToBookMarkEvent(
-                              newsToBookmark: bookmarks[index],
-                              user: state.currentUser));
-                        }
-                      },
-                      onTapShare: () {
-                        Share.share('check out this ${bookmarks[index].url}');
-                      },
-                      isBookmark: state.currentUser.bookmarks!
-                          .any((element) => element.id == bookmarks[index].id),
-                      isHeart: state.currentUser.history!
-                          .any((element) => element.id == bookmarks[index].id),
-                      onTapMenu: () {},
-                      channelImage: bookmarks[index].channel.channelImage,
-                      imageUrl: bookmarks[index].newsImage,
+                      child: NewsDetailCard(
+                        channelName: bookmarks[index].channel.channel,
+                        newsDescription: bookmarks[index].content,
+                        newsTime: bookmarks[index].date,
+                        numberOfLikes: bookmarks[index].likes.toString(),
+                        numberOfComments:
+                            bookmarks[index].comment!.length.toString(),
+                        onTapHeart: () {
+                          if (state.currentUser.history!
+                              .contains(bookmarks[index])) {
+                            _authBloc.add(RemoveFromHistory(
+                                newsModel: bookmarks[index],
+                                user: state.currentUser));
+                            _newsBloc.add(UnlikeNewsEvent(
+                                unlikedNews: bookmarks[index].copyWith(
+                                    likes: bookmarks[index].likes! - 1)));
+                          } else {
+                            _authBloc.add(AddToHistory(
+                                newsModel: bookmarks[index],
+                                user: state.currentUser));
+                            _newsBloc.add(LikeNewsEvent(
+                                likedNews: bookmarks[index].copyWith(
+                                    likes: bookmarks[index].likes! + 1)));
+                          }
+                        },
+                        onTapComment: () {
+                          Navigator.of(context).pushNamed(CommentScreen.route,
+                              arguments: bookmarks[index]);
+                        },
+                        onTapBookmark: () {
+                          if (state.currentUser.bookmarks!
+                              .contains(bookmarks[index])) {
+                            _authBloc.add(RemoveBookMarkEvent(
+                                newsToBookmark: bookmarks[index],
+                                user: state.currentUser));
+                          } else {
+                            _authBloc.add(AddToBookMarkEvent(
+                                newsToBookmark: bookmarks[index],
+                                user: state.currentUser));
+                          }
+                        },
+                        onTapShare: () {
+                          Share.share('check out this ${bookmarks[index].url}');
+                        },
+                        isBookmark: state.currentUser.bookmarks!.any(
+                            (element) => element.id == bookmarks[index].id),
+                        isHeart: state.currentUser.history!.any(
+                            (element) => element.id == bookmarks[index].id),
+                        onTapMenu: () {},
+                        channelImage: bookmarks[index].channel.channelImage,
+                        imageUrl: bookmarks[index].newsImage,
+                      ),
                     );
                   },
                 );

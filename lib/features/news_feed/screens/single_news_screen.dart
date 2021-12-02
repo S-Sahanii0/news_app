@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
@@ -278,7 +277,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                   ),
                                 ),
                                 SizedBox(
-                                  height: isExpanded ? 50.h : 20.h,
+                                  height: isExpanded ? 80.h : 20.h,
                                 )
                               ],
                             ),

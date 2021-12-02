@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/components/app_loading.dart';
+import 'package:news_app/config/theme/app_colors.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/news_feed/bloc/filter/cubit/filter_cubit.dart';
 import 'package:news_app/features/news_feed/screens/search_screen.dart';
@@ -93,7 +94,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                 if (state is FilterLoadSuccess) {
                   return state.news.isEmpty
                       ? const Center(child: Text('Could not find any news.'))
-                      : ListView.builder(
+                      : ListView.separated(
                           controller: _scrollController,
                           itemCount: state.news.length + 1,
                           itemBuilder: (context, index) {
@@ -172,7 +173,15 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                         Share.share(
                                             'check out this ${state.news[index].url}');
                                       },
-                                      onTapMenu: () {},
+                                      onTapMenu: () {
+                                        Navigator.of(context).pushNamed(
+                                            SingleNewsScreen.route,
+                                            arguments: [
+                                              index,
+                                              state.news,
+                                              userData
+                                            ]);
+                                      },
                                       isBookmark: userData.bookmarks!.any(
                                           (e) => state.news[index].id == e.id),
                                       isHeart: userData.history!.any(
@@ -182,6 +191,14 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                       imageUrl: state.news[index].newsImage,
                                     ),
                                   );
+                          },
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const ColoredBox(
+                                color: AppColors.appWhite,
+                                child: Divider(
+                                  thickness: 1.5,
+                                  height: 14,
+                                ));
                           },
                         );
                 } else {

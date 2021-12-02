@@ -76,14 +76,22 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                   ? const Center(
                       child: Text("No news of this category available"),
                     )
-                  : ListView.builder(
+                  : ListView.separated(
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const ColoredBox(
+                            color: AppColors.appWhite,
+                            child: Divider(
+                              thickness: 1.5,
+                              height: 14,
+                            ));
+                      },
                       itemCount: newsList.length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
                             Navigator.of(context).pushNamed(
                                 SingleNewsScreen.route,
-                                arguments: newsList[index]);
+                                arguments: [index, newsList, userData]);
                           },
                           child: NewsDetailCard(
                             channelName: newsList[index].channel.channel,

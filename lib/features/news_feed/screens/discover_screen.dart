@@ -31,17 +31,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
-  late final User _currentUser;
   final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    _currentUser = FirebaseAuth.instance.currentUser!;
     _authBloc = BlocProvider.of<AuthBloc>(context);
     _newsBloc = BlocProvider.of<NewsBloc>(context)
-      ..add(GetFirstNewsListEvent());
+      ..add(const GetFirstNewsListEvent());
   }
 
   @override
@@ -88,7 +86,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               onTap: () {
                                 Navigator.of(context).pushNamed(
                                     SingleNewsScreen.route,
-                                    arguments: [index, newListDiscover]);
+                                    arguments: [
+                                      index,
+                                      newListDiscover,
+                                      userData
+                                    ]);
                               },
                               child: NewsDetailCard(
                                 channelName:
@@ -145,7 +147,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                   Share.share(
                                       'check out this ${state.newsList[index].url}');
                                 },
-                                onTapMenu: () {},
+                                onTapMenu: () {
+                                  Navigator.of(context).pushNamed(
+                                      SingleNewsScreen.route,
+                                      arguments: [
+                                        index,
+                                        newListDiscover,
+                                        userData
+                                      ]);
+                                },
                                 isBookmark: userData.bookmarks!.any(
                                     (e) => newListDiscover[index].id == e.id),
                                 isHeart: userData.history!.any(
@@ -179,7 +189,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   void _onScroll() {
-    if (_isBottom) _newsBloc.add(GetNextNewsListEvent());
+    if (_isBottom) _newsBloc.add(const GetNextNewsListEvent());
   }
 
   bool get _isBottom {
