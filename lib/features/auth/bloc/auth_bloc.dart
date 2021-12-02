@@ -91,7 +91,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authService.removeChosenCategory(event.category, event.user.id!);
       emit(AuthSuccess(
           currentUser: event.user.copyWith(
-              chosenCategories: event.user.chosenCategories!
+              chosenCategories: List.from(event.user.chosenCategories!)
                 ..remove(event.category))));
     } catch (e, stk) {
       log('Exception', error: e, stackTrace: stk);
@@ -145,9 +145,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final result =
           await authService.addToHistory(event.newsModel, event.user.id!);
       // add(LoginEvent(user: event.user));
-      emit(AuthSuccess(
-          currentUser: event.user
-              .copyWith(bookmarks: event.user.history!..add(event.newsModel))));
+      emit(AuthSuccess(currentUser: event.user));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
@@ -160,9 +158,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final result =
           await authService.removeFromHistory(event.newsModel, event.user.id!);
       // add(LoginEvent(user: event.user));
-      emit(AuthSuccess(
-          currentUser: event.user.copyWith(
-              bookmarks: event.user.history!..remove(event.newsModel))));
+      emit(AuthSuccess(currentUser: event.user));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }

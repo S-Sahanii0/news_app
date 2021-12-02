@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/features/auth/models/user_model.dart';
 import '../../../components/app_loading.dart';
 import '../bloc/channel_bloc.dart';
 import '../../news_feed/bloc/news_bloc.dart';
@@ -30,29 +31,28 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
   late final ChannelBloc _channelBloc;
-  late final User _currentUser;
+  late final UserModel userData;
 
   @override
   void initState() {
     super.initState();
     _channelBloc = BlocProvider.of<ChannelBloc>(context)
       ..add(GetNewsByChannelEvent(channelName: widget.channelName));
-    _currentUser = FirebaseAuth.instance.currentUser!;
     _authBloc = BlocProvider.of<AuthBloc>(context);
     _newsBloc = BlocProvider.of<NewsBloc>(context);
+    userData = (_authBloc.state as AuthSuccess).currentUser;
   }
 
   @override
   Widget build(BuildContext context) {
-    var userData = (_authBloc.state as AuthSuccess).currentUser;
     return SafeArea(
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
           appBar: CustomAppBar()
               .appBarWithBack(pageTitle: "Interest", context: context),
-          body: BlocBuilder<NewsBloc, NewsState>(
-            builder: (context, newsState) {
+          body: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, authState) {
               return BlocBuilder<ChannelBloc, ChannelState>(
                   builder: (context, state) {
                 if (state is ChannelInitial || state is ChannelLoading) {
@@ -67,7 +67,6 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                       : ListView.builder(
                           itemCount: newsList.length,
                           itemBuilder: (context, index) {
-                            print(newsList[index]);
                             return GestureDetector(
                               onTap: () {
                                 Navigator.of(context).pushNamed(
@@ -87,8 +86,10 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                       (e) => state.news[index].id == e.id)) {
                                     _authBloc.add(RemoveFromHistory(
                                         newsModel: newsList[index],
-                                        user: userData));
-                                    _newsBloc.add(UnlikeNewsEvent(
+                                        user: userData.copyWith(
+                                            history: userData.history!
+                                              ..remove(newsList[index].id))));
+                                    _channelBloc.add(UnlikeNewsChannelEvent(
                                         unlikedNews: newsList[index].copyWith(
                                             likes:
                                                 newsList[index].likes! - 1)));
@@ -96,7 +97,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                     _authBloc.add(AddToHistory(
                                         newsModel: newsList[index],
                                         user: userData));
-                                    _newsBloc.add(LikeNewsEvent(
+                                    _channelBloc.add(LikeNewsChannelEvent(
                                         likedNews: newsList[index].copyWith(
                                             likes:
                                                 newsList[index].likes! + 1)));
@@ -126,7 +127,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                 onTapMenu: () {},
                                 isBookmark: userData.bookmarks!
                                     .any((e) => newsList[index].id == e.id),
-                                isHeart: userData.bookmarks!
+                                isHeart: userData.history!
                                     .any((e) => newsList[index].id == e.id),
                                 channelImage:
                                     newsList[index].channel.channelImage,

@@ -15,3 +15,26 @@ class GetNewsByChannelEvent extends ChannelEvent {
   });
   final String channelName;
 }
+
+class LikeNewsChannelEvent extends ChannelEvent {
+  final News likedNews;
+
+  const LikeNewsChannelEvent({
+    required this.likedNews,
+  });
+}
+
+class UnlikeNewsChannelEvent extends ChannelEvent {
+  final News unlikedNews;
+
+  const UnlikeNewsChannelEvent({
+    required this.unlikedNews,
+  });
+}
+
+class AddCommentChannelEvent extends ChannelEvent {
+  final CommentModel comment;
+  final News news;
+
+  const AddCommentChannelEvent({required this.comment, required this.news});
+}

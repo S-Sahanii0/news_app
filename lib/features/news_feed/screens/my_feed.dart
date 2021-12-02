@@ -1,21 +1,17 @@
 import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_loading.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/news_feed/bloc/filter/cubit/filter_cubit.dart';
-import 'package:news_app/features/news_feed/bloc/search/search_cubit.dart';
 import 'package:news_app/features/news_feed/screens/search_screen.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
 import '../../../components/app_floating_button.dart';
-import '../../../config/theme/app_colors.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../bloc/news_bloc.dart';
 import '../widgets/news_detail_card.dart';
@@ -131,7 +127,10 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                             state.news[index].id == e.id)) {
                                           _authBloc.add(RemoveFromHistory(
                                               newsModel: state.news[index],
-                                              user: userData));
+                                              user: userData.copyWith(
+                                                  history: userData.history!
+                                                    ..remove(
+                                                        state.news[index]))));
                                           _newsBloc.add(UnlikeNewsEvent(
                                               unlikedNews: state.news[index]
                                                   .copyWith(
@@ -141,7 +140,9 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                         } else {
                                           _authBloc.add(AddToHistory(
                                               newsModel: state.news[index],
-                                              user: userData));
+                                              user: userData.copyWith(
+                                                  history: userData.history!
+                                                    ..add(state.news[index]))));
                                           _newsBloc.add(LikeNewsEvent(
                                               likedNews: state.news[index]
                                                   .copyWith(

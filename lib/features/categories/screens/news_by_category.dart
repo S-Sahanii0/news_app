@@ -37,19 +37,18 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   late final NewsBloc _newsBloc;
-
   late final CategoryBloc _categoryBloc;
   late final AuthBloc _authBloc;
-  late final User _currentUser;
+  late final UserModel userData;
 
   @override
   void initState() {
     super.initState();
     _categoryBloc = BlocProvider.of<CategoryBloc>(context)
       ..add(GetNewsByCategory(category: widget.category));
-    _currentUser = FirebaseAuth.instance.currentUser!;
     _newsBloc = BlocProvider.of<NewsBloc>(context);
     _authBloc = BlocProvider.of<AuthBloc>(context);
+    userData = (_authBloc.state as AuthSuccess).currentUser;
   }
 
   @override
@@ -90,18 +89,29 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                             channelName: newsList[index].channel.channel,
                             newsDescription: newsList[index].content,
                             newsTime: newsList[index].date,
-                            numberOfLikes: "100",
-                            numberOfComments: "100",
+                            numberOfLikes: newsList[index].likes!.toString(),
+                            numberOfComments:
+                                newsList[index].comment!.length.toString(),
                             onTapHeart: () {
-                              if (widget.userData.history!
-                                  .contains(newsList[index])) {
+                              if (userData.history!
+                                  .any((e) => newsList[index].id == e.id)) {
                                 _authBloc.add(RemoveFromHistory(
                                     newsModel: newsList[index],
-                                    user: widget.userData));
+                                    user: userData.copyWith(
+                                        history: userData.history!
+                                          ..remove(newsList[index].id))));
+                                _categoryBloc.add(UnlikeNewsCategoryEvent(
+                                    unlikedNews: newsList[index].copyWith(
+                                        likes: newsList[index].likes! - 1),
+                                    category: widget.category));
                               } else {
                                 _authBloc.add(AddToHistory(
                                     newsModel: newsList[index],
-                                    user: widget.userData));
+                                    user: userData));
+                                _categoryBloc.add(LikeNewsCategoryEvent(
+                                    likedNews: newsList[index].copyWith(
+                                        likes: newsList[index].likes! + 1),
+                                    category: widget.category));
                               }
                             },
                             onTapComment: () {
@@ -126,10 +136,10 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                                   'check out this ${newsList[index].url}');
                             },
                             onTapMenu: () {},
-                            isBookmark: widget.userData.bookmarks!
-                                .contains(newsList[index]),
-                            isHeart: widget.userData.history!
-                                .contains(newsList[index]),
+                            isBookmark: userData.bookmarks!
+                                .any((e) => newsList[index].id == e.id),
+                            isHeart: userData.history!
+                                .any((e) => newsList[index].id == e.id),
                             channelImage: newsList[index].channel.channelImage,
                             imageUrl: newsList[index].newsImage,
                           ),

@@ -97,7 +97,7 @@ class NewsService {
 
   Stream<List<News>> getFirstNewsList(List<String> userCategories) {
     var tempList = <News>[];
-    return news.limit(20).snapshots().map((event) {
+    return news.limit(100).snapshots().map((event) {
       tempList.addAll(event.docs.map((e) {
         final newsData = e.data() as Map<String, dynamic>;
         return News.fromMap({
@@ -134,7 +134,7 @@ class NewsService {
         .get();
     return news
         .startAfterDocument(prevDocument.docs.first)
-        .limit(20)
+        .limit(100)
         .snapshots()
         .map((event) {
       newsList.addAll(event.docs.map((e) {

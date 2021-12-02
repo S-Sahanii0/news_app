@@ -21,7 +21,8 @@ class CustomAppBar {
       title: Center(
         child: Text(
           pageTitle,
-          style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+          style:
+              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
         ),
       ),
       actions: [
@@ -52,7 +53,8 @@ class CustomAppBar {
       title: Center(
         child: Text(
           pageTitle,
-          style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+          style:
+              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
         ),
       ),
       actions: [
@@ -73,14 +75,16 @@ class CustomAppBar {
     );
   }
 
-  AppBar appBarWithBack({required String pageTitle, required BuildContext context}) {
+  AppBar appBarWithBack(
+      {required String pageTitle, required BuildContext context}) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 80),
         child: Text(
           pageTitle,
-          style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+          style:
+              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
         ),
       ),
       leading: GestureDetector(
@@ -96,8 +100,24 @@ class CustomAppBar {
     );
   }
 
+  AppBar appBarWithNoBack(
+      {required String pageTitle, required BuildContext context}) {
+    return AppBar(
+      backgroundColor: AppColors.appWhite,
+      title: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 80),
+        child: Text(
+          pageTitle,
+          style:
+              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+        ),
+      ),
+    );
+  }
+
   AppBar appBarSearch(
-      {required BuildContext context, required void Function(String?) onChanged}) {
+      {required BuildContext context,
+      required void Function(String?) onChanged}) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
       leading: GestureDetector(
@@ -114,7 +134,8 @@ class CustomAppBar {
         Flexible(
           flex: 3,
           child: Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 15),
+            padding:
+                const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 15),
             child: FormBuilderTextField(
               name: "search",
               textAlign: TextAlign.center,
@@ -122,14 +143,16 @@ class CustomAppBar {
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                   isDense: true,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   suffixIcon: const Icon(
                     Icons.search,
                     color: AppColors.greyShade2,
                     size: 20,
                   ),
                   hintText: "Search",
-                  hintStyle: AppStyle.lightText12.copyWith(color: AppColors.greyShade1)),
+                  hintStyle: AppStyle.lightText12
+                      .copyWith(color: AppColors.greyShade1)),
             ),
           ),
         ),

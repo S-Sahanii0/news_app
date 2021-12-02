@@ -52,7 +52,8 @@ final _newsBloc = NewsBloc(newsService: _newsService);
 final _filerBloc = FilterCubit(newsBloc: _newsBloc);
 final _categoryBloc =
     CategoryBloc(catgoryService: _categoryService, newsService: _newsService);
-final _channelBloc = ChannelBloc(channelService: _channelService);
+final _channelBloc =
+    ChannelBloc(channelService: _channelService, newsService: _newsService);
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -150,15 +151,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           value: _categoryBloc,
           child: MultiBlocProvider(
             providers: [
-              BlocProvider.value(
-                value: _channelBloc,
-              ),
-              BlocProvider.value(
-                value: _newsBloc,
-              ),
-              BlocProvider.value(
-                value: _authBloc,
-              ),
+              BlocProvider.value(value: _channelBloc),
+              BlocProvider.value(value: _authBloc),
+              BlocProvider.value(value: _newsBloc),
+              BlocProvider.value(value: _filerBloc),
             ],
             child: NewsByChannelScreen(
               channelName: args,

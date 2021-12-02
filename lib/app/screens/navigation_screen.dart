@@ -12,29 +12,31 @@ class NavigationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<NavigationCubit, NavigationState>(
-        builder: (context, state) {
-          if (state is MyFeedState) {
-            return const MyFeedScreen();
-          }
-          if (state is ChannelsState) {
-            return const ChannelScreen();
-          }
-          if (state is DiscoverState) {
-            return const DiscoverScreen();
-          }
-          if (state is CategoryState) {
-            return const CategoryScreen();
-          }
-          if (state is ProfileState) {
-            return const ProfileScreen();
-          } else {
-            return const Center(
-              child: Text('Screens Holder'),
-            );
-          }
-        },
+    return SafeArea(
+      child: Scaffold(
+        body: BlocBuilder<NavigationCubit, NavigationState>(
+          builder: (context, state) {
+            if (state is MyFeedState) {
+              return const MyFeedScreen();
+            }
+            if (state is ChannelsState) {
+              return const ChannelScreen();
+            }
+            if (state is DiscoverState) {
+              return const DiscoverScreen();
+            }
+            if (state is CategoryState) {
+              return const CategoryScreen();
+            }
+            if (state is ProfileState) {
+              return const ProfileScreen();
+            } else {
+              return const Center(
+                child: Text('Screens Holder'),
+              );
+            }
+          },
+        ),
       ),
     );
   }

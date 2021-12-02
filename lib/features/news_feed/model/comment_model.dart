@@ -1,34 +1,34 @@
 import 'dart:convert';
 
 class CommentModel {
-  final String userId;
+  final String? username;
   final String comment;
   CommentModel({
-    required this.userId,
+    required this.username,
     required this.comment,
   });
 
   CommentModel copyWith({
-    String? userId,
+    String? username,
     String? comment,
   }) {
     return CommentModel(
-      userId: userId ?? this.userId,
+      username: username ?? this.username,
       comment: comment ?? this.comment,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'userId': userId,
+      'username': username,
       'comment': comment,
     };
   }
 
   factory CommentModel.fromMap(Map<String, dynamic> map) {
     return CommentModel(
-      userId: map['userId'],
-      comment: map['comment'],
+      username: map['username'] == null ? "" : map['username'],
+      comment: map['comment'] == null ? "" : map['comment'],
     );
   }
 
@@ -38,17 +38,17 @@ class CommentModel {
       CommentModel.fromMap(json.decode(source));
 
   @override
-  String toString() => 'CommentModel(userId: $userId, comment: $comment)';
+  String toString() => 'CommentModel(username: $username, comment: $comment)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
     return other is CommentModel &&
-        other.userId == userId &&
+        other.username == username &&
         other.comment == comment;
   }
 
   @override
-  int get hashCode => userId.hashCode ^ comment.hashCode;
+  int get hashCode => username.hashCode ^ comment.hashCode;
 }

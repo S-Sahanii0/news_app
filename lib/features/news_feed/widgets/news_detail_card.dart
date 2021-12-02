@@ -186,8 +186,7 @@ class _feedIconRow extends StatefulWidget {
 class __feedIconRowState extends State<_feedIconRow> {
   @override
   void initState() {
-    // TODO: implement initState
-    widget.isHeart = widget.isHeart == null ? false : widget.isHeart;
+    super.initState();
   }
 
   @override
@@ -201,8 +200,8 @@ class __feedIconRowState extends State<_feedIconRow> {
           onTap: () {
             setState(() {
               widget.isHeart = !widget.isHeart;
-              widget.onTapHeart();
             });
+            widget.onTapHeart();
           },
           child: Image(
               image: widget.isHeart ? AppIcons.heartTapped : AppIcons.heart),

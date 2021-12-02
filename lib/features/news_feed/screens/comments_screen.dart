@@ -122,14 +122,14 @@ class _CommentScreenState extends State<CommentScreen> {
                               BlocProvider.of<NewsBloc>(context).add(
                                   AddCommentEvent(
                                       comment: CommentModel.fromMap({
-                                        "userId": _currentUser.uid,
+                                        "username": userData.username,
                                         "comment": result['comment']
                                       }),
                                       news: widget.newsModel.copyWith(
                                           comment: widget.newsModel.comment!
                                             ..add(
                                               CommentModel.fromMap({
-                                                "userId": _currentUser.uid,
+                                                "username": userData.username,
                                                 "comment": result['comment']
                                               }),
                                             ))));
@@ -147,7 +147,7 @@ class _CommentScreenState extends State<CommentScreen> {
                         final comment =
                             widget.newsModel.comment!.reversed.toList();
                         return CommentCard(
-                            commentor: comment[index].userId,
+                            commentor: comment[index].username ?? '',
                             noOfLikes: 1,
                             commentText: comment[index].comment,
                             onTapHeart: () {});

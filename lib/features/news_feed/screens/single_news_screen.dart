@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
@@ -33,15 +34,32 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
   late final TtsCubit _ttsCubit;
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
-  late final UserModel userData;
+  bool isExpanded = false;
 
   @override
   void initState() {
-    _newsBloc = BlocProvider.of<NewsBloc>(context);
-    _ttsCubit = context.read<TtsCubit>()..init(widget.currentNewsIndex);
-    _authBloc = BlocProvider.of<AuthBloc>(context);
-    userData = (_authBloc.state as AuthSuccess).currentUser;
     super.initState();
+    _newsBloc = BlocProvider.of<NewsBloc>(context);
+    _ttsCubit = context.read<TtsCubit>();
+    if (_ttsCubit.state.shouldAutoPlay) {
+      _ttsCubit.handlePlay(widget.newsList[widget.currentNewsIndex].content);
+    }
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _ttsCubit.state.pageController.jumpToPage(widget.currentNewsIndex);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('didUpdateWidget');
+  }
+
+  @override
+  void didUpdateWidget(covariant SingleNewsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('didUpdateWidget');
   }
 
   @override
@@ -60,12 +78,17 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
             builder: (context, authState) {
               return BlocBuilder<TtsCubit, TtsState>(
                 builder: (context, state) {
+                  final _shouldPlay = _ttsCubit.state.shouldAutoPlay;
+
+                  print('new state : ${state.hashCode}');
                   return PageView.builder(
+                      onPageChanged: (_) {
+                        if (!_shouldPlay) _ttsCubit.stop();
+                      },
                       controller: state.pageController,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
                         final _news = news[index];
-                        final _shouldPlay = _ttsCubit.state.shouldAutoPlay;
                         if (_shouldPlay) _ttsCubit.handlePlay(_news.content);
                         return Scaffold(
                           appBar: CustomAppBar()
@@ -79,7 +102,11 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                           body: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 15),
-                            child: Column(
+                            child: ListView(
+                              shrinkWrap: true,
+                              physics: isExpanded
+                                  ? ScrollPhysics()
+                                  : const NeverScrollableScrollPhysics(),
                               children: [
                                 Row(
                                   children: [
@@ -139,8 +166,9 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                   _news.content,
                                   style: AppStyle.regularText18.copyWith(
                                       color: AppColors.darkBlueShade1),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 4,
+                                  overflow:
+                                      isExpanded ? null : TextOverflow.ellipsis,
+                                  maxLines: isExpanded ? null : 4,
                                 ),
                                 Padding(
                                   padding:
@@ -148,10 +176,13 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                   child: Row(
                                     children: [
                                       InkWell(
-                                        // todo add cofig for iOS
-                                        onTap: () => launch(_news.url),
+                                        onTap: () => setState(() {
+                                          isExpanded = !isExpanded;
+                                        }),
                                         child: Text(
-                                          "Read more",
+                                          isExpanded
+                                              ? "Read less"
+                                              : "Read more",
                                           style: AppStyle.semiBoldText12
                                               .copyWith(
                                                   color:
@@ -247,7 +278,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                   ),
                                 ),
                                 SizedBox(
-                                  height: 20.h,
+                                  height: isExpanded ? 50.h : 20.h,
                                 )
                               ],
                             ),
