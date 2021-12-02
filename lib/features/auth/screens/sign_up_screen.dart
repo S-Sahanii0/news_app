@@ -63,7 +63,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               resizeToAvoidBottomInset: true,
               appBar: AppBar(
                 elevation: 0,
-                backgroundColor: AppColors.appWhite,
+                backgroundColor: Colors.transparent,
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pop();
@@ -74,13 +74,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     size: 20,
                   ),
                 ),
+                actions: [
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: GestureDetector(
+                        onTap: () {
+                          BlocProvider.of<AuthBloc>(context)
+                              .add(AnonLoginEvent());
+                        },
+                        child: Text(
+                          'Skip',
+                          style: AppStyle.mediumText16
+                              .copyWith(color: AppColors.yellowShade1),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               body: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
-                      height: 100.h,
+                      height: 30.h,
                     ),
                     Text("Get only what you want",
                         style: AppStyle.semiBoldText16
@@ -143,7 +161,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed(LoginScreen.route);
+                        Navigator.of(context).pop();
                       },
                       child: RichText(
                         text: TextSpan(

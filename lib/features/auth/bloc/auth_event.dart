@@ -63,6 +63,8 @@ class LoginEvent extends AuthEvent {
 
 class LogoutEvent extends AuthEvent {}
 
+class AnonLoginEvent extends AuthEvent {}
+
 class LoginSuccess extends AuthEvent {
   final User user;
 

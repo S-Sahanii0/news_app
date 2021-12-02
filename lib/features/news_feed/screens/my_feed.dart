@@ -32,7 +32,7 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
   late final NewsBloc _newsBloc;
   late final FilterCubit _filterBloc;
   late final AuthBloc _authBloc;
-  late final UserModel userData;
+  late final UserModel? userData;
   final _scrollController = ScrollController();
 
   @override
@@ -51,79 +51,91 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
     log(_authBloc.state.toString());
     return SafeArea(
       child: Scaffold(
-          key: _key,
-          resizeToAvoidBottomInset: true,
-          appBar: CustomAppBar().primaryAppBar(
-            pageTitle: "My Feed",
-            context: context,
-            onPressSearch: () => Navigator.of(context)
-                .pushNamed(SearchScreen.route, arguments: userData),
-            onAscendingSort: () =>
-                _newsBloc.add(const SortNewsEvent(isAscending: true)),
-            onDescendingSort: () =>
-                _newsBloc.add(const SortNewsEvent(isAscending: false)),
-            onTrendingSort: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No trending news at the moment.')),
-            ),
-            onUnreadFilter: () {
-              final allNews = (_newsBloc.state as NewsLoadingSuccess).newsList;
-              _filterBloc.applyFilter(
-                  allNews, FilterType.unread, userData.history ?? []);
-            },
-            onReadFilter: () {
-              final allNews = (_newsBloc.state as NewsLoadingSuccess).newsList;
-              _filterBloc.applyFilter(
-                  allNews, FilterType.read, userData.history ?? []);
-            },
-            onChannelFilter: () {},
+        key: _key,
+        resizeToAvoidBottomInset: true,
+        appBar: CustomAppBar().primaryAppBar(
+          pageTitle: "My Feed",
+          context: context,
+          onPressSearch: () => Navigator.of(context)
+              .pushNamed(SearchScreen.route, arguments: userData),
+          onAscendingSort: () =>
+              _newsBloc.add(const SortNewsEvent(isAscending: true)),
+          onDescendingSort: () =>
+              _newsBloc.add(const SortNewsEvent(isAscending: false)),
+          onTrendingSort: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No trending news at the moment.')),
           ),
-          body: BlocBuilder<AuthBloc, AuthState>(
-            buildWhen: (prevState, curState) {
-              return curState is NewsInitial;
-            },
-            builder: (context, authState) {
-              var userData = (_authBloc.state as AuthSuccess).currentUser;
-              return BlocBuilder<FilterCubit, FilterState>(
-                  buildWhen: (current, prev) {
-                return current != prev;
-              }, builder: (context, state) {
-                if (state is FilterInitailState ||
-                    state is FilterLoadInProgress) {
-                  return const AppLoadingIndicator();
-                }
-                if (state is FilterLoadSuccess) {
-                  return state.news.isEmpty
-                      ? const Center(child: Text('Could not find any news.'))
-                      : ListView.separated(
-                          controller: _scrollController,
-                          itemCount: state.news.length + 1,
-                          itemBuilder: (context, index) {
-                            return (index >= state.news.length)
-                                ? state.hasReachedMax
-                                    ? const AppLoadingIndicator()
-                                    : const SizedBox()
-                                : GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).pushNamed(
-                                          SingleNewsScreen.route,
-                                          arguments: [
-                                            index,
-                                            state.news,
-                                            userData
-                                          ]);
-                                    },
-                                    child: NewsDetailCard(
-                                      channelName:
-                                          state.news[index].channel.channel,
-                                      newsDescription:
-                                          state.news[index].content,
-                                      newsTime: state.news[index].date,
-                                      numberOfLikes:
-                                          state.news[index].likes.toString(),
-                                      numberOfComments: state
-                                          .news[index].comment!.length
-                                          .toString(),
-                                      onTapHeart: () {
+          onUnreadFilter: () {
+            if (userData != null) {
+              final allNews = (_newsBloc.state as NewsLoadingSuccess).newsList;
+              _filterBloc.applyFilter(
+                  allNews, FilterType.unread, userData!.history ?? []);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content:
+                      Text("Please Login to access the following feature")));
+            }
+          },
+          onReadFilter: () {
+            if (userData != null) {
+              final allNews = (_newsBloc.state as NewsLoadingSuccess).newsList;
+              _filterBloc.applyFilter(
+                  allNews, FilterType.read, userData!.history ?? []);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content:
+                      Text("Please Login to access the following feature")));
+            }
+          },
+          onChannelFilter: () {},
+        ),
+        body: BlocBuilder<AuthBloc, AuthState>(
+          buildWhen: (prevState, curState) {
+            return curState is NewsInitial;
+          },
+          builder: (context, authState) {
+            var userData = (_authBloc.state as AuthSuccess).currentUser;
+            return BlocBuilder<FilterCubit, FilterState>(
+                buildWhen: (current, prev) {
+              return current != prev;
+            }, builder: (context, state) {
+              if (state is FilterInitailState ||
+                  state is FilterLoadInProgress) {
+                return const AppLoadingIndicator();
+              }
+              if (state is FilterLoadSuccess) {
+                return state.news.isEmpty
+                    ? const Center(child: Text('Could not find any news.'))
+                    : ListView.separated(
+                        controller: _scrollController,
+                        itemCount: state.news.length + 1,
+                        itemBuilder: (context, index) {
+                          return (index >= state.news.length)
+                              ? state.hasReachedMax
+                                  ? const AppLoadingIndicator()
+                                  : const SizedBox()
+                              : GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushNamed(
+                                        SingleNewsScreen.route,
+                                        arguments: [
+                                          index,
+                                          state.news,
+                                          userData
+                                        ]);
+                                  },
+                                  child: NewsDetailCard(
+                                    channelName:
+                                        state.news[index].channel.channel,
+                                    newsDescription: state.news[index].content,
+                                    newsTime: state.news[index].date,
+                                    numberOfLikes:
+                                        state.news[index].likes.toString(),
+                                    numberOfComments: state
+                                        .news[index].comment!.length
+                                        .toString(),
+                                    onTapHeart: () {
+                                      if (userData != null) {
                                         if (userData.history!.any((e) =>
                                             state.news[index].id == e.id)) {
                                           _authBloc.add(RemoveFromHistory(
@@ -151,13 +163,20 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                                               .likes! +
                                                           1)));
                                         }
-                                      },
-                                      onTapComment: () {
-                                        Navigator.of(context).pushNamed(
-                                            CommentScreen.route,
-                                            arguments: state.news[index]);
-                                      },
-                                      onTapBookmark: () {
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    "Please Login to access the following feature")));
+                                      }
+                                    },
+                                    onTapComment: () {
+                                      Navigator.of(context).pushNamed(
+                                          CommentScreen.route,
+                                          arguments: state.news[index]);
+                                    },
+                                    onTapBookmark: () {
+                                      if (userData != null) {
                                         if (userData.bookmarks!
                                             .contains(state.news[index])) {
                                           _authBloc.add(RemoveBookMarkEvent(
@@ -168,49 +187,60 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                               newsToBookmark: state.news[index],
                                               user: userData));
                                         }
-                                      },
-                                      onTapShare: () {
-                                        Share.share(
-                                            'check out this ${state.news[index].url}');
-                                      },
-                                      onTapMenu: () {
-                                        Navigator.of(context).pushNamed(
-                                            SingleNewsScreen.route,
-                                            arguments: [
-                                              index,
-                                              state.news,
-                                              userData
-                                            ]);
-                                      },
-                                      isBookmark: userData.bookmarks!.any(
-                                          (e) => state.news[index].id == e.id),
-                                      isHeart: userData.history!.any(
-                                          (e) => state.news[index].id == e.id),
-                                      channelImage: state
-                                          .news[index].channel.channelImage,
-                                      imageUrl: state.news[index].newsImage,
-                                    ),
-                                  );
-                          },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return const ColoredBox(
-                                color: AppColors.appWhite,
-                                child: Divider(
-                                  thickness: 1.5,
-                                  height: 14,
-                                ));
-                          },
-                        );
-                } else {
-                  return const Center(child: Text("Error fetching news."));
-                }
-              });
-            },
-          ),
-          floatingActionButton: AppFloatingActionButton(
-            scaffoldKey: _key,
-          ),
-          drawer: const AppDrawer()),
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    "Please Login to access the following feature")));
+                                      }
+                                    },
+                                    onTapShare: () {
+                                      Share.share(
+                                          'check out this ${state.news[index].url}');
+                                    },
+                                    onTapMenu: () {
+                                      Navigator.of(context).pushNamed(
+                                          SingleNewsScreen.route,
+                                          arguments: [
+                                            index,
+                                            state.news,
+                                            userData
+                                          ]);
+                                    },
+                                    isBookmark: userData == null
+                                        ? false
+                                        : userData.bookmarks!.any((e) =>
+                                            state.news[index].id == e.id),
+                                    isHeart: userData == null
+                                        ? false
+                                        : userData.history!.any((e) =>
+                                            state.news[index].id == e.id),
+                                    channelImage:
+                                        state.news[index].channel.channelImage,
+                                    imageUrl: state.news[index].newsImage,
+                                  ),
+                                );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const ColoredBox(
+                              color: AppColors.appWhite,
+                              child: Divider(
+                                thickness: 1.5,
+                                height: 14,
+                              ));
+                        },
+                      );
+              } else {
+                return const Center(child: Text("Error fetching news."));
+              }
+            });
+          },
+        ),
+        floatingActionButton: AppFloatingActionButton(
+          scaffoldKey: _key,
+        ),
+        endDrawer: const AppDrawer(),
+      ),
     );
   }
 

@@ -28,7 +28,7 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   late final AuthBloc _authBloc;
-  late final UserModel userData;
+  late final UserModel? userData;
   late final NewsBloc _newsBloc;
   late final User _currentUser;
 
@@ -64,30 +64,45 @@ class _CommentScreenState extends State<CommentScreen> {
                     numberOfLikes: currentNews.likes.toString(),
                     numberOfComments: currentNews.comment!.length.toString(),
                     commentTapped: true,
-                    isHeart:
-                        userData.history!.any((e) => currentNews.id == e.id),
-                    isBookmark:
-                        userData.bookmarks!.any((e) => currentNews.id == e.id),
+                    isHeart: userData == null
+                        ? false
+                        : userData!.history!.any((e) => currentNews.id == e.id),
+                    isBookmark: userData == null
+                        ? false
+                        : userData!.bookmarks!
+                            .any((e) => currentNews.id == e.id),
                     onTapHeart: () {
-                      if (userData.history!.contains(widget.newsModel)) {
-                        _authBloc.add(RemoveFromHistory(
-                            newsModel: widget.newsModel, user: userData));
+                      if (userData != null) {
+                        if (userData!.history!.contains(widget.newsModel)) {
+                          _authBloc.add(RemoveFromHistory(
+                              newsModel: widget.newsModel, user: userData!));
+                        } else {
+                          _authBloc.add(AddToHistory(
+                              newsModel: widget.newsModel, user: userData!));
+                          _newsBloc.add(LikeNewsEvent(
+                              likedNews: currentNews.copyWith(
+                                  likes: currentNews.likes! + 1)));
+                        }
                       } else {
-                        _authBloc.add(AddToHistory(
-                            newsModel: widget.newsModel, user: userData));
-                        _newsBloc.add(LikeNewsEvent(
-                            likedNews: currentNews.copyWith(
-                                likes: currentNews.likes! + 1)));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text(
+                                "Please Login to access the following feature")));
                       }
                     },
                     onTapComment: () {},
                     onTapBookmark: () {
-                      if (userData.bookmarks!.contains(currentNews)) {
-                        _authBloc.add(RemoveBookMarkEvent(
-                            newsToBookmark: currentNews, user: userData));
+                      if (userData != null) {
+                        if (userData!.bookmarks!.contains(currentNews)) {
+                          _authBloc.add(RemoveBookMarkEvent(
+                              newsToBookmark: currentNews, user: userData!));
+                        } else {
+                          _authBloc.add(AddToBookMarkEvent(
+                              newsToBookmark: currentNews, user: userData!));
+                        }
                       } else {
-                        _authBloc.add(AddToBookMarkEvent(
-                            newsToBookmark: currentNews, user: userData));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text(
+                                "Please Login to access the following feature")));
                       }
                     },
                     onTapShare: () {
@@ -114,26 +129,34 @@ class _CommentScreenState extends State<CommentScreen> {
                                 errorText: ("You cant comment empty"))
                           ]),
                           onTap: () {
-                            if (CommentScreen._formKey.currentState!
-                                .validate()) {
-                              CommentScreen._formKey.currentState!.save();
-                              final result =
-                                  CommentScreen._formKey.currentState!.value;
-                              BlocProvider.of<NewsBloc>(context).add(
-                                  AddCommentEvent(
-                                      comment: CommentModel.fromMap({
-                                        "username": userData.username,
-                                        "comment": result['comment']
-                                      }),
-                                      news: widget.newsModel.copyWith(
-                                          comment: widget.newsModel.comment!
-                                            ..add(
-                                              CommentModel.fromMap({
-                                                "username": userData.username,
-                                                "comment": result['comment']
-                                              }),
-                                            ))));
-                              CommentScreen._formKey.currentState!.reset();
+                            if (userData != null) {
+                              if (CommentScreen._formKey.currentState!
+                                  .validate()) {
+                                CommentScreen._formKey.currentState!.save();
+                                final result =
+                                    CommentScreen._formKey.currentState!.value;
+                                BlocProvider.of<NewsBloc>(context).add(
+                                    AddCommentEvent(
+                                        comment: CommentModel.fromMap({
+                                          "username": userData!.username,
+                                          "comment": result['comment']
+                                        }),
+                                        news: widget.newsModel.copyWith(
+                                            comment: widget.newsModel.comment!
+                                              ..add(
+                                                CommentModel.fromMap({
+                                                  "username":
+                                                      userData!.username,
+                                                  "comment": result['comment']
+                                                }),
+                                              ))));
+                                CommentScreen._formKey.currentState!.reset();
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "Please Login to access the following feature")));
                             }
                           },
                           textInputAction: TextInputAction.done),

@@ -47,7 +47,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),
-        drawer: const AppDrawer(),
+        endDrawer: const AppDrawer(),
         body: SingleChildScrollView(
           child: BlocBuilder<ChannelBloc, ChannelState>(
             builder: (context, state) {
@@ -86,7 +86,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                 onTap: () {},
                               ),
                             );
-                          })
+                          }),
+                      SizedBox(
+                        height: 100.h,
+                      )
                     ],
                   ),
                 );

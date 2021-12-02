@@ -32,7 +32,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
   late final ChannelBloc _channelBloc;
-  late final UserModel userData;
+  late final UserModel? userData;
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                               onTap: () {
                                 Navigator.of(context).pushNamed(
                                     SingleNewsScreen.route,
-                                    arguments: newsList[index]);
+                                    arguments: [index, newsList, userData]);
                               },
                               child: GestureDetector(
                                 onTap: () {
@@ -99,25 +99,35 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                       .length
                                       .toString(),
                                   onTapHeart: () {
-                                    if (userData.history!.any(
-                                        (e) => state.news[index].id == e.id)) {
-                                      _authBloc.add(RemoveFromHistory(
-                                          newsModel: newsList[index],
-                                          user: userData.copyWith(
-                                              history: userData.history!
-                                                ..remove(newsList[index].id))));
-                                      _channelBloc.add(UnlikeNewsChannelEvent(
-                                          unlikedNews: newsList[index].copyWith(
-                                              likes:
-                                                  newsList[index].likes! - 1)));
+                                    if (userData != null) {
+                                      if (userData!.history!.any((e) =>
+                                          state.news[index].id == e.id)) {
+                                        _authBloc.add(RemoveFromHistory(
+                                            newsModel: newsList[index],
+                                            user: userData!.copyWith(
+                                                history: userData!.history!
+                                                  ..remove(
+                                                      newsList[index].id))));
+                                        _channelBloc.add(UnlikeNewsChannelEvent(
+                                            unlikedNews: newsList[index]
+                                                .copyWith(
+                                                    likes:
+                                                        newsList[index].likes! -
+                                                            1)));
+                                      } else {
+                                        _authBloc.add(AddToHistory(
+                                            newsModel: newsList[index],
+                                            user: userData!));
+                                        _channelBloc.add(LikeNewsChannelEvent(
+                                            likedNews: newsList[index].copyWith(
+                                                likes: newsList[index].likes! +
+                                                    1)));
+                                      }
                                     } else {
-                                      _authBloc.add(AddToHistory(
-                                          newsModel: newsList[index],
-                                          user: userData));
-                                      _channelBloc.add(LikeNewsChannelEvent(
-                                          likedNews: newsList[index].copyWith(
-                                              likes:
-                                                  newsList[index].likes! + 1)));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  "Please Login to access the following feature")));
                                     }
                                   },
                                   onTapComment: () {
@@ -126,15 +136,22 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                         arguments: newsList[index]);
                                   },
                                   onTapBookmark: () {
-                                    if (userData.bookmarks!
-                                        .contains(newsList[index])) {
-                                      _authBloc.add(RemoveBookMarkEvent(
-                                          newsToBookmark: newsList[index],
-                                          user: userData));
+                                    if (userData != null) {
+                                      if (userData!.bookmarks!
+                                          .contains(newsList[index])) {
+                                        _authBloc.add(RemoveBookMarkEvent(
+                                            newsToBookmark: newsList[index],
+                                            user: userData!));
+                                      } else {
+                                        _authBloc.add(AddToBookMarkEvent(
+                                            newsToBookmark: newsList[index],
+                                            user: userData!));
+                                      }
                                     } else {
-                                      _authBloc.add(AddToBookMarkEvent(
-                                          newsToBookmark: newsList[index],
-                                          user: userData));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  "Please Login to access the following feature")));
                                     }
                                   },
                                   onTapShare: () {
@@ -142,10 +159,14 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                         'check out this ${newsList[index].url}');
                                   },
                                   onTapMenu: () {},
-                                  isBookmark: userData.bookmarks!
-                                      .any((e) => newsList[index].id == e.id),
-                                  isHeart: userData.history!
-                                      .any((e) => newsList[index].id == e.id),
+                                  isBookmark: userData == null
+                                      ? false
+                                      : userData!.bookmarks!.any(
+                                          (e) => newsList[index].id == e.id),
+                                  isHeart: userData == null
+                                      ? false
+                                      : userData!.history!.any(
+                                          (e) => newsList[index].id == e.id),
                                   channelImage:
                                       newsList[index].channel.channelImage,
                                   imageUrl: newsList[index].newsImage,
@@ -160,7 +181,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
               });
             },
           ),
-          drawer: const AppDrawer()),
+          endDrawer: const AppDrawer()),
     );
   }
 }

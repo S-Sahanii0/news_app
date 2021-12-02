@@ -27,7 +27,6 @@ class FollowingCategoryScreen extends StatefulWidget {
 
 class _FollowingCategoryScreenState extends State<FollowingCategoryScreen> {
   late final AuthBloc _authBloc;
-  late final UserModel userData;
 
   late String uid;
   @override
@@ -35,7 +34,7 @@ class _FollowingCategoryScreenState extends State<FollowingCategoryScreen> {
     super.initState();
 
     _authBloc = BlocProvider.of<AuthBloc>(context);
-    userData = (_authBloc.state as AuthSuccess).currentUser;
+
     uid = FirebaseAuth.instance.currentUser!.uid;
   }
 
@@ -45,7 +44,7 @@ class _FollowingCategoryScreenState extends State<FollowingCategoryScreen> {
       child: Scaffold(
         appBar: CustomAppBar()
             .appBarWithBack(pageTitle: "Following", context: context),
-        drawer: const AppDrawer(),
+        endDrawer: const AppDrawer(),
         body: SingleChildScrollView(
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
@@ -61,28 +60,28 @@ class _FollowingCategoryScreenState extends State<FollowingCategoryScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (state.currentUser.chosenCategories!.isNotEmpty)
+                      if (state.currentUser!.chosenCategories!.isNotEmpty)
                         ListView.builder(
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount:
-                                state.currentUser.chosenCategories!.length,
+                                state.currentUser!.chosenCategories!.length,
                             itemBuilder: (context, index) {
                               return AppCard.hasRemoveButton(
                                 cardText:
-                                    state.currentUser.chosenCategories![index],
+                                    state.currentUser!.chosenCategories![index],
                                 onTapRemove: () {
                                   _authBloc.add(RemoveChosenCategoryEvent(
-                                      category: state
-                                          .currentUser.chosenCategories![index],
-                                      user: userData));
+                                      category: state.currentUser!
+                                          .chosenCategories![index],
+                                      user: state.currentUser!));
                                 },
                               );
                             }),
                       SizedBox(
                         height: 8.h,
                       ),
-                      if (state.currentUser.chosenCategories!.isEmpty)
+                      if (state.currentUser!.chosenCategories!.isEmpty)
                         Center(
                           child: Text(
                             "You have not liked any category",

@@ -118,11 +118,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                   BlocProvider.value(
                     value: _newsBloc,
                   ),
+                  BlocProvider.value(
+                    value: _categoryBloc,
+                  ),
                 ],
                 child: SingleNewsScreen(
                   currentNewsIndex: args.first as int,
-                  newsList: args[1] as List<News>,
-                  user: args.last as UserModel,
+                  news: args[1] as List<News>,
+                  user: args.last != null ? args.last as UserModel : null,
                 ),
               ));
     case ChannelScreen.route:
@@ -181,7 +184,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               ),
             ],
             child: NewsByCategoryScreen(
-              userData: args.first as UserModel,
+              userData: args.first == null ? null : args.first as UserModel,
               category: args[1],
             ),
           ),
@@ -249,7 +252,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                   BlocProvider.value(value: _channelBloc),
                   BlocProvider.value(value: _filerBloc),
                   BlocProvider.value(value: NetworkCubit()),
-                  BlocProvider(create: (_) => NavigationCubit()),
                 ],
                 child: BaseScreen(),
               ));

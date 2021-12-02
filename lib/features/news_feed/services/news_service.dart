@@ -40,6 +40,14 @@ class NewsService {
     return result;
   }
 
+  Future<List<News>> getNewsByListOfCategory(List<String> categoryList) async {
+    final resultCategoryList = <News>[];
+    for (var i = 0; i < categoryList.length; i++) {
+      resultCategoryList.addAll(await getNewsByCategory(categoryList[i]));
+    }
+    return resultCategoryList;
+  }
+
   Future<void> addDataToFirebase() async {
     final String response =
         await rootBundle.loadString('assets/data/news_data.json');

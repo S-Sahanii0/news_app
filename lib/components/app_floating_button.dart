@@ -15,7 +15,7 @@ class _AppFloatingActionButtonState extends State<AppFloatingActionButton> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        widget.scaffoldKey.currentState!.openDrawer();
+        widget.scaffoldKey.currentState!.openEndDrawer();
       },
       child: const Image(
         image: AppIcons.floating,

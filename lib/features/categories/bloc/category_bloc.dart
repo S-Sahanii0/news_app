@@ -36,7 +36,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(CategoryLoading());
       final result = await catgoryService.getCategoryList();
       final likedCategory = <CategoryModel>[];
-      event.user!.chosenCategories!.forEach((categoryName) {
+      event.user?.chosenCategories!.forEach((categoryName) {
         likedCategory.addAll(result
             .where((element) => element.categoryName == categoryName)
             .toList());
@@ -53,16 +53,14 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       LikeCategoryEvent event, Emitter<CategoryState> emit) async {
     var currentState = state as CategoryLoadSuccess;
     try {
-      print("eta pugyo");
-
-      final result = await catgoryService.getCategoryList();
       final likedCategory =
           List<CategoryModel>.from(currentState.likedCategoryList)
             ..add(event.caytegory);
-      result.remove(event.caytegory);
 
       emit(CategoryLoadSuccess(
-          likedCategoryList: likedCategory, otherCategoryList: result));
+          likedCategoryList: likedCategory,
+          otherCategoryList: List.from(
+              currentState.otherCategoryList..remove(event.caytegory))));
     } catch (e) {
       emit(CategoryLoadFailure());
     }

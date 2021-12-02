@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),
-        drawer: const AppDrawer(),
+        endDrawer: const AppDrawer(),
         body: Stack(
           children: [
             DefaultTabController(
@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ProfileCard(
-                      username: '${userData.username}',
+                      username: '${userData?.username}',
                       profileBio: "Get only what you want"),
                   ColoredBox(
                     color: AppColors.appWhite,
@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         BlocProvider.value(
                           value: BlocProvider.of<AuthBloc>(context),
-                          child: Settings(user: userData),
+                          child: Settings(user: userData!),
                         ),
                         const BookmarkTab(),
                         const History(),

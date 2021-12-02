@@ -26,7 +26,7 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen> {
   late final AuthBloc _authBloc;
-  late final UserModel userData;
+  late final UserModel? userData;
   late final CategoryBloc _categoryBloc;
 
   late String uid;
@@ -52,7 +52,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),
-        drawer: const AppDrawer(),
+        endDrawer: const AppDrawer(),
         body: SingleChildScrollView(
           child: BlocBuilder<CategoryBloc, CategoryState>(
             builder: (context, state) {
@@ -133,17 +133,29 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 onTap: () {},
                                 isSaved: false,
                                 onTapheart: () {
-                                  _categoryBloc.add(LikeCategoryEvent(
-                                      caytegory:
-                                          state.otherCategoryList[index]));
-                                  _authBloc.add(
-                                      AddChosenCategoryEvent(categoryList: [
-                                    state.otherCategoryList[index].categoryName
-                                  ], user: userData));
+                                  if (userData != null) {
+                                    _categoryBloc.add(LikeCategoryEvent(
+                                        caytegory:
+                                            state.otherCategoryList[index]));
+                                    _authBloc.add(AddChosenCategoryEvent(
+                                        categoryList: [
+                                          state.otherCategoryList[index]
+                                              .categoryName
+                                        ],
+                                        user: userData!));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                "Please Login to access the following feature")));
+                                  }
                                 },
                               ),
                             );
-                          })
+                          }),
+                      SizedBox(
+                        height: 100.h,
+                      )
                     ],
                   ),
                 );

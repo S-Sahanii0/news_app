@@ -79,13 +79,10 @@ class CustomAppBar {
       {required String pageTitle, required BuildContext context}) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
-      title: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 80),
-        child: Text(
-          pageTitle,
-          style:
-              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
-        ),
+      title: Text(
+        pageTitle,
+        style:
+            AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
       ),
       leading: GestureDetector(
         onTap: () {
@@ -105,11 +102,13 @@ class CustomAppBar {
     return AppBar(
       backgroundColor: AppColors.appWhite,
       title: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 80),
-        child: Text(
-          pageTitle,
-          style:
-              AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+        padding: const EdgeInsets.only(left: 24),
+        child: Center(
+          child: Text(
+            pageTitle,
+            style: AppStyle.semiBoldText16
+                .copyWith(color: AppColors.darkBlueShade2),
+          ),
         ),
       ),
     );

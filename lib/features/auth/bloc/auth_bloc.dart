@@ -20,6 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterEvent>(_handleRegister);
     on<GoogleSignInEvent>(_handleGoogleSignIn);
     // on<FacebookSignInEvent>(_handleGoogleSignIn);
+    on<AnonLoginEvent>(_handleAnonLogin);
     on<LoginSuccess>(_handleLoginSuccess);
     on<LoginFailure>(_handleLoginFailure);
     on<LoginEvent>(_handleLogin);
@@ -42,6 +43,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           final userEvent = authService.getCurrentUser(authEvent.uid);
           await for (var user in userEvent) {
             emit(AuthSuccess(currentUser: await user));
+          }
+          if (FirebaseAuth.instance.currentUser!.isAnonymous) {
+            emit(AuthSuccess(currentUser: null));
           }
         } else {
           emit(AuthFailure(errorMessage: "No user"));
@@ -76,9 +80,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await authService.addChosenCategory(event.categoryList, event.user.id!);
       emit(AuthSuccess(
-          currentUser: event.user.copyWith(
-              chosenCategories: event.user.chosenCategories!
-                ..addAll(event.categoryList))));
+          currentUser: (state as AuthSuccess).currentUser!.copyWith(
+              chosenCategories: List<String>.from(
+                  ((state as AuthSuccess).currentUser!.chosenCategories!
+                    ..addAll(event.categoryList))))));
     } catch (e, stk) {
       log('Exception', error: e, stackTrace: stk);
       emit(AuthFailure(errorMessage: e.toString()));
@@ -87,12 +92,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   _handleRemoveChosenCatgoryEvent(
       RemoveChosenCategoryEvent event, Emitter<AuthState> emit) async {
+    final currentState = state as AuthSuccess;
     try {
-      await authService.removeChosenCategory(event.category, event.user.id!);
-      emit(AuthSuccess(
-          currentUser: event.user.copyWith(
-              chosenCategories: List.from(event.user.chosenCategories!)
-                ..remove(event.category))));
+      final result = await authService.removeChosenCategory(
+          event.category, event.user.id!);
+      emit(AuthLoading());
+      await for (var event in result) {
+        emit(AuthSuccess(currentUser: await event));
+      }
     } catch (e, stk) {
       log('Exception', error: e, stackTrace: stk);
       emit(AuthFailure(errorMessage: e.toString()));
@@ -213,6 +220,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (e.code == "wrong-password") {
         emit(AuthFailure(errorMessage: "Incorrect credentials were provided"));
       }
+    }
+  }
+
+  _handleAnonLogin(AnonLoginEvent event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      final result = await authService.anonSignUp();
+      if (result != null) {
+        emit(AuthSuccess(currentUser: null));
+      } else {
+        emit(AuthFailure(errorMessage: 'Error when in signing in anonymously'));
+      }
+    } catch (e, stk) {
+      log('Error when signing in anonymously', error: e, stackTrace: stk);
     }
   }
 

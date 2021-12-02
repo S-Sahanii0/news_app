@@ -1,28 +1,23 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_indicator/loading_indicator.dart';
-import 'package:news_app/components/app_loading.dart';
-import 'package:news_app/features/auth/models/user_model.dart';
-import 'package:news_app/features/categories/bloc/category_bloc.dart';
-import 'package:news_app/features/categories/models/category_model.dart';
-import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
-import 'package:news_app/features/news_feed/screens/comments_screen.dart';
-import 'package:news_app/features/news_feed/screens/single_news_screen.dart';
-import 'package:news_app/features/news_feed/widgets/news_detail_card.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../components/app_bar/app_bar.dart';
 import '../../../components/app_drawer.dart';
-import '../../../components/app_floating_button.dart';
+import '../../../components/app_loading.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/models/user_model.dart';
+import '../../news_feed/bloc/news_bloc.dart';
+import '../../news_feed/screens/comments_screen.dart';
+import '../../news_feed/screens/single_news_screen.dart';
+import '../../news_feed/widgets/news_detail_card.dart';
+import '../bloc/category_bloc.dart';
+import '../models/category_model.dart';
 
 class NewsByCategoryScreen extends StatefulWidget {
-  final UserModel userData;
+  final UserModel? userData;
   final CategoryModel category;
   const NewsByCategoryScreen(
       {Key? key, required this.userData, required this.category})
@@ -39,7 +34,7 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
   late final NewsBloc _newsBloc;
   late final CategoryBloc _categoryBloc;
   late final AuthBloc _authBloc;
-  late final UserModel userData;
+  late final UserModel? userData;
 
   @override
   void initState() {
@@ -101,25 +96,32 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                             numberOfComments:
                                 newsList[index].comment!.length.toString(),
                             onTapHeart: () {
-                              if (userData.history!
-                                  .any((e) => newsList[index].id == e.id)) {
-                                _authBloc.add(RemoveFromHistory(
-                                    newsModel: newsList[index],
-                                    user: userData.copyWith(
-                                        history: userData.history!
-                                          ..remove(newsList[index].id))));
-                                _categoryBloc.add(UnlikeNewsCategoryEvent(
-                                    unlikedNews: newsList[index].copyWith(
-                                        likes: newsList[index].likes! - 1),
-                                    category: widget.category));
+                              if (userData != null) {
+                                if (userData!.history!
+                                    .any((e) => newsList[index].id == e.id)) {
+                                  _authBloc.add(RemoveFromHistory(
+                                      newsModel: newsList[index],
+                                      user: userData!.copyWith(
+                                          history: userData!.history!
+                                            ..remove(newsList[index].id))));
+                                  _categoryBloc.add(UnlikeNewsCategoryEvent(
+                                      unlikedNews: newsList[index].copyWith(
+                                          likes: newsList[index].likes! - 1),
+                                      category: widget.category));
+                                } else {
+                                  _authBloc.add(AddToHistory(
+                                      newsModel: newsList[index],
+                                      user: userData!));
+                                  _categoryBloc.add(LikeNewsCategoryEvent(
+                                      likedNews: newsList[index].copyWith(
+                                          likes: newsList[index].likes! + 1),
+                                      category: widget.category));
+                                }
                               } else {
-                                _authBloc.add(AddToHistory(
-                                    newsModel: newsList[index],
-                                    user: userData));
-                                _categoryBloc.add(LikeNewsCategoryEvent(
-                                    likedNews: newsList[index].copyWith(
-                                        likes: newsList[index].likes! + 1),
-                                    category: widget.category));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            "Please Login to access the following feature")));
                               }
                             },
                             onTapComment: () {
@@ -128,15 +130,22 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                                   arguments: newsList[index]);
                             },
                             onTapBookmark: () {
-                              if (widget.userData.bookmarks!
-                                  .contains(newsList[index])) {
-                                _authBloc.add(RemoveBookMarkEvent(
-                                    newsToBookmark: newsList[index],
-                                    user: widget.userData));
+                              if (userData == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            "Please Login to access the following feature")));
                               } else {
-                                _authBloc.add(AddToBookMarkEvent(
-                                    newsToBookmark: newsList[index],
-                                    user: widget.userData));
+                                if (widget.userData!.bookmarks!
+                                    .contains(newsList[index])) {
+                                  _authBloc.add(RemoveBookMarkEvent(
+                                      newsToBookmark: newsList[index],
+                                      user: widget.userData!));
+                                } else {
+                                  _authBloc.add(AddToBookMarkEvent(
+                                      newsToBookmark: newsList[index],
+                                      user: widget.userData!));
+                                }
                               }
                             },
                             onTapShare: () {
@@ -144,10 +153,14 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                                   'check out this ${newsList[index].url}');
                             },
                             onTapMenu: () {},
-                            isBookmark: userData.bookmarks!
-                                .any((e) => newsList[index].id == e.id),
-                            isHeart: userData.history!
-                                .any((e) => newsList[index].id == e.id),
+                            isBookmark: userData == null
+                                ? false
+                                : userData!.bookmarks!
+                                    .any((e) => newsList[index].id == e.id),
+                            isHeart: userData == null
+                                ? false
+                                : userData!.history!
+                                    .any((e) => newsList[index].id == e.id),
                             channelImage: newsList[index].channel.channelImage,
                             imageUrl: newsList[index].newsImage,
                           ),
@@ -158,7 +171,7 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
               return const Center(child: Text("Error fetching news."));
             }
           }),
-          drawer: const AppDrawer()),
+          endDrawer: const AppDrawer()),
     );
   }
 }

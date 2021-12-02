@@ -103,27 +103,34 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                     .newsList[index].comment!.length
                                     .toString(),
                                 onTapHeart: () {
-                                  if (userData.history!
-                                      .contains(newListDiscover[index])) {
-                                    _authBloc.add(RemoveFromHistory(
-                                        newsModel: newListDiscover[index],
-                                        user: userData));
-                                    _newsBloc.add(UnlikeNewsEvent(
-                                        unlikedNews: newListDiscover[index]
-                                            .copyWith(
-                                                likes: newListDiscover[index]
-                                                        .likes! -
-                                                    1)));
+                                  if (userData != null) {
+                                    if (userData.history!
+                                        .contains(newListDiscover[index])) {
+                                      _authBloc.add(RemoveFromHistory(
+                                          newsModel: newListDiscover[index],
+                                          user: userData));
+                                      _newsBloc.add(UnlikeNewsEvent(
+                                          unlikedNews: newListDiscover[index]
+                                              .copyWith(
+                                                  likes: newListDiscover[index]
+                                                          .likes! -
+                                                      1)));
+                                    } else {
+                                      _authBloc.add(AddToHistory(
+                                          newsModel: newListDiscover[index],
+                                          user: userData));
+                                      _newsBloc.add(LikeNewsEvent(
+                                          likedNews: newListDiscover[index]
+                                              .copyWith(
+                                                  likes: newListDiscover[index]
+                                                          .likes! +
+                                                      1)));
+                                    }
                                   } else {
-                                    _authBloc.add(AddToHistory(
-                                        newsModel: newListDiscover[index],
-                                        user: userData));
-                                    _newsBloc.add(LikeNewsEvent(
-                                        likedNews: newListDiscover[index]
-                                            .copyWith(
-                                                likes: newListDiscover[index]
-                                                        .likes! +
-                                                    1)));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                "Please Login to access the following feature")));
                                   }
                                 },
                                 onTapComment: () {
@@ -132,15 +139,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                       arguments: newListDiscover[index]);
                                 },
                                 onTapBookmark: () {
-                                  if (userData.bookmarks!
-                                      .contains(newListDiscover[index])) {
-                                    _authBloc.add(RemoveBookMarkEvent(
-                                        newsToBookmark: newListDiscover[index],
-                                        user: userData));
+                                  if (userData != null) {
+                                    if (userData.bookmarks!
+                                        .contains(newListDiscover[index])) {
+                                      _authBloc.add(RemoveBookMarkEvent(
+                                          newsToBookmark:
+                                              newListDiscover[index],
+                                          user: userData));
+                                    } else {
+                                      _authBloc.add(AddToBookMarkEvent(
+                                          newsToBookmark:
+                                              newListDiscover[index],
+                                          user: userData));
+                                    }
                                   } else {
-                                    _authBloc.add(AddToBookMarkEvent(
-                                        newsToBookmark: newListDiscover[index],
-                                        user: userData));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                "Please Login to access the following feature")));
                                   }
                                 },
                                 onTapShare: () {
@@ -156,10 +172,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                         userData
                                       ]);
                                 },
-                                isBookmark: userData.bookmarks!.any(
-                                    (e) => newListDiscover[index].id == e.id),
-                                isHeart: userData.history!.any(
-                                    (e) => newListDiscover[index].id == e.id),
+                                isBookmark: userData == null
+                                    ? false
+                                    : userData.bookmarks!.any((e) =>
+                                        newListDiscover[index].id == e.id),
+                                isHeart: userData == null
+                                    ? false
+                                    : userData.history!.any((e) =>
+                                        newListDiscover[index].id == e.id),
                                 channelImage:
                                     newListDiscover[index].channel.channelImage,
                                 imageUrl: newListDiscover[index].newsImage,
@@ -176,7 +196,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           floatingActionButton: AppFloatingActionButton(
             scaffoldKey: _key,
           ),
-          drawer: const AppDrawer()),
+          endDrawer: const AppDrawer()),
     );
   }
 

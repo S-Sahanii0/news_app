@@ -76,7 +76,7 @@ class _SettingsState extends State<Settings> {
                         .pushNamed(FollowingCategoryScreen.route);
                   },
                   number: (state as AuthSuccess)
-                      .currentUser
+                      .currentUser!
                       .chosenCategories!
                       .length),
               // SettingsCard.hasNumber(cardText: "Blocked", onTap: () {}, number: 1),

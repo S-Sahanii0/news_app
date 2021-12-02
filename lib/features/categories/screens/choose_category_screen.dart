@@ -86,7 +86,7 @@ class _ChooseCategoryScreenState extends State<ChooseCategoryScreen> {
               ),
               FormButton(onTap: () {
                 _authBloc.add(AddChosenCategoryEvent(
-                    categoryList: chosenList, user: userData));
+                    categoryList: chosenList, user: userData!));
                 Navigator.of(context).pop();
               })
             ],

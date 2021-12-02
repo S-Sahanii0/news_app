@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/app/cubit/navigation/navigation_cubit.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:news_app/features/auth/models/user_model.dart';
 import 'package:news_app/features/profile/tabs/settings_tab.dart';
 import 'package:provider/src/provider.dart';
 import '../config/theme/theme.dart';
@@ -16,9 +17,13 @@ class AppDrawer extends StatefulWidget {
 
 class _AppDrawerState extends State<AppDrawer> {
   late final NavigationCubit _navigationCubit;
+  late final AuthBloc _authBloc;
+  late UserModel? _user;
   @override
   void initState() {
     super.initState();
+    _authBloc = context.read<AuthBloc>();
+    _user = (_authBloc.state as AuthSuccess).currentUser;
     _navigationCubit = context.read<NavigationCubit>();
   }
 
@@ -54,9 +59,11 @@ class _AppDrawerState extends State<AppDrawer> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
-                  onTap: () {
-                    _navigationCubit.navigateToMyFeed();
-                  },
+                  onTap: _user == null
+                      ? null
+                      : () {
+                          _navigationCubit.navigateToMyFeed();
+                        },
                   child: Text(
                     "My Feed",
                     style: AppStyle.mediumText20,
@@ -103,7 +110,13 @@ class _AppDrawerState extends State<AppDrawer> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
                   onTap: () {
-                    _navigationCubit.navigateToProfile();
+                    if (_user == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text(
+                              "Please Login to access the following feature")));
+                    } else {
+                      _navigationCubit.navigateToProfile();
+                    }
                   },
                   child: Text(
                     "Profile",
@@ -113,7 +126,8 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
               Spacer(),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 child: Row(children: [
                   Icon(Icons.close),
                   Spacer(),

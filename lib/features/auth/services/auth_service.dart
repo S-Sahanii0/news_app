@@ -32,6 +32,11 @@ class AuthService {
     return _firebaseAuth.authStateChanges().asBroadcastStream();
   }
 
+  Future<User?> anonSignUp() async {
+    final result = await _firebaseAuth.signInAnonymously();
+    return result.user;
+  }
+
   Stream<Future<UserModel>> getCurrentUser(String uid) {
     return users.doc(uid).snapshots().map((event) async {
       final userModel = event.data() as Map<String, dynamic>;

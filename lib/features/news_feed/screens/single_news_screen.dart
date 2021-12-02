@@ -16,13 +16,13 @@ import 'comments_screen.dart';
 class SingleNewsScreen extends StatefulWidget {
   const SingleNewsScreen(
       {Key? key,
-      required this.newsList,
+      required this.news,
       required this.currentNewsIndex,
       required this.user})
       : super(key: key);
-  final List<News> newsList;
+  final List<News> news;
   final int currentNewsIndex;
-  final UserModel user;
+  final UserModel? user;
   static const String route = '/kRouteSingleNewsScreen';
 
   @override
@@ -41,7 +41,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
     _newsBloc = BlocProvider.of<NewsBloc>(context);
     _ttsCubit = context.read<TtsCubit>();
     if (_ttsCubit.state.shouldAutoPlay) {
-      _ttsCubit.handlePlay(widget.newsList[widget.currentNewsIndex].content);
+      _ttsCubit.handlePlay(widget.news[widget.currentNewsIndex].content);
     }
     _authBloc = BlocProvider.of<AuthBloc>(context);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -69,7 +69,6 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var news = (_newsBloc.state as NewsLoadingSuccess).newsList;
     return SafeArea(
       child: BlocBuilder<NewsBloc, NewsState>(
         builder: (context, newsState) {
@@ -87,7 +86,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                       controller: state.pageController,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
-                        final _news = news[index];
+                        final _news = widget.news[index];
                         if (_shouldPlay) _ttsCubit.handlePlay(_news.content);
                         return Scaffold(
                           appBar: CustomAppBar()
@@ -208,27 +207,39 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                     children: [
                                       InkWell(
                                         onTap: () {
-                                          if (widget.user.history!
-                                              .contains(_news)) {
-                                            _authBloc.add(RemoveFromHistory(
-                                                newsModel: _news,
-                                                user: widget.user));
+                                          if (widget.user != null) {
+                                            if (widget.user!.history!
+                                                .contains(_news)) {
+                                              _authBloc.add(RemoveFromHistory(
+                                                  newsModel: _news,
+                                                  user: widget.user!));
+                                            } else {
+                                              _authBloc.add(AddToHistory(
+                                                  newsModel: _news,
+                                                  user: widget.user!));
+                                              _newsBloc.add(LikeNewsEvent(
+                                                  likedNews: _news.copyWith(
+                                                      likes:
+                                                          _news.likes! + 1)));
+                                            }
                                           } else {
-                                            _authBloc.add(AddToHistory(
-                                                newsModel: _news,
-                                                user: widget.user));
-                                            _newsBloc.add(LikeNewsEvent(
-                                                likedNews: _news.copyWith(
-                                                    likes: _news.likes! + 1)));
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                                    content: Text(
+                                                        "Please Login to access the following feature")));
                                           }
                                         },
                                         child: Image(
                                             image: (authState as AuthSuccess)
-                                                    .currentUser
-                                                    .history!
-                                                    .any((element) =>
-                                                        element == _news)
-                                                ? AppIcons.heartTapped
+                                                        .currentUser !=
+                                                    null
+                                                ? (authState as AuthSuccess)
+                                                        .currentUser!
+                                                        .history!
+                                                        .any((element) =>
+                                                            element == _news)
+                                                    ? AppIcons.heartTapped
+                                                    : AppIcons.heart
                                                 : AppIcons.heart),
                                       ),
                                       Padding(

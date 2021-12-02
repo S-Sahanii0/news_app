@@ -40,8 +40,8 @@ class _BookmarkTabState extends State<BookmarkTab> {
           return const AppLoadingIndicator();
         }
         if (state is AuthSuccess) {
-          final bookmarks = state.currentUser.bookmarks;
-          return bookmarks!.isEmpty
+          final bookmarks = state.currentUser?.bookmarks ?? [];
+          return bookmarks.isEmpty
               ? const Center(
                   child: Text("You dont have any bookmarks"),
                 )
@@ -69,18 +69,18 @@ class _BookmarkTabState extends State<BookmarkTab> {
                         numberOfComments:
                             bookmarks[index].comment!.length.toString(),
                         onTapHeart: () {
-                          if (state.currentUser.history!
+                          if (state.currentUser!.history!
                               .contains(bookmarks[index])) {
                             _authBloc.add(RemoveFromHistory(
                                 newsModel: bookmarks[index],
-                                user: state.currentUser));
+                                user: state.currentUser!));
                             _newsBloc.add(UnlikeNewsEvent(
                                 unlikedNews: bookmarks[index].copyWith(
                                     likes: bookmarks[index].likes! - 1)));
                           } else {
                             _authBloc.add(AddToHistory(
                                 newsModel: bookmarks[index],
-                                user: state.currentUser));
+                                user: state.currentUser!));
                             _newsBloc.add(LikeNewsEvent(
                                 likedNews: bookmarks[index].copyWith(
                                     likes: bookmarks[index].likes! + 1)));
@@ -91,24 +91,28 @@ class _BookmarkTabState extends State<BookmarkTab> {
                               arguments: bookmarks[index]);
                         },
                         onTapBookmark: () {
-                          if (state.currentUser.bookmarks!
+                          if (state.currentUser!.bookmarks!
                               .contains(bookmarks[index])) {
                             _authBloc.add(RemoveBookMarkEvent(
                                 newsToBookmark: bookmarks[index],
-                                user: state.currentUser));
+                                user: state.currentUser!));
                           } else {
                             _authBloc.add(AddToBookMarkEvent(
                                 newsToBookmark: bookmarks[index],
-                                user: state.currentUser));
+                                user: state.currentUser!));
                           }
                         },
                         onTapShare: () {
                           Share.share('check out this ${bookmarks[index].url}');
                         },
-                        isBookmark: state.currentUser.bookmarks!.any(
-                            (element) => element.id == bookmarks[index].id),
-                        isHeart: state.currentUser.history!.any(
-                            (element) => element.id == bookmarks[index].id),
+                        isBookmark: state.currentUser == null
+                            ? false
+                            : state.currentUser!.bookmarks!.any(
+                                (element) => element.id == bookmarks[index].id),
+                        isHeart: state.currentUser == null
+                            ? false
+                            : state.currentUser!.history!.any(
+                                (element) => element.id == bookmarks[index].id),
                         onTapMenu: () {},
                         channelImage: bookmarks[index].channel.channelImage,
                         imageUrl: bookmarks[index].newsImage,
