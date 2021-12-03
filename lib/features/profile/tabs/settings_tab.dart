@@ -15,7 +15,7 @@ import '../widgets/email_card.dart';
 import '../widgets/settings_screen_card.dart';
 
 class Settings extends StatefulWidget {
-  final UserModel user;
+  final UserModel? user;
   const Settings({Key? key, required this.user}) : super(key: key);
 
   @override
@@ -40,8 +40,8 @@ class _SettingsState extends State<Settings> {
               SettingsCard.text(
                   cardText: "Username",
                   onTap: () {},
-                  text: widget.user.username.toString()),
-              EmailCard(email: widget.user.email.toString()),
+                  text: widget.user!.username?.toString() ?? ""),
+              EmailCard(email: widget.user!.email.toString()),
               SettingsCard(
                   cardText: "Change Password",
                   onTap: () {
@@ -59,7 +59,7 @@ class _SettingsState extends State<Settings> {
                         builder: (contex) {
                           return _ChangePasswordBottomSheet(
                             authBloc: BlocProvider.of<AuthBloc>(context),
-                            user: widget.user,
+                            user: widget.user!,
                           );
                         });
                   }),

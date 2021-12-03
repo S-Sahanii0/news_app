@@ -4,6 +4,7 @@ import 'package:news_app/app/cubit/navigation/navigation_cubit.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/profile/tabs/settings_tab.dart';
 import 'package:provider/src/provider.dart';
 import '../config/theme/theme.dart';
@@ -59,11 +60,9 @@ class _AppDrawerState extends State<AppDrawer> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
-                  onTap: _user == null
-                      ? null
-                      : () {
-                          _navigationCubit.navigateToMyFeed();
-                        },
+                  onTap: () {
+                    _navigationCubit.navigateToMyFeed();
+                  },
                   child: Text(
                     "My Feed",
                     style: AppStyle.mediumText20,
@@ -129,28 +128,37 @@ class _AppDrawerState extends State<AppDrawer> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 child: Row(children: [
-                  Icon(Icons.close),
+                  GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: const Icon(Icons.close)),
                   Spacer(),
                   InkWell(
                       onTap: () {
-                        showModalBottomSheet(
-                            useRootNavigator: false,
-                            isDismissible: true,
-                            isScrollControlled: true,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10.r),
-                              topRight: Radius.circular(10.r),
-                            )),
-                            backgroundColor: Colors.transparent,
-                            context: context,
-                            builder: (contex) {
-                              return LogoutBottomSheet(
-                                authBloc: BlocProvider.of<AuthBloc>(context),
-                              );
-                            });
+                        if (_user != null) {
+                          showModalBottomSheet(
+                              useRootNavigator: false,
+                              isDismissible: true,
+                              isScrollControlled: true,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10.r),
+                                topRight: Radius.circular(10.r),
+                              )),
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (contex) {
+                                return LogoutBottomSheet(
+                                  authBloc: BlocProvider.of<AuthBloc>(context),
+                                );
+                              });
+                        } else {
+                          Navigator.of(context)
+                              .pushReplacementNamed(LoginScreen.route);
+                        }
                       },
-                      child: Text("Logout", style: AppStyle.regularText14))
+                      child: _user == null
+                          ? Text("Login/SignUp", style: AppStyle.regularText14)
+                          : Text("Logout", style: AppStyle.regularText14))
                 ]),
               ),
             ],

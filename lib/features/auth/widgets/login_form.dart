@@ -55,7 +55,10 @@ class _LoginFormState extends State<LoginForm> {
             height: 10.h,
           ),
           FormButton(
-            onTap: () => widget.onSubmit(widget._formKey),
+            onTap: () {
+              widget.onSubmit(widget._formKey);
+              Navigator.maybePop(context);
+            },
           ),
           SizedBox(
             height: 15.h,

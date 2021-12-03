@@ -152,7 +152,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final result =
           await authService.addToHistory(event.newsModel, event.user.id!);
       // add(LoginEvent(user: event.user));
-      emit(AuthSuccess(currentUser: event.user));
+      emit(AuthSuccess(
+          currentUser: event.user
+              .copyWith(history: event.user.history!..add(event.newsModel))));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
@@ -161,11 +163,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _handleRemoveFromHistory(
       RemoveFromHistory event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
+    final currentUser = (state as AuthSuccess).currentUser;
     try {
       final result =
           await authService.removeFromHistory(event.newsModel, event.user.id!);
       // add(LoginEvent(user: event.user));
-      emit(AuthSuccess(currentUser: event.user));
+      emit(AuthSuccess(
+          currentUser: currentUser!.copyWith(
+              history: currentUser.history!..remove(event.newsModel))));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }

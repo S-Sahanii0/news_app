@@ -52,13 +52,11 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('didUpdateWidget');
   }
 
   @override
   void didUpdateWidget(covariant SingleNewsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('didUpdateWidget');
   }
 
   @override
@@ -201,91 +199,88 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                 const Divider(
                                   thickness: 2,
                                 ),
-                                Flexible(
-                                  flex: 4,
-                                  child: Row(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          if (widget.user != null) {
-                                            if (widget.user!.history!
-                                                .contains(_news)) {
-                                              _authBloc.add(RemoveFromHistory(
-                                                  newsModel: _news,
-                                                  user: widget.user!));
-                                            } else {
-                                              _authBloc.add(AddToHistory(
-                                                  newsModel: _news,
-                                                  user: widget.user!));
-                                              _newsBloc.add(LikeNewsEvent(
-                                                  likedNews: _news.copyWith(
-                                                      likes:
-                                                          _news.likes! + 1)));
-                                            }
+                                Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        if (widget.user != null) {
+                                          if (widget.user!.history!
+                                              .contains(_news)) {
+                                            _authBloc.add(RemoveFromHistory(
+                                                newsModel: _news,
+                                                user: widget.user!));
+                                            _newsBloc.add(UnlikeNewsEvent(
+                                                unlikedNews: _news.copyWith(
+                                                    likes: _news.likes! - 1)));
                                           } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(const SnackBar(
-                                                    content: Text(
-                                                        "Please Login to access the following feature")));
+                                            _authBloc.add(AddToHistory(
+                                                newsModel: _news,
+                                                user: widget.user!));
+                                            _newsBloc.add(LikeNewsEvent(
+                                                likedNews: _news.copyWith(
+                                                    likes: _news.likes! + 1)));
                                           }
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      "Please Login to access the following feature")));
+                                        }
+                                      },
+                                      child: Image(
+                                          image: (authState as AuthSuccess)
+                                                      .currentUser !=
+                                                  null
+                                              ? (authState)
+                                                      .currentUser!
+                                                      .history!
+                                                      .any((element) =>
+                                                          element == _news)
+                                                  ? AppIcons.heartTapped
+                                                  : AppIcons.heart
+                                              : AppIcons.heart),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: Text(
+                                        (newsState as NewsLoadingSuccess)
+                                            .newsList
+                                            .where((element) =>
+                                                element.id == _news.id)
+                                            .first
+                                            .likes
+                                            .toString(),
+                                        style: AppStyle.regularText12.copyWith(
+                                            color: AppColors.greyShade2),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 4.w,
+                                    ),
+                                    InkWell(
+                                        onTap: () {
+                                          Navigator.of(context).pushNamed(
+                                              CommentScreen.route,
+                                              arguments: (newsState
+                                                      as NewsLoadingSuccess)
+                                                  .newsList
+                                                  .where((element) =>
+                                                      element.id == _news.id)
+                                                  .first);
                                         },
-                                        child: Image(
-                                            image: (authState as AuthSuccess)
-                                                        .currentUser !=
-                                                    null
-                                                ? (authState as AuthSuccess)
-                                                        .currentUser!
-                                                        .history!
-                                                        .any((element) =>
-                                                            element == _news)
-                                                    ? AppIcons.heartTapped
-                                                    : AppIcons.heart
-                                                : AppIcons.heart),
+                                        child: const Image(
+                                            image: AppIcons.comment)),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: Text(
+                                        _news.comment!.length.toString(),
+                                        style: AppStyle.regularText12.copyWith(
+                                            color: AppColors.greyShade2),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: Text(
-                                          (newsState as NewsLoadingSuccess)
-                                              .newsList
-                                              .where((element) =>
-                                                  element.id == _news.id)
-                                              .first
-                                              .likes
-                                              .toString(),
-                                          style: AppStyle.regularText12
-                                              .copyWith(
-                                                  color: AppColors.greyShade2),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 4.w,
-                                      ),
-                                      InkWell(
-                                          onTap: () {
-                                            Navigator.of(context).pushNamed(
-                                                CommentScreen.route,
-                                                arguments: (newsState
-                                                        as NewsLoadingSuccess)
-                                                    .newsList
-                                                    .where((element) =>
-                                                        element.id == _news.id)
-                                                    .first);
-                                          },
-                                          child: const Image(
-                                              image: AppIcons.comment)),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: Text(
-                                          _news.comment!.length.toString(),
-                                          style: AppStyle.regularText12
-                                              .copyWith(
-                                                  color: AppColors.greyShade2),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: isExpanded ? 80.h : 20.h,

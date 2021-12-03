@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         BlocProvider.value(
                           value: BlocProvider.of<AuthBloc>(context),
-                          child: Settings(user: userData!),
+                          child: Settings(user: userData),
                         ),
                         const BookmarkTab(),
                         const History(),

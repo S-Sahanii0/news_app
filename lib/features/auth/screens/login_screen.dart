@@ -83,7 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (value.currentState!.validate()) {
                             value.currentState!.save();
                             final result = value.currentState!.value;
-                            print(result);
                             BlocProvider.of<AuthBloc>(context).add(
                                 LoginEvent(user: UserModel.fromMap(result)));
                           }
@@ -103,9 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           GestureDetector(
                             onTap: () => ScaffoldMessenger.of(context)
-                                .showSnackBar(
-                                    SnackBar(content: Text("Coming soon"))),
-                            child: Image(
+                                .showSnackBar(const SnackBar(
+                                    content: Text("Coming soon"))),
+                            child: const Image(
                               image: AppIcons.facebook,
                             ),
                           ),
@@ -114,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               BlocProvider.of<AuthBloc>(context)
                                   .add(GoogleSignInEvent());
                             },
-                            child: Image(
+                            child: const Image(
                               image: AppIcons.google,
                             ),
                           ),

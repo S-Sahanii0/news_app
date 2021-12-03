@@ -32,7 +32,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   _handleGetCategoryEvent(
       GetCategoryEvent event, Emitter<CategoryState> emit) async {
     try {
-      print("eta pugyo");
       emit(CategoryLoading());
       final result = await catgoryService.getCategoryList();
       final likedCategory = <CategoryModel>[];

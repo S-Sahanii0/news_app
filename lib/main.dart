@@ -1,18 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:device_preview/device_preview.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/app/cubit/navigation/navigation_cubit.dart';
 import 'package:news_app/bloc_observer.dart';
-import 'package:news_app/features/categories/services/category_service.dart';
-import 'base_screen.dart';
+
 import 'config/app_router.dart' as router;
-import 'features/auth/screens/auth_test.dart';
-import 'features/auth/screens/sign_up_screen.dart';
-import 'features/news_feed/services/news_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return DevicePreview(
-      enabled: true,
+      enabled: false,
       builder: (context) => ScreenUtilInit(
         designSize: const Size(410, 730),
         builder: () => BlocProvider(
