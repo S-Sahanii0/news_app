@@ -3,7 +3,6 @@ part of 'auth_bloc.dart';
 @immutable
 abstract class AuthState extends Equatable {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
@@ -15,7 +14,6 @@ class AuthSuccess extends AuthState {
   AuthSuccess({this.currentUser});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [currentUser];
 }
 

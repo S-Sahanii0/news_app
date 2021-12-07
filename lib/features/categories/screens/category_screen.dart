@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_loading.dart';
+import 'package:news_app/components/buttons/app_outlined_button.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/categories/bloc/category_bloc.dart';
 import 'package:news_app/features/categories/screens/news_by_category.dart';
 import 'package:news_app/features/news_feed/screens/my_feed.dart';
@@ -47,8 +49,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return SafeArea(
       child: Scaffold(
         key: _key,
-        appBar: CustomAppBar()
-            .appBarWithNoBack(pageTitle: "Category", context: context),
+        appBar: CustomAppBar().appBarWithNoBack(pageTitle: "Category", context: context),
         floatingActionButton: AppFloatingActionButton(
           scaffoldKey: _key,
         ),
@@ -62,8 +63,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
               if (state is CategoryLoadSuccess) {
                 return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 17, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 15),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,17 +82,81 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).pushNamed(
-                                      NewsByCategoryScreen.route,
-                                      arguments: [
-                                        userData,
-                                        state.likedCategoryList[index]
-                                      ]);
+                                  Navigator.of(context)
+                                      .pushNamed(NewsByCategoryScreen.route, arguments: [
+                                    userData,
+                                    state.likedCategoryList[index]
+                                  ]);
                                 },
-                                child: AppCard(
-                                  cardText: state
-                                      .likedCategoryList[index].categoryName,
+                                child: AppCard.hasHeart(
+                                  cardText: state.likedCategoryList[index].categoryName,
                                   onTap: () {},
+                                  isSaved: true,
+                                  onTapheart: () {
+                                    if (userData != null) {
+                                      _categoryBloc.add(UnlikeCategoryEvent(
+                                          caytegory: state.likedCategoryList[index]));
+                                    } else {
+                                      showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: Colors.transparent,
+                                          useRootNavigator: false,
+                                          isDismissible: true,
+                                          isScrollControlled: true,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(10.r),
+                                            topRight: Radius.circular(10.r),
+                                          )),
+                                          builder: (_) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10.r),
+                                                color: AppColors.appWhite,
+                                              ),
+                                              constraints:
+                                                  BoxConstraints(maxHeight: 170.h),
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 18.w, vertical: 25.h),
+                                              child: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(
+                                                        vertical: 20.h),
+                                                    child: InkWell(
+                                                      onTap: () => Navigator.of(context)
+                                                          .pushNamed(LoginScreen.route),
+                                                      child: Text(
+                                                        'Login to Continue',
+                                                        style: AppStyle.semiBoldText16
+                                                            .copyWith(
+                                                                color: AppColors
+                                                                    .darkBlueShade2),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(
+                                                        horizontal: 28.w, vertical: 20.h),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.spaceAround,
+                                                      children: [
+                                                        AppOutlinedButton(
+                                                            onTap: () {
+                                                              Navigator.of(context).pop();
+                                                            },
+                                                            buttonText:
+                                                                "Continue Browsing")
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                    }
+                                  },
                                 ),
                               );
                             }),
@@ -120,34 +184,80 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
-                                Navigator.of(context).pushNamed(
-                                    NewsByCategoryScreen.route,
-                                    arguments: [
-                                      userData,
-                                      state.otherCategoryList[index]
-                                    ]);
+                                Navigator.of(context)
+                                    .pushNamed(NewsByCategoryScreen.route, arguments: [
+                                  userData,
+                                  state.otherCategoryList[index]
+                                ]);
                               },
                               child: AppCard.hasHeart(
-                                cardText:
-                                    state.otherCategoryList[index].categoryName,
+                                cardText: state.otherCategoryList[index].categoryName,
                                 onTap: () {},
                                 isSaved: false,
                                 onTapheart: () {
                                   if (userData != null) {
                                     _categoryBloc.add(LikeCategoryEvent(
-                                        caytegory:
-                                            state.otherCategoryList[index]));
-                                    _authBloc.add(AddChosenCategoryEvent(
-                                        categoryList: [
-                                          state.otherCategoryList[index]
-                                              .categoryName
-                                        ],
-                                        user: userData!));
+                                        caytegory: state.otherCategoryList[index]));
+                                    _authBloc.add(AddChosenCategoryEvent(categoryList: [
+                                      state.otherCategoryList[index].categoryName
+                                    ], user: userData!));
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "Please Login to access the following feature")));
+                                    showModalBottomSheet(
+                                        context: context,
+                                        backgroundColor: Colors.transparent,
+                                        useRootNavigator: false,
+                                        isDismissible: true,
+                                        isScrollControlled: true,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10.r),
+                                          topRight: Radius.circular(10.r),
+                                        )),
+                                        builder: (_) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10.r),
+                                              color: AppColors.appWhite,
+                                            ),
+                                            constraints: BoxConstraints(maxHeight: 170.h),
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 18.w, vertical: 25.h),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 20.h),
+                                                  child: InkWell(
+                                                    onTap: () => Navigator.of(context)
+                                                        .pushNamed(LoginScreen.route),
+                                                    child: Text(
+                                                      'Login to Continue',
+                                                      style: AppStyle.semiBoldText16
+                                                          .copyWith(
+                                                              color: AppColors
+                                                                  .darkBlueShade2),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 28.w, vertical: 20.h),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.spaceAround,
+                                                    children: [
+                                                      AppOutlinedButton(
+                                                          onTap: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          buttonText: "Continue Browsing")
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        });
                                   }
                                 },
                               ),

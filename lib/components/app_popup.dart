@@ -31,19 +31,29 @@ class _AppPopUpState extends State<AppPopUp> {
     return PopupMenuButton(
       offset: const Offset(0, 45),
       shape: const TooltipShape(),
-      child: const Image(image: AppIcons.filter),
+      child: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Icon(
+          AppIcons.filter,
+          color: AppColors.darkBlueShade1,
+          size: 20,
+        ),
+      ),
       itemBuilder: (context) {
         return [
           PopupMenuItem(
             enabled: false, // DISABLED THIS ITEM
-            child: IntrinsicWidth(
-              child: _FilteringTab(
-                onAscending: widget.onAscending,
-                onDescending: widget.onDescending,
-                onTrending: widget.onTrending,
-                onChannel: widget.onChannel,
-                onRead: widget.onRead,
-                onUnread: widget.onUnread,
+            child: Container(
+              width: 135.w,
+              child: IntrinsicWidth(
+                child: _FilteringTab(
+                  onAscending: widget.onAscending,
+                  onDescending: widget.onDescending,
+                  onTrending: widget.onTrending,
+                  onChannel: widget.onChannel,
+                  onRead: widget.onRead,
+                  onUnread: widget.onUnread,
+                ),
               ),
             ),
           ),
@@ -140,7 +150,7 @@ class __FilteringTabState extends State<_FilteringTab> {
                       isSelected: currentOptionIndex == 1,
                     ),
                     _Option(
-                      option: 'Trending',
+                      option: 'All',
                       onTap: () => setState(() {
                         widget.onTrending();
                         currentOptionIndex = 2;
@@ -173,7 +183,7 @@ class __FilteringTabState extends State<_FilteringTab> {
                       isSelected: currentOptionIndex == 1,
                     ),
                     _Option(
-                      option: 'Channel',
+                      option: 'All',
                       onTap: () => setState(() {
                         widget.onChannel();
                         currentOptionIndex = 2;

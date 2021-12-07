@@ -16,10 +16,8 @@ class NewsService {
     listenToChannelEvent();
   }
   CollectionReference userRef = FirebaseFirestore.instance.collection('users');
-  CollectionReference category =
-      FirebaseFirestore.instance.collection('category');
-  CollectionReference channel =
-      FirebaseFirestore.instance.collection('channel');
+  CollectionReference category = FirebaseFirestore.instance.collection('category');
+  CollectionReference channel = FirebaseFirestore.instance.collection('channel');
   CollectionReference news = FirebaseFirestore.instance.collection('news');
   List<Channel> channelList = [];
   List<News> newsList = [];
@@ -30,9 +28,7 @@ class NewsService {
     final categoryDocument = await this.category.doc(category).get();
     final categoryData = categoryDocument.data() as Map<String, dynamic>;
     final listOfNews = await getNewsModel(
-        (categoryData["news"] as List<dynamic>)
-            .map((e) => e.toString())
-            .toList());
+        (categoryData["news"] as List<dynamic>).map((e) => e.toString()).toList());
     final result = <News>[];
     for (var i in listOfNews) {
       result.add(News.fromMap(i));
@@ -49,8 +45,7 @@ class NewsService {
   }
 
   Future<void> addDataToFirebase() async {
-    final String response =
-        await rootBundle.loadString('assets/data/news_data.json');
+    final String response = await rootBundle.loadString('assets/data/news_data.json');
     final data = await json.decode(response);
 
     for (var element in List.from(data.keys)) {
@@ -105,7 +100,7 @@ class NewsService {
 
   Stream<List<News>> getFirstNewsList(List<String> userCategories) {
     var tempList = <News>[];
-    return news.limit(100).snapshots().map((event) {
+    return news.limit(70).snapshots().map((event) {
       tempList.addAll(event.docs.map((e) {
         final newsData = e.data() as Map<String, dynamic>;
         return News.fromMap({
@@ -137,12 +132,11 @@ class NewsService {
   // }
 
   Future<Stream<List<News>>> getNextNewsList() async {
-    final prevDocument = await news
-        .where('title', isEqualTo: newsList[newsList.length - 1].title)
-        .get();
+    final prevDocument =
+        await news.where('title', isEqualTo: newsList[newsList.length - 1].title).get();
     return news
         .startAfterDocument(prevDocument.docs.first)
-        .limit(100)
+        .limit(50)
         .snapshots()
         .map((event) {
       newsList.addAll(event.docs.map((e) {

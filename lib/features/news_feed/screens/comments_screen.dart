@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:news_app/components/buttons/app_outlined_button.dart';
+import 'package:news_app/config/theme/app_colors.dart';
+import 'package:news_app/config/theme/app_styles.dart';
 import 'package:news_app/features/auth/bloc/auth_bloc.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/model/comment_model.dart';
 import 'package:share_plus/share_plus.dart';
@@ -45,8 +49,7 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar()
-            .appBarWithBack(context: context, pageTitle: "Comments"),
+        appBar: CustomAppBar().appBarWithBack(context: context, pageTitle: "Comments"),
         body: SingleChildScrollView(
           child: BlocBuilder<NewsBloc, NewsState>(
             bloc: BlocProvider.of<NewsBloc>(context),
@@ -69,24 +72,72 @@ class _CommentScreenState extends State<CommentScreen> {
                         : userData!.history!.any((e) => currentNews.id == e.id),
                     isBookmark: userData == null
                         ? false
-                        : userData!.bookmarks!
-                            .any((e) => currentNews.id == e.id),
+                        : userData!.bookmarks!.any((e) => currentNews.id == e.id),
                     onTapHeart: () {
                       if (userData != null) {
                         if (userData!.history!.contains(widget.newsModel)) {
                           _authBloc.add(RemoveFromHistory(
                               newsModel: widget.newsModel, user: userData!));
                         } else {
-                          _authBloc.add(AddToHistory(
-                              newsModel: widget.newsModel, user: userData!));
+                          _authBloc.add(
+                              AddToHistory(newsModel: widget.newsModel, user: userData!));
                           _newsBloc.add(LikeNewsEvent(
-                              likedNews: currentNews.copyWith(
-                                  likes: currentNews.likes! + 1)));
+                              likedNews:
+                                  currentNews.copyWith(likes: currentNews.likes! + 1)));
                         }
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                "Please Login to access the following feature")));
+                        showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            useRootNavigator: false,
+                            isDismissible: true,
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10.r),
+                              topRight: Radius.circular(10.r),
+                            )),
+                            builder: (_) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  color: AppColors.appWhite,
+                                ),
+                                constraints: BoxConstraints(maxHeight: 170.h),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 18.w, vertical: 25.h),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                                      child: InkWell(
+                                        onTap: () => Navigator.of(context)
+                                            .pushNamed(LoginScreen.route),
+                                        child: Text(
+                                          'Login to Continue',
+                                          style: AppStyle.semiBoldText16
+                                              .copyWith(color: AppColors.darkBlueShade2),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 28.w, vertical: 20.h),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          AppOutlinedButton(
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              buttonText: "Continue Browsing")
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
                       }
                     },
                     onTapComment: () {},
@@ -100,9 +151,58 @@ class _CommentScreenState extends State<CommentScreen> {
                               newsToBookmark: currentNews, user: userData!));
                         }
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                "Please Login to access the following feature")));
+                        showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            useRootNavigator: false,
+                            isDismissible: true,
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10.r),
+                              topRight: Radius.circular(10.r),
+                            )),
+                            builder: (_) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  color: AppColors.appWhite,
+                                ),
+                                constraints: BoxConstraints(maxHeight: 170.h),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 18.w, vertical: 25.h),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                                      child: InkWell(
+                                        onTap: () => Navigator.of(context)
+                                            .pushNamed(LoginScreen.route),
+                                        child: Text(
+                                          'Login to Continue',
+                                          style: AppStyle.semiBoldText16
+                                              .copyWith(color: AppColors.darkBlueShade2),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 28.w, vertical: 20.h),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          AppOutlinedButton(
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              buttonText: "Continue Browsing")
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
                       }
                     },
                     onTapShare: () {
@@ -130,33 +230,78 @@ class _CommentScreenState extends State<CommentScreen> {
                           ]),
                           onTap: () {
                             if (userData != null) {
-                              if (CommentScreen._formKey.currentState!
-                                  .validate()) {
+                              if (CommentScreen._formKey.currentState!.validate()) {
                                 CommentScreen._formKey.currentState!.save();
-                                final result =
-                                    CommentScreen._formKey.currentState!.value;
-                                BlocProvider.of<NewsBloc>(context).add(
-                                    AddCommentEvent(
-                                        comment: CommentModel.fromMap({
-                                          "username": userData!.username,
-                                          "comment": result['comment']
-                                        }),
-                                        news: widget.newsModel.copyWith(
-                                            comment: widget.newsModel.comment!
-                                              ..add(
-                                                CommentModel.fromMap({
-                                                  "username":
-                                                      userData!.username,
-                                                  "comment": result['comment']
-                                                }),
-                                              ))));
+                                final result = CommentScreen._formKey.currentState!.value;
+                                BlocProvider.of<NewsBloc>(context).add(AddCommentEvent(
+                                    comment: CommentModel.fromMap({
+                                      "username": userData!.username,
+                                      "comment": result['comment']
+                                    }),
+                                    news: widget.newsModel.copyWith(
+                                        comment: widget.newsModel.comment!
+                                          ..add(
+                                            CommentModel.fromMap({
+                                              "username": userData!.username,
+                                              "comment": result['comment']
+                                            }),
+                                          ))));
                                 CommentScreen._formKey.currentState!.reset();
                               }
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Please Login to access the following feature")));
+                              showModalBottomSheet(
+                                  context: context,
+                                  backgroundColor: Colors.transparent,
+                                  useRootNavigator: false,
+                                  isDismissible: true,
+                                  isScrollControlled: true,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(10.r),
+                                    topRight: Radius.circular(10.r),
+                                  )),
+                                  builder: (_) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10.r),
+                                        color: AppColors.appWhite,
+                                      ),
+                                      constraints: BoxConstraints(maxHeight: 170.h),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 18.w, vertical: 25.h),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(vertical: 20.h),
+                                            child: InkWell(
+                                              onTap: () => Navigator.of(context)
+                                                  .pushNamed(LoginScreen.route),
+                                              child: Text(
+                                                'Login to Continue',
+                                                style: AppStyle.semiBoldText16.copyWith(
+                                                    color: AppColors.darkBlueShade2),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 28.w, vertical: 20.h),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                AppOutlinedButton(
+                                                    onTap: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                    buttonText: "Continue Browsing")
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  });
                             }
                           },
                           textInputAction: TextInputAction.done),
@@ -167,8 +312,7 @@ class _CommentScreenState extends State<CommentScreen> {
                       shrinkWrap: true,
                       itemCount: widget.newsModel.comment!.length,
                       itemBuilder: (context, index) {
-                        final comment =
-                            widget.newsModel.comment!.reversed.toList();
+                        final comment = widget.newsModel.comment!.reversed.toList();
                         return CommentCard(
                             commentor: comment[index].username ?? '',
                             noOfLikes: 1,

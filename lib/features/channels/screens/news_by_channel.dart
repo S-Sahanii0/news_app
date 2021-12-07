@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/components/buttons/app_outlined_button.dart';
 import 'package:news_app/config/theme/theme.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/auth/screens/login_screen.dart';
 import '../../../components/app_loading.dart';
 import '../bloc/channel_bloc.dart';
 import '../../news_feed/bloc/news_bloc.dart';
@@ -18,8 +21,7 @@ import '../../auth/bloc/auth_bloc.dart';
 
 class NewsByChannelScreen extends StatefulWidget {
   final String channelName;
-  const NewsByChannelScreen({Key? key, required this.channelName})
-      : super(key: key);
+  const NewsByChannelScreen({Key? key, required this.channelName}) : super(key: key);
   static const String route = '/kRouteNewsByChannel';
 
   @override
@@ -50,12 +52,10 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
-          appBar: CustomAppBar()
-              .appBarWithBack(pageTitle: "Interest", context: context),
+          appBar: CustomAppBar().appBarWithBack(pageTitle: "Interest", context: context),
           body: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, authState) {
-              return BlocBuilder<ChannelBloc, ChannelState>(
-                  builder: (context, state) {
+              return BlocBuilder<ChannelBloc, ChannelState>(builder: (context, state) {
                 if (state is ChannelInitial || state is ChannelLoading) {
                   return const AppLoadingIndicator();
                 }
@@ -78,61 +78,103 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
-                                Navigator.of(context).pushNamed(
-                                    SingleNewsScreen.route,
+                                Navigator.of(context).pushNamed(SingleNewsScreen.route,
                                     arguments: [index, newsList, userData]);
                               },
                               child: GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).pushNamed(
-                                      SingleNewsScreen.route,
+                                  Navigator.of(context).pushNamed(SingleNewsScreen.route,
                                       arguments: [index, newsList, userData]);
                                 },
                                 child: NewsDetailCard(
                                   channelName: newsList[index].channel.channel,
                                   newsDescription: newsList[index].content,
                                   newsTime: newsList[index].date,
-                                  numberOfLikes:
-                                      newsList[index].likes!.toString(),
-                                  numberOfComments: newsList[index]
-                                      .comment!
-                                      .length
-                                      .toString(),
+                                  numberOfLikes: newsList[index].likes!.toString(),
+                                  numberOfComments:
+                                      newsList[index].comment!.length.toString(),
                                   onTapHeart: () {
                                     if (userData != null) {
-                                      if (userData!.history!.any((e) =>
-                                          state.news[index].id == e.id)) {
+                                      if (userData!.history!
+                                          .any((e) => state.news[index].id == e.id)) {
                                         _authBloc.add(RemoveFromHistory(
                                             newsModel: newsList[index],
                                             user: userData!.copyWith(
                                                 history: userData!.history!
-                                                  ..remove(
-                                                      newsList[index].id))));
+                                                  ..remove(newsList[index].id))));
                                         _channelBloc.add(UnlikeNewsChannelEvent(
-                                            unlikedNews: newsList[index]
-                                                .copyWith(
-                                                    likes:
-                                                        newsList[index].likes! -
-                                                            1)));
+                                            unlikedNews: newsList[index].copyWith(
+                                                likes: newsList[index].likes! - 1)));
                                       } else {
                                         _authBloc.add(AddToHistory(
-                                            newsModel: newsList[index],
-                                            user: userData!));
+                                            newsModel: newsList[index], user: userData!));
                                         _channelBloc.add(LikeNewsChannelEvent(
                                             likedNews: newsList[index].copyWith(
-                                                likes: newsList[index].likes! +
-                                                    1)));
+                                                likes: newsList[index].likes! + 1)));
                                       }
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  "Please Login to access the following feature")));
+                                      showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: Colors.transparent,
+                                          useRootNavigator: false,
+                                          isDismissible: true,
+                                          isScrollControlled: true,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(10.r),
+                                            topRight: Radius.circular(10.r),
+                                          )),
+                                          builder: (_) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10.r),
+                                                color: AppColors.appWhite,
+                                              ),
+                                              constraints:
+                                                  BoxConstraints(maxHeight: 170.h),
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 18.w, vertical: 25.h),
+                                              child: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(
+                                                        vertical: 20.h),
+                                                    child: InkWell(
+                                                      onTap: () => Navigator.of(context)
+                                                          .pushNamed(LoginScreen.route),
+                                                      child: Text(
+                                                        'Login to Continue',
+                                                        style: AppStyle.semiBoldText16
+                                                            .copyWith(
+                                                                color: AppColors
+                                                                    .darkBlueShade2),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(
+                                                        horizontal: 28.w, vertical: 20.h),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.spaceAround,
+                                                      children: [
+                                                        AppOutlinedButton(
+                                                            onTap: () {
+                                                              Navigator.of(context).pop();
+                                                            },
+                                                            buttonText:
+                                                                "Continue Browsing")
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          });
                                     }
                                   },
                                   onTapComment: () {
-                                    Navigator.of(context).pushNamed(
-                                        CommentScreen.route,
+                                    Navigator.of(context).pushNamed(CommentScreen.route,
                                         arguments: newsList[index]);
                                   },
                                   onTapBookmark: () {
@@ -148,27 +190,79 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                             user: userData!));
                                       }
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  "Please Login to access the following feature")));
+                                      showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: Colors.transparent,
+                                          useRootNavigator: false,
+                                          isDismissible: true,
+                                          isScrollControlled: true,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(10.r),
+                                            topRight: Radius.circular(10.r),
+                                          )),
+                                          builder: (_) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10.r),
+                                                color: AppColors.appWhite,
+                                              ),
+                                              constraints:
+                                                  BoxConstraints(maxHeight: 170.h),
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 18.w, vertical: 25.h),
+                                              child: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(
+                                                        vertical: 20.h),
+                                                    child: InkWell(
+                                                      onTap: () => Navigator.of(context)
+                                                          .pushNamed(LoginScreen.route),
+                                                      child: Text(
+                                                        'Login to Continue',
+                                                        style: AppStyle.semiBoldText16
+                                                            .copyWith(
+                                                                color: AppColors
+                                                                    .darkBlueShade2),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(
+                                                        horizontal: 28.w, vertical: 20.h),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.spaceAround,
+                                                      children: [
+                                                        AppOutlinedButton(
+                                                            onTap: () {
+                                                              Navigator.of(context).pop();
+                                                            },
+                                                            buttonText:
+                                                                "Continue Browsing")
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          });
                                     }
                                   },
                                   onTapShare: () {
-                                    Share.share(
-                                        'check out this ${newsList[index].url}');
+                                    Share.share('check out this ${newsList[index].url}');
                                   },
                                   onTapMenu: () {},
                                   isBookmark: userData == null
                                       ? false
-                                      : userData!.bookmarks!.any(
-                                          (e) => newsList[index].id == e.id),
+                                      : userData!.bookmarks!
+                                          .any((e) => newsList[index].id == e.id),
                                   isHeart: userData == null
                                       ? false
-                                      : userData!.history!.any(
-                                          (e) => newsList[index].id == e.id),
-                                  channelImage:
-                                      newsList[index].channel.channelImage,
+                                      : userData!.history!
+                                          .any((e) => newsList[index].id == e.id),
+                                  channelImage: newsList[index].channel.channelImage,
                                   imageUrl: newsList[index].newsImage,
                                 ),
                               ),

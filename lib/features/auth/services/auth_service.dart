@@ -47,14 +47,10 @@ class AuthService {
       newUser["email"] = userModel["email"];
       newUser["username"] = userModel["username"];
       newUser["bookmarks"] = (await newsService.getNewsModel(
-          (userModel["bookmark"] as List<dynamic>)
-              .map((e) => e.toString())
-              .toList()));
+          (userModel["bookmark"] as List<dynamic>).map((e) => e.toString()).toList()));
       newUser["chosenCategories"] = userModel["chosenCategory"];
       newUser["history"] = await newsService.getNewsModel(
-          (userModel["history"] as List<dynamic>)
-              .map((e) => e.toString())
-              .toList());
+          (userModel["history"] as List<dynamic>).map((e) => e.toString()).toList());
 
       return UserModel.fromMap(newUser);
     });
@@ -76,8 +72,7 @@ class AuthService {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
@@ -146,8 +141,7 @@ class AuthService {
     return getCurrentUser(uid);
   }
 
-  Future<Stream<Future<UserModel>>> addToHistory(
-      News newsToAdd, String uid) async {
+  Future<Stream<Future<UserModel>>> addToHistory(News newsToAdd, String uid) async {
     final newsId = newsToAdd.id!;
     await users.doc(uid).update({
       'history': FieldValue.arrayUnion([newsId])
@@ -155,8 +149,7 @@ class AuthService {
     return getCurrentUser(uid);
   }
 
-  Future<Stream<Future<UserModel>>> removeFromHistory(
-      News newsToAdd, String uid) async {
+  Future<Stream<Future<UserModel>>> removeFromHistory(News newsToAdd, String uid) async {
     final newsId = newsToAdd.id!;
     await (users.doc(uid).update(
       {
@@ -186,5 +179,9 @@ class AuthService {
 
   Future<void> resetPassword(String password) async {
     await _firebaseAuth.currentUser!.updatePassword(password);
+  }
+
+  Future<void> forgotPassword(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 }

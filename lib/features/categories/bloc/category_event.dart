@@ -25,6 +25,12 @@ class LikeCategoryEvent extends CategoryEvent {
   const LikeCategoryEvent({required this.caytegory});
 }
 
+class UnlikeCategoryEvent extends CategoryEvent {
+  final CategoryModel caytegory;
+
+  const UnlikeCategoryEvent({required this.caytegory});
+}
+
 class AddCategoryToInterestsEvent extends CategoryEvent {
   final List<CategoryModel> categoryListToBeAdded;
   final UserModel currentIser;

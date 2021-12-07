@@ -56,6 +56,7 @@ dependencies:
   flutter_tts: ^3.2.2
   url_launcher: ^6.0.15
   share_plus: ^3.0.4
+  open_mail_app: ^0.4.1
   connectivity_plus: ^2.0.3
 
 dev_dependencies:

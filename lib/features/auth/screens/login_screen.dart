@@ -7,6 +7,7 @@ import '../../../config/theme/theme.dart';
 import '../bloc/auth_bloc.dart';
 import '../models/user_model.dart';
 import 'auth_test.dart';
+import 'forgot_password_screen.dart';
 import 'sign_up_screen.dart';
 import '../widgets/login_form.dart';
 
@@ -31,8 +32,10 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthFailure) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+            if (state.errorMessage.isNotEmpty) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+            }
           }
         },
         builder: (context, state) {
@@ -45,13 +48,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.all(24.0),
                     child: GestureDetector(
                       onTap: () {
-                        BlocProvider.of<AuthBloc>(context)
-                            .add(AnonLoginEvent());
+                        BlocProvider.of<AuthBloc>(context).add(AnonLoginEvent());
+                        Navigator.of(context).maybePop();
                       },
                       child: Text(
                         'Skip',
-                        style: AppStyle.mediumText16
-                            .copyWith(color: AppColors.yellowShade1),
+                        style:
+                            AppStyle.mediumText16.copyWith(color: AppColors.yellowShade1),
                       ),
                     ),
                   ),
@@ -72,8 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 25),
                       child: Text(
                         "Login",
-                        style: AppStyle.boldText20
-                            .copyWith(color: AppColors.darkBlueShade1),
+                        style:
+                            AppStyle.boldText20.copyWith(color: AppColors.darkBlueShade1),
                       ),
                     ),
                     Padding(
@@ -83,8 +86,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (value.currentState!.validate()) {
                             value.currentState!.save();
                             final result = value.currentState!.value;
-                            BlocProvider.of<AuthBloc>(context).add(
-                                LoginEvent(user: UserModel.fromMap(result)));
+                            BlocProvider.of<AuthBloc>(context)
+                                .add(LoginEvent(user: UserModel.fromMap(result)));
+                          }
+                        },
+                        onForgotPassword: (val) {
+                          if (val.currentState!.saveAndValidate()) {
+                            context.read<AuthBloc>().add(ForgotPasswordEvent(
+                                email: val.currentState!.value['email']));
+                            Navigator.pushNamed(context, ForgotPasswordScreen.route,
+                                arguments: val.currentState!.value['email']);
                           }
                         },
                       ),
@@ -101,17 +112,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           GestureDetector(
-                            onTap: () => ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                                    content: Text("Coming soon"))),
+                            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Coming soon"))),
                             child: const Image(
                               image: AppIcons.facebook,
                             ),
                           ),
                           GestureDetector(
                             onTap: () {
-                              BlocProvider.of<AuthBloc>(context)
-                                  .add(GoogleSignInEvent());
+                              BlocProvider.of<AuthBloc>(context).add(GoogleSignInEvent());
                             },
                             child: const Image(
                               image: AppIcons.google,

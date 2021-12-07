@@ -24,21 +24,20 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<GetCategoryEvent>(_handleGetCategoryEvent);
     on<GetNewsByCategory>(_handleGetNewsByCategory);
     on<LikeCategoryEvent>(_handleLikeCatgoryEvent);
+    on<UnlikeCategoryEvent>(_handleUnlikeCatgoryEvent);
     on<LikeNewsCategoryEvent>(_handleLikeNewsByCategoryEvent);
     on<UnlikeNewsCategoryEvent>(_handleUnLikeNewsByCategory);
     on<AddCommentCategoryEvent>(_handleCommentNewsByCategory);
   }
 
-  _handleGetCategoryEvent(
-      GetCategoryEvent event, Emitter<CategoryState> emit) async {
+  _handleGetCategoryEvent(GetCategoryEvent event, Emitter<CategoryState> emit) async {
     try {
       emit(CategoryLoading());
       final result = await catgoryService.getCategoryList();
       final likedCategory = <CategoryModel>[];
       event.user?.chosenCategories!.forEach((categoryName) {
-        likedCategory.addAll(result
-            .where((element) => element.categoryName == categoryName)
-            .toList());
+        likedCategory.addAll(
+            result.where((element) => element.categoryName == categoryName).toList());
         result.remove(likedCategory.last);
       });
       emit(CategoryLoadSuccess(
@@ -48,18 +47,32 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     }
   }
 
-  _handleLikeCatgoryEvent(
-      LikeCategoryEvent event, Emitter<CategoryState> emit) async {
+  _handleLikeCatgoryEvent(LikeCategoryEvent event, Emitter<CategoryState> emit) async {
     var currentState = state as CategoryLoadSuccess;
     try {
-      final likedCategory =
-          List<CategoryModel>.from(currentState.likedCategoryList)
-            ..add(event.caytegory);
+      final likedCategory = List<CategoryModel>.from(currentState.likedCategoryList)
+        ..add(event.caytegory);
 
       emit(CategoryLoadSuccess(
           likedCategoryList: likedCategory,
-          otherCategoryList: List.from(
-              currentState.otherCategoryList..remove(event.caytegory))));
+          otherCategoryList:
+              List.from(currentState.otherCategoryList..remove(event.caytegory))));
+    } catch (e) {
+      emit(CategoryLoadFailure());
+    }
+  }
+
+  _handleUnlikeCatgoryEvent(
+      UnlikeCategoryEvent event, Emitter<CategoryState> emit) async {
+    var currentState = state as CategoryLoadSuccess;
+    try {
+      final likedCategory = List<CategoryModel>.from(currentState.likedCategoryList)
+        ..remove(event.caytegory);
+
+      emit(CategoryLoadSuccess(
+          likedCategoryList: likedCategory,
+          otherCategoryList:
+              List.from(currentState.otherCategoryList..add(event.caytegory))));
     } catch (e) {
       emit(CategoryLoadFailure());
     }
@@ -76,8 +89,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
               .map((e) => e.categoryName == event.category.categoryName
                   ? event.category.copyWith(
                       news: e.news
-                          .map((e) =>
-                              e.id == event.likedNews.id ? event.likedNews : e)
+                          .map((e) => e.id == event.likedNews.id ? event.likedNews : e)
                           .toList())
                   : e)
               .toList();
@@ -86,8 +98,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
               .map((e) => e.categoryName == event.category.categoryName
                   ? event.category.copyWith(
                       news: e.news
-                          .map((e) =>
-                              e.id == event.likedNews.id ? event.likedNews : e)
+                          .map((e) => e.id == event.likedNews.id ? event.likedNews : e)
                           .toList())
                   : e)
               .toList();
@@ -107,28 +118,24 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
     try {
       await newsService.updateLike(event.unlikedNews.id!);
-      final updatedOtherCatgoryList =
-          List<CategoryModel>.from(currentState.otherCategoryList)
-              .map((e) => e.categoryName == event.category.categoryName
-                  ? event.category.copyWith(
-                      news: e.news
-                          .map((el) => el.id == event.unlikedNews.id
-                              ? event.unlikedNews
-                              : el)
-                          .toList())
-                  : e)
-              .toList();
-      final updatedLikedCatgoryList =
-          List<CategoryModel>.from(currentState.likedCategoryList)
-              .map((e) => e.categoryName == event.category.categoryName
-                  ? event.category.copyWith(
-                      news: e.news
-                          .map((e) => e.id == event.unlikedNews.id
-                              ? event.unlikedNews
-                              : e)
-                          .toList())
-                  : e)
-              .toList();
+      final updatedOtherCatgoryList = List<CategoryModel>.from(
+              currentState.otherCategoryList)
+          .map((e) => e.categoryName == event.category.categoryName
+              ? event.category.copyWith(
+                  news: e.news
+                      .map((el) => el.id == event.unlikedNews.id ? event.unlikedNews : el)
+                      .toList())
+              : e)
+          .toList();
+      final updatedLikedCatgoryList = List<CategoryModel>.from(
+              currentState.likedCategoryList)
+          .map((e) => e.categoryName == event.category.categoryName
+              ? event.category.copyWith(
+                  news: e.news
+                      .map((e) => e.id == event.unlikedNews.id ? event.unlikedNews : e)
+                      .toList())
+              : e)
+          .toList();
 
       emit(CategoryLoadSuccess(
           likedCategoryList: updatedLikedCatgoryList,
@@ -173,13 +180,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     }
   }
 
-  _handleGetNewsByCategory(
-      GetNewsByCategory event, Emitter<CategoryState> emit) async {
+  _handleGetNewsByCategory(GetNewsByCategory event, Emitter<CategoryState> emit) async {
     var currentState = state as CategoryLoadSuccess;
     try {
       emit(CategoryLoading());
-      final news =
-          await newsService.getNewsByCategory(event.category.categoryName);
+      final news = await newsService.getNewsByCategory(event.category.categoryName);
 
       final updatedOtherCatgoryList =
           List<CategoryModel>.from(currentState.otherCategoryList)

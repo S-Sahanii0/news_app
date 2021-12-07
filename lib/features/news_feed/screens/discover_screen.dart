@@ -3,9 +3,13 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:news_app/components/app_loading.dart';
+import 'package:news_app/components/buttons/app_outlined_button.dart';
+import 'package:news_app/config/theme/app_styles.dart';
+import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/news_feed/screens/search_screen.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -38,8 +42,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _authBloc = BlocProvider.of<AuthBloc>(context);
-    _newsBloc = BlocProvider.of<NewsBloc>(context)
-      ..add(const GetFirstNewsListEvent());
+    _newsBloc = BlocProvider.of<NewsBloc>(context)..add(const GetFirstNewsListEvent());
   }
 
   @override
@@ -53,8 +56,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           appBar: CustomAppBar().primaryAppBar(
             pageTitle: "Discover",
             context: context,
-            onPressSearch: () => Navigator.of(context)
-                .pushNamed(SearchScreen.route, arguments: userData),
+            onPressSearch: () =>
+                Navigator.of(context).pushNamed(SearchScreen.route, arguments: userData),
             onAscendingSort: () {},
             onDescendingSort: () {},
             onTrendingSort: () {},
@@ -68,8 +71,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             },
             builder: (context, authState) {
               var userData = (_authBloc.state as AuthSuccess).currentUser;
-              return BlocBuilder<NewsBloc, NewsState>(
-                  buildWhen: (current, prev) {
+              return BlocBuilder<NewsBloc, NewsState>(buildWhen: (current, prev) {
                 return current != prev;
               }, builder: (context, state) {
                 if (state is NewsInitial || state is NewsLoading)
@@ -84,24 +86,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           ? const AppLoadingIndicator()
                           : GestureDetector(
                               onTap: () {
-                                Navigator.of(context).pushNamed(
-                                    SingleNewsScreen.route,
-                                    arguments: [
-                                      index,
-                                      newListDiscover,
-                                      userData
-                                    ]);
+                                Navigator.of(context).pushNamed(SingleNewsScreen.route,
+                                    arguments: [index, newListDiscover, userData]);
                               },
                               child: NewsDetailCard(
-                                channelName:
-                                    newListDiscover[index].channel.channel,
+                                channelName: newListDiscover[index].channel.channel,
                                 newsDescription: newListDiscover[index].content,
                                 newsTime: newListDiscover[index].date,
-                                numberOfLikes:
-                                    newListDiscover[index].likes.toString(),
-                                numberOfComments: state
-                                    .newsList[index].comment!.length
-                                    .toString(),
+                                numberOfLikes: newListDiscover[index].likes.toString(),
+                                numberOfComments:
+                                    state.newsList[index].comment!.length.toString(),
                                 onTapHeart: () {
                                   if (userData != null) {
                                     if (userData.history!
@@ -110,32 +104,77 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                           newsModel: newListDiscover[index],
                                           user: userData));
                                       _newsBloc.add(UnlikeNewsEvent(
-                                          unlikedNews: newListDiscover[index]
-                                              .copyWith(
-                                                  likes: newListDiscover[index]
-                                                          .likes! -
-                                                      1)));
+                                          unlikedNews: newListDiscover[index].copyWith(
+                                              likes: newListDiscover[index].likes! - 1)));
                                     } else {
                                       _authBloc.add(AddToHistory(
                                           newsModel: newListDiscover[index],
                                           user: userData));
                                       _newsBloc.add(LikeNewsEvent(
-                                          likedNews: newListDiscover[index]
-                                              .copyWith(
-                                                  likes: newListDiscover[index]
-                                                          .likes! +
-                                                      1)));
+                                          likedNews: newListDiscover[index].copyWith(
+                                              likes: newListDiscover[index].likes! + 1)));
                                     }
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "Please Login to access the following feature")));
+                                    showModalBottomSheet(
+                                        context: context,
+                                        backgroundColor: Colors.transparent,
+                                        useRootNavigator: false,
+                                        isDismissible: true,
+                                        isScrollControlled: true,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10.r),
+                                          topRight: Radius.circular(10.r),
+                                        )),
+                                        builder: (_) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10.r),
+                                              color: AppColors.appWhite,
+                                            ),
+                                            constraints: BoxConstraints(maxHeight: 170.h),
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 18.w, vertical: 25.h),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 20.h),
+                                                  child: InkWell(
+                                                    onTap: () => Navigator.of(context)
+                                                        .pushNamed(LoginScreen.route),
+                                                    child: Text(
+                                                      ' Login to Continue',
+                                                      style: AppStyle.semiBoldText16
+                                                          .copyWith(
+                                                              color: AppColors
+                                                                  .darkBlueShade2),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 28.w, vertical: 20.h),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.spaceAround,
+                                                    children: [
+                                                      AppOutlinedButton(
+                                                          onTap: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          buttonText: "Continue Browsing")
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        });
                                   }
                                 },
                                 onTapComment: () {
-                                  Navigator.of(context).pushNamed(
-                                      CommentScreen.route,
+                                  Navigator.of(context).pushNamed(CommentScreen.route,
                                       arguments: newListDiscover[index]);
                                 },
                                 onTapBookmark: () {
@@ -143,20 +182,70 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                     if (userData.bookmarks!
                                         .contains(newListDiscover[index])) {
                                       _authBloc.add(RemoveBookMarkEvent(
-                                          newsToBookmark:
-                                              newListDiscover[index],
+                                          newsToBookmark: newListDiscover[index],
                                           user: userData));
                                     } else {
                                       _authBloc.add(AddToBookMarkEvent(
-                                          newsToBookmark:
-                                              newListDiscover[index],
+                                          newsToBookmark: newListDiscover[index],
                                           user: userData));
                                     }
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "Please Login to access the following feature")));
+                                    showModalBottomSheet(
+                                        context: context,
+                                        backgroundColor: Colors.transparent,
+                                        useRootNavigator: false,
+                                        isDismissible: true,
+                                        isScrollControlled: true,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10.r),
+                                          topRight: Radius.circular(10.r),
+                                        )),
+                                        builder: (_) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10.r),
+                                              color: AppColors.appWhite,
+                                            ),
+                                            constraints: BoxConstraints(maxHeight: 170.h),
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 18.w, vertical: 25.h),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 20.h),
+                                                  child: InkWell(
+                                                    onTap: () => Navigator.of(context)
+                                                        .pushNamed(LoginScreen.route),
+                                                    child: Text(
+                                                      'Login to Continue',
+                                                      style: AppStyle.semiBoldText16
+                                                          .copyWith(
+                                                              color: AppColors
+                                                                  .darkBlueShade2),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 28.w, vertical: 20.h),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.spaceAround,
+                                                    children: [
+                                                      AppOutlinedButton(
+                                                          onTap: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          buttonText: "Continue Browsing")
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        });
                                   }
                                 },
                                 onTapShare: () {
@@ -164,24 +253,18 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                       'check out this ${state.newsList[index].url}');
                                 },
                                 onTapMenu: () {
-                                  Navigator.of(context).pushNamed(
-                                      SingleNewsScreen.route,
-                                      arguments: [
-                                        index,
-                                        newListDiscover,
-                                        userData
-                                      ]);
+                                  Navigator.of(context).pushNamed(SingleNewsScreen.route,
+                                      arguments: [index, newListDiscover, userData]);
                                 },
                                 isBookmark: userData == null
                                     ? false
-                                    : userData.bookmarks!.any((e) =>
-                                        newListDiscover[index].id == e.id),
+                                    : userData.bookmarks!
+                                        .any((e) => newListDiscover[index].id == e.id),
                                 isHeart: userData == null
                                     ? false
-                                    : userData.history!.any((e) =>
-                                        newListDiscover[index].id == e.id),
-                                channelImage:
-                                    newListDiscover[index].channel.channelImage,
+                                    : userData.history!
+                                        .any((e) => newListDiscover[index].id == e.id),
+                                channelImage: newListDiscover[index].channel.channelImage,
                                 imageUrl: newListDiscover[index].newsImage,
                               ),
                             );

@@ -7,6 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:news_app/app/cubit/navigation/navigation_cubit.dart';
 import 'package:news_app/app/cubit/network/network_cubit.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
+import 'package:news_app/features/auth/screens/forgot_password_screen.dart';
 import 'package:news_app/features/auth/services/auth_service.dart';
 import 'package:news_app/features/categories/bloc/category_bloc.dart';
 import 'package:news_app/features/categories/screens/follwing_category_screen.dart';
@@ -240,6 +241,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                 child: SearchScreen(
                   user: user,
                 ),
+              ));
+    case ForgotPasswordScreen.route:
+      final email = settings.arguments as String;
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: _authBloc,
+                child: ForgotPasswordScreen(email: email),
               ));
 
     default:

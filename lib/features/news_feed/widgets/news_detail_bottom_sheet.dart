@@ -3,8 +3,7 @@ import '../../../config/theme/app_icons.dart';
 import '../../../config/theme/theme.dart';
 
 class NewsDetailBottomSheet extends StatefulWidget {
-  const NewsDetailBottomSheet(
-      {Key? key, required this.onPlay, required this.shouldPlay})
+  const NewsDetailBottomSheet({Key? key, required this.onPlay, required this.shouldPlay})
       : super(key: key);
 
   final Function(bool) onPlay;
@@ -42,7 +41,7 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Icon(Icons.bookmark_outline, color: AppColors.blueShade3),
+            const Icon(Icons.bookmark_outline, color: AppColors.blueShade3, size: 20),
             const Image(image: AppIcons.fontSize),
             InkWell(
                 onTap: () {
@@ -57,11 +56,12 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
                   progress: animationController,
                   color: AppColors.appWhite,
                 )),
-            const Image(
-              image: AppIcons.share,
+            const Icon(
+              AppIcons.share,
               color: AppColors.blueShade3,
+              size: 20,
             ),
-            const Image(image: AppIcons.hamburger, color: AppColors.blueShade3),
+            const Icon(AppIcons.hamburger, color: AppColors.blueShade3, size: 20),
           ],
         ),
       ),
