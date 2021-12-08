@@ -150,7 +150,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _handleAddToHistory(AddToHistory event, Emitter<AuthState> emit) async {
     try {
       emit(AuthSuccess(currentUser: event.user));
-      await authService.addToHistory(event.newsModel, event.user.id!);
+      authService.addToHistory(event.newsModel, event.user.id!);
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
@@ -161,7 +161,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(AuthSuccess(currentUser: event.user));
 
-      await authService.removeFromHistory(event.newsModel, event.user.id!);
+      authService.removeFromHistory(event.newsModel, event.user.id!);
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }

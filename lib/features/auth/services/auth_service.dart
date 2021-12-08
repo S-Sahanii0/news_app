@@ -47,10 +47,14 @@ class AuthService {
       newUser["email"] = userModel["email"];
       newUser["username"] = userModel["username"];
       newUser["bookmarks"] = (await newsService.getNewsModel(
-          (userModel["bookmark"] as List<dynamic>).map((e) => e.toString()).toList()));
+          (userModel["bookmark"] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList()));
       newUser["chosenCategories"] = userModel["chosenCategory"];
       newUser["history"] = await newsService.getNewsModel(
-          (userModel["history"] as List<dynamic>).map((e) => e.toString()).toList());
+          (userModel["history"] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList());
 
       return UserModel.fromMap(newUser);
     });
@@ -72,7 +76,8 @@ class AuthService {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
@@ -123,10 +128,8 @@ class AuthService {
   }
 
   Future<Stream<Future<UserModel>>> login(UserModel userModel) async {
-    print(await _firebaseAuth.signInWithEmailAndPassword(
-        email: userModel.email, password: userModel.password!));
     final result = await _firebaseAuth.signInWithEmailAndPassword(
-        email: userModel.email, password: userModel.password!);
+        email: userModel.email.trim(), password: userModel.password!);
     return getCurrentUser(result.user!.uid);
   }
 
@@ -141,22 +144,20 @@ class AuthService {
     return getCurrentUser(uid);
   }
 
-  Future<Stream<Future<UserModel>>> addToHistory(News newsToAdd, String uid) async {
+  addToHistory(News newsToAdd, String uid) async {
     final newsId = newsToAdd.id!;
     await users.doc(uid).update({
       'history': FieldValue.arrayUnion([newsId])
     });
-    return getCurrentUser(uid);
   }
 
-  Future<Stream<Future<UserModel>>> removeFromHistory(News newsToAdd, String uid) async {
+  removeFromHistory(News newsToAdd, String uid) async {
     final newsId = newsToAdd.id!;
     await (users.doc(uid).update(
       {
         'history': FieldValue.arrayRemove([newsId])
       },
     ));
-    return getCurrentUser(uid);
   }
 
   Future<Stream<Future<UserModel>>> addChosenCategory(
