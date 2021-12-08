@@ -65,7 +65,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: 140.h,
+                height: 110.h,
                 width: 120.w,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
@@ -79,10 +79,11 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: ListView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    // physics: const NeverScrollableScrollPhysics(),
+                    // shrinkWrap: true,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Row(
                         children: [

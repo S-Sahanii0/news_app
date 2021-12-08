@@ -123,10 +123,8 @@ class AuthService {
   }
 
   Future<Stream<Future<UserModel>>> login(UserModel userModel) async {
-    print(await _firebaseAuth.signInWithEmailAndPassword(
-        email: userModel.email, password: userModel.password!));
     final result = await _firebaseAuth.signInWithEmailAndPassword(
-        email: userModel.email, password: userModel.password!);
+        email: userModel.email.trim(), password: userModel.password!);
     return getCurrentUser(result.user!.uid);
   }
 

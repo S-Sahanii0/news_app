@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return DevicePreview(
-      enabled: true,
+      enabled: false,
       builder: (context) => ScreenUtilInit(
         designSize: const Size(410, 730),
         builder: () => BlocProvider(
