@@ -1,3 +1,4 @@
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../config/theme/app_icons.dart';
@@ -65,7 +66,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: 110.h,
+                height: 140.h,
                 width: 120.w,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
@@ -193,9 +194,11 @@ class _feedIconRow extends StatefulWidget {
 }
 
 class __feedIconRowState extends State<_feedIconRow> {
+  late bool isLiked;
   @override
   void initState() {
     super.initState();
+    isLiked = widget.isHeart;
   }
 
   @override
@@ -209,15 +212,15 @@ class __feedIconRowState extends State<_feedIconRow> {
             InkWell(
               onTap: () {
                 setState(() {
-                  widget.isHeart = !widget.isHeart;
+                  isLiked = !isLiked;
                 });
-                widget.onTapHeart();
+                EasyDebounce.debounce('tag', Duration(milliseconds: 500), () {
+                  widget.onTapHeart();
+                });
               },
-              child: Icon(
-                  widget.isHeart ? AppIcons.heartTapped : AppIcons.heart,
-                  color: widget.isHeart
-                      ? Colors.red.shade800
-                      : AppColors.darkBlueShade2,
+              child: Icon(isLiked ? AppIcons.heartTapped : AppIcons.heart,
+                  color:
+                      isLiked ? Colors.red.shade800 : AppColors.darkBlueShade2,
                   size: 23),
             ),
             Padding(

@@ -13,7 +13,7 @@ import 'config/app_router.dart' as router;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  Bloc.observer = AppBlocObserver();
+  // Bloc.observer = AppBlocObserver();
   // NewsService(categoryService: CategoryService()).addDataToFirebase();
   runApp(const MyApp());
 }
