@@ -102,6 +102,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                       shouldPlay: _shouldPlay,
                     ),
                     body: PageView.builder(
+                        physics: ClampingScrollPhysics(),
                         onPageChanged: (_) {
                           currentNews = widget.news[_].content;
                           if (!_shouldPlay)

@@ -3,7 +3,8 @@ import '../../../config/theme/app_icons.dart';
 import '../../../config/theme/theme.dart';
 
 class NewsDetailBottomSheet extends StatefulWidget {
-  const NewsDetailBottomSheet({Key? key, required this.onPlay, required this.shouldPlay})
+  const NewsDetailBottomSheet(
+      {Key? key, required this.onPlay, required this.shouldPlay})
       : super(key: key);
 
   final Function(bool) onPlay;
@@ -28,6 +29,8 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
 
   @override
   Widget build(BuildContext context) {
+    animationController.value = widget.shouldPlay ? 1 : 0;
+    print('should play: ${widget.shouldPlay}');
     return DecoratedBox(
       decoration: const BoxDecoration(color: AppColors.blueShade1, boxShadow: [
         BoxShadow(
@@ -41,7 +44,8 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Icon(Icons.bookmark_outline, color: AppColors.blueShade3, size: 20),
+            const Icon(Icons.bookmark_outline,
+                color: AppColors.blueShade3, size: 20),
             const Image(image: AppIcons.fontSize),
             InkWell(
                 onTap: () {
@@ -61,7 +65,8 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
               color: AppColors.blueShade3,
               size: 20,
             ),
-            const Icon(AppIcons.hamburger, color: AppColors.blueShade3, size: 20),
+            const Icon(AppIcons.hamburger,
+                color: AppColors.blueShade3, size: 20),
           ],
         ),
       ),
