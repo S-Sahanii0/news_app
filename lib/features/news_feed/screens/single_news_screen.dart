@@ -64,6 +64,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
     super.dispose();
   }
 
+  String currentNews = '';
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -82,8 +83,7 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                         if (isPlaying) {
                           _ttsCubit.stop();
                         } else {
-                          _ttsCubit
-                              .handlePlay(widget.news[widget.currentNewsIndex].content);
+                          _ttsCubit.handlePlay(currentNews);
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                             content: Text('Playing...'),
                             duration: Duration(seconds: 1),
@@ -98,7 +98,11 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                     ),
                     body: PageView.builder(
                         onPageChanged: (_) {
-                          if (!_shouldPlay) _ttsCubit.stop();
+                          currentNews = widget.news[_].content;
+                          if (!_shouldPlay)
+                            _ttsCubit.stop();
+                          else
+                            _ttsCubit.handlePlay(currentNews);
                         },
                         controller: state.pageController,
                         scrollDirection: Axis.vertical,
