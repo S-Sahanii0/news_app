@@ -69,7 +69,8 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                 width: 120.w,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.yellowShade1, width: 1.5),
+                      border:
+                          Border.all(color: AppColors.yellowShade1, width: 1.5),
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
                         fit: BoxFit.fitHeight,
@@ -79,7 +80,8 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: ListView(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -90,7 +92,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                             flex: 8,
                             child: CircleAvatar(
                               backgroundColor: AppColors.yellowShade2,
-                              radius: 15,
+                              radius: 10,
                               child: Image(
                                 fit: BoxFit.contain,
                                 image: NetworkImage(widget.channelImage),
@@ -118,12 +120,18 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                           ),
                         ],
                       ),
+                      SizedBox(
+                        height: 8.h,
+                      ),
                       Text(
                         widget.newsDescription,
-                        style:
-                            AppStyle.boldText14.copyWith(color: AppColors.darkBlueShade1),
+                        style: AppStyle.boldText14
+                            .copyWith(color: AppColors.darkBlueShade1),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
+                      ),
+                      SizedBox(
+                        height: 5.h,
                       ),
                       const Divider(
                         thickness: 2,
@@ -205,15 +213,19 @@ class __feedIconRowState extends State<_feedIconRow> {
                 });
                 widget.onTapHeart();
               },
-              child: Icon(widget.isHeart ? AppIcons.heartTapped : AppIcons.heart,
-                  color: widget.isHeart ? Colors.red.shade800 : AppColors.darkBlueShade2,
+              child: Icon(
+                  widget.isHeart ? AppIcons.heartTapped : AppIcons.heart,
+                  color: widget.isHeart
+                      ? Colors.red.shade800
+                      : AppColors.darkBlueShade2,
                   size: 23),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Text(
                 widget.numberOfLikes,
-                style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
+                style: AppStyle.regularText12
+                    .copyWith(color: AppColors.greyShade2),
               ),
             ),
           ],
@@ -223,7 +235,9 @@ class __feedIconRowState extends State<_feedIconRow> {
             InkWell(
                 onTap: widget.onTapComment,
                 child: Icon(
-                  widget.commentTapped ? AppIcons.commentTapped : AppIcons.comment,
+                  widget.commentTapped
+                      ? AppIcons.commentTapped
+                      : AppIcons.comment,
                   color: AppColors.darkBlueShade2,
                   size: 20,
                 )),
@@ -231,7 +245,8 @@ class __feedIconRowState extends State<_feedIconRow> {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Text(
                 widget.numberOfComments,
-                style: AppStyle.regularText12.copyWith(color: AppColors.greyShade2),
+                style: AppStyle.regularText12
+                    .copyWith(color: AppColors.greyShade2),
               ),
             ),
           ],
@@ -245,7 +260,9 @@ class __feedIconRowState extends State<_feedIconRow> {
           },
           child: Icon(
             widget.isBookmark ? AppIcons.bookmarkTapped : AppIcons.bookmark,
-            color: widget.isBookmark ? Colors.red.shade800 : AppColors.darkBlueShade2,
+            color: widget.isBookmark
+                ? Colors.red.shade800
+                : AppColors.darkBlueShade2,
             size: 20,
           ),
         ),

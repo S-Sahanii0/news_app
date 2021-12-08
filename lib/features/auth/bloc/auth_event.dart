@@ -76,7 +76,9 @@ class ResetPasswordEvent extends AuthEvent {
   final String password;
   final String confirmPassword;
   ResetPasswordEvent(
-      {required this.user, required this.password, required this.confirmPassword});
+      {required this.user,
+      required this.password,
+      required this.confirmPassword});
 }
 
 class ForgotPasswordEvent extends AuthEvent {

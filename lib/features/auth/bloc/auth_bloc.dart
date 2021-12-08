@@ -38,7 +38,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _handleAppStarted(AppStartedEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      // NewsService().listenToChannelEvent();
       await for (var authEvent in authService.checkUser()) {
         if (authEvent != null) {
           final userEvent = authService.getCurrentUser(authEvent.uid);
@@ -70,12 +69,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthFailure(errorMessage: "Email already in use"));
       }
       if (e.code == 'network-request-failed') {
-        emit(AuthFailure(errorMessage: "Please check your internet connection."));
+        emit(AuthFailure(
+            errorMessage: "Please check your internet connection."));
       }
     }
   }
 
-  _handleChosenCatgoryEvent(AddChosenCategoryEvent event, Emitter<AuthState> emit) async {
+  _handleChosenCatgoryEvent(
+      AddChosenCategoryEvent event, Emitter<AuthState> emit) async {
     try {
       await authService.addChosenCategory(event.categoryList, event.user.id!);
       emit(AuthSuccess(
@@ -93,8 +94,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       RemoveChosenCategoryEvent event, Emitter<AuthState> emit) async {
     final currentState = state as AuthSuccess;
     try {
-      final result =
-          await authService.removeChosenCategory(event.category, event.user.id!);
+      final result = await authService.removeChosenCategory(
+          event.category, event.user.id!);
       emit(AuthLoading());
       await for (var event in result) {
         emit(AuthSuccess(currentUser: await event));
@@ -105,38 +106,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  _handleAddToBookmark(AddToBookMarkEvent event, Emitter<AuthState> emit) async {
+  _handleAddToBookmark(
+      AddToBookMarkEvent event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
     try {
-      final result =
-          await authService.addToBookmarks(event.newsToBookmark, event.user.id!);
+      final result = await authService.addToBookmarks(
+          event.newsToBookmark, event.user.id!);
       emit(AuthSuccess(
-          currentUser: event.user
-              .copyWith(bookmarks: event.user.bookmarks!..add(event.newsToBookmark))));
+          currentUser: event.user.copyWith(
+              bookmarks: event.user.bookmarks!..add(event.newsToBookmark))));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
-  _handleRemoveFromBookMark(RemoveBookMarkEvent event, Emitter<AuthState> emit) async {
+  _handleRemoveFromBookMark(
+      RemoveBookMarkEvent event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
     try {
-      final result =
-          await authService.addToBookmarks(event.newsToBookmark, event.user.id!);
+      final result = await authService.addToBookmarks(
+          event.newsToBookmark, event.user.id!);
       emit(AuthSuccess(
-          currentUser: event.user
-              .copyWith(bookmarks: event.user.bookmarks!..remove(event.newsToBookmark))));
+          currentUser: event.user.copyWith(
+              bookmarks: event.user.bookmarks!..remove(event.newsToBookmark))));
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
-  _handleResetPasswordEvent(ResetPasswordEvent event, Emitter<AuthState> emit) async {
+  _handleResetPasswordEvent(
+      ResetPasswordEvent event, Emitter<AuthState> emit) async {
     // emit(AuthLoading());
     try {
       if (event.confirmPassword == event.password) {
-        await authService.resetPassword(event.password);
         emit(AuthSuccess(currentUser: event.user));
+        await authService.resetPassword(event.password);
       }
     } on FirebaseAuthException catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
@@ -145,25 +149,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   _handleAddToHistory(AddToHistory event, Emitter<AuthState> emit) async {
     try {
-      final result = await authService.addToHistory(event.newsModel, event.user.id!);
-      // add(LoginEvent(user: event.user));
-      emit(AuthSuccess(
-          currentUser:
-              event.user.copyWith(history: event.user.history!..add(event.newsModel))));
+      emit(AuthSuccess(currentUser: event.user));
+      await authService.addToHistory(event.newsModel, event.user.id!);
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
   }
 
-  _handleRemoveFromHistory(RemoveFromHistory event, Emitter<AuthState> emit) async {
-    // emit(AuthLoading());
-    final currentUser = (state as AuthSuccess).currentUser;
+  _handleRemoveFromHistory(
+      RemoveFromHistory event, Emitter<AuthState> emit) async {
     try {
-      final result = await authService.removeFromHistory(event.newsModel, event.user.id!);
-      // add(LoginEvent(user: event.user));
-      emit(AuthSuccess(
-          currentUser: currentUser!
-              .copyWith(history: currentUser.history!..remove(event.newsModel))));
+      emit(AuthSuccess(currentUser: event.user));
+
+      await authService.removeFromHistory(event.newsModel, event.user.id!);
     } catch (e) {
       emit(AuthFailure(errorMessage: e.toString()));
     }
@@ -212,7 +210,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthFailure(errorMessage: "Please Check your network connection"));
       }
       if (e.code == "user-not-found") {
-        emit(AuthFailure(errorMessage: "No account with given email address exists"));
+        emit(AuthFailure(
+            errorMessage: "No account with given email address exists"));
       }
       if (e.code == "wrong-password") {
         emit(AuthFailure(errorMessage: "Incorrect credentials were provided"));
@@ -256,7 +255,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return emit(AuthFailure(errorMessage: "Login Failed"));
   }
 
-  _handleForgotPasswordEvent(ForgotPasswordEvent event, Emitter<AuthState> emit) {
+  _handleForgotPasswordEvent(
+      ForgotPasswordEvent event, Emitter<AuthState> emit) {
     try {
       authService.forgotPassword(event.email);
     } catch (e, stk) {
