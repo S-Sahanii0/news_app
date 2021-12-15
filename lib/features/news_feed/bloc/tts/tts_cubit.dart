@@ -14,10 +14,14 @@ class TtsCubit extends Cubit<TtsState> {
 
   void handlePlay(String text) async {
     log('Playing audio.');
-    await ttsService.stopReading();
+    //if prev audio is being read it needs to be stopped when going to new article
+    // await ttsService.stopReading();
     try {
       final result = await ttsService.readText(text);
+      //result = 1 means reading has been completed
+
       if (result == 1) {
+        //auto scroll to next page
         state.pageController.nextPage(
             duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
         emit(state.copyWith(shouldAutoPlay: true));

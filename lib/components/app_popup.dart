@@ -43,18 +43,13 @@ class _AppPopUpState extends State<AppPopUp> {
         return [
           PopupMenuItem(
             enabled: false, // DISABLED THIS ITEM
-            child: Container(
-              width: 135.w,
-              child: IntrinsicWidth(
-                child: _FilteringTab(
-                  onAscending: widget.onAscending,
-                  onDescending: widget.onDescending,
-                  onTrending: widget.onTrending,
-                  onChannel: widget.onChannel,
-                  onRead: widget.onRead,
-                  onUnread: widget.onUnread,
-                ),
-              ),
+            child: _FilteringTab(
+              onAscending: widget.onAscending,
+              onDescending: widget.onDescending,
+              onTrending: widget.onTrending,
+              onChannel: widget.onChannel,
+              onRead: widget.onRead,
+              onUnread: widget.onUnread,
             ),
           ),
         ];
@@ -95,75 +90,75 @@ class __FilteringTabState extends State<_FilteringTab> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () => setState(() => currentIndex = 0),
-              child: Text(
-                "Sort",
-                style: AppStyle.regularText12.copyWith(
-                  color: currentIndex == 1
-                      ? AppColors.darkBlueShade3
-                      : AppColors.darkBlueShade1,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () => setState(() => currentIndex = 0),
+                child: Text(
+                  "Sort",
+                  style: AppStyle.regularText12.copyWith(
+                    color: currentIndex == 1
+                        ? AppColors.darkBlueShade3
+                        : AppColors.darkBlueShade1,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(width: 69.w),
-            GestureDetector(
-              onTap: () => setState(() => currentIndex = 1),
-              child: Text(
-                "Filter",
-                style: AppStyle.regularText12.copyWith(
-                    color: currentIndex == 1
-                        ? AppColors.darkBlueShade1
-                        : AppColors.darkBlueShade3),
-              ),
-            )
-          ],
+              const Spacer(),
+              GestureDetector(
+                onTap: () => setState(() => currentIndex = 1),
+                child: Text(
+                  "Filter",
+                  style: AppStyle.regularText12.copyWith(
+                      color: currentIndex == 1
+                          ? AppColors.darkBlueShade1
+                          : AppColors.darkBlueShade3),
+                ),
+              )
+            ],
+          ),
         ),
         const Divider(
           thickness: 2,
         ),
         currentIndex == 0
-            ? SizedBox(
-                height: 80.h,
-                width: 170.h,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _Option(
-                      option: 'Newest to Oldest',
-                      onTap: () => setState(() {
-                        widget.onAscending();
-                        currentOptionIndex = 0;
-                      }),
-                      isSelected: currentOptionIndex == 0,
-                    ),
-                    _Option(
-                      option: 'Old to Newest',
-                      onTap: () => setState(() {
-                        widget.onDescending();
-                        currentOptionIndex = 1;
-                      }),
-                      isSelected: currentOptionIndex == 1,
-                    ),
-                    _Option(
-                      option: 'All',
-                      onTap: () => setState(() {
-                        widget.onTrending();
-                        currentOptionIndex = 2;
-                      }),
-                      isSelected: currentOptionIndex == 2,
-                    ),
-                  ],
-                ),
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Option(
+                    option: 'Newest to Oldest',
+                    onTap: () => setState(() {
+                      widget.onAscending();
+                      currentOptionIndex = 0;
+                    }),
+                    isSelected: currentOptionIndex == 0,
+                  ),
+                  _Option(
+                    option: 'Old to Newest',
+                    onTap: () => setState(() {
+                      widget.onDescending();
+                      currentOptionIndex = 1;
+                    }),
+                    isSelected: currentOptionIndex == 1,
+                  ),
+                  _Option(
+                    option: 'Trending',
+                    onTap: () => setState(() {
+                      widget.onTrending();
+                      currentOptionIndex = 2;
+                    }),
+                    isSelected: currentOptionIndex == 2,
+                  ),
+                ],
               )
             : SizedBox(
-                height: 80.h,
-                width: 170.h,
+                width: 120.w,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _Option(
@@ -204,7 +199,10 @@ class _Option extends StatefulWidget {
   final VoidCallback onTap;
   final bool isSelected;
   const _Option(
-      {Key? key, required this.option, required this.onTap, required this.isSelected})
+      {Key? key,
+      required this.option,
+      required this.onTap,
+      required this.isSelected})
       : super(key: key);
 
   @override
@@ -219,19 +217,22 @@ class __OptionState extends State<_Option> {
       children: [
         Icon(
           Icons.done,
-          color: widget.isSelected ? AppColors.darkBlueShade1 : AppColors.darkBlueShade3,
+          color: widget.isSelected
+              ? AppColors.darkBlueShade1
+              : AppColors.darkBlueShade3,
           size: 20,
         ),
         SizedBox(
-          width: 15.w,
+          width: 10.w,
         ),
         GestureDetector(
           onTap: widget.onTap,
           child: Text(
             widget.option,
             style: AppStyle.regularText12.copyWith(
-              color:
-                  widget.isSelected ? AppColors.darkBlueShade1 : AppColors.darkBlueShade3,
+              color: widget.isSelected
+                  ? AppColors.darkBlueShade1
+                  : AppColors.darkBlueShade3,
             ),
           ),
         ),
@@ -275,7 +276,8 @@ class TooltipShape extends ShapeBorder {
     path.lineTo(rrect.width - 10, 0);
     path.quadraticBezierTo(rrect.width, 0, rrect.width, 10);
     path.lineTo(rrect.width, rrect.height - 10);
-    path.quadraticBezierTo(rrect.width, rrect.height, rrect.width - 10, rrect.height);
+    path.quadraticBezierTo(
+        rrect.width, rrect.height, rrect.width - 10, rrect.height);
     path.lineTo(10, rrect.height);
     path.quadraticBezierTo(0, rrect.height, 0, rrect.height - 10);
 

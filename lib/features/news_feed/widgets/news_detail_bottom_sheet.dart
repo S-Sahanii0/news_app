@@ -3,12 +3,20 @@ import '../../../config/theme/app_icons.dart';
 import '../../../config/theme/theme.dart';
 
 class NewsDetailBottomSheet extends StatefulWidget {
-  const NewsDetailBottomSheet(
-      {Key? key, required this.onPlay, required this.shouldPlay})
-      : super(key: key);
+  NewsDetailBottomSheet({
+    Key? key,
+    required this.onPlay,
+    required this.shouldPlay,
+    required this.onTapBookmark,
+    required this.onTapShare,
+    this.isBookmark = false,
+  }) : super(key: key);
 
   final Function(bool) onPlay;
   final bool shouldPlay;
+  final VoidCallback onTapBookmark;
+  bool isBookmark;
+  final VoidCallback onTapShare;
 
   @override
   _NewsDetailBottomSheetState createState() => _NewsDetailBottomSheetState();
@@ -30,7 +38,7 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
   @override
   Widget build(BuildContext context) {
     animationController.value = widget.shouldPlay ? 1 : 0;
-    print('should play: ${widget.shouldPlay}');
+
     return DecoratedBox(
       decoration: const BoxDecoration(color: AppColors.blueShade1, boxShadow: [
         BoxShadow(
@@ -44,9 +52,26 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Icon(Icons.bookmark_outline,
-                color: AppColors.blueShade3, size: 20),
-            const Image(image: AppIcons.fontSize),
+            InkWell(
+              onTap: () {
+                setState(() {
+                  widget.isBookmark = !widget.isBookmark;
+                });
+                widget.onTapBookmark();
+              },
+              child: widget.isBookmark
+                  ? const Icon(
+                      Icons.bookmark,
+                      size: 20,
+                      color: AppColors.blueShade3,
+                    )
+                  : const Icon(
+                      Icons.bookmark_outline,
+                      color: AppColors.blueShade3,
+                      size: 20,
+                    ),
+            ),
+            // const Image(image: AppIcons.fontSize),
             InkWell(
                 onTap: () {
                   final isPlaying = animationController.value == 0;
@@ -60,13 +85,16 @@ class _NewsDetailBottomSheetState extends State<NewsDetailBottomSheet>
                   progress: animationController,
                   color: AppColors.appWhite,
                 )),
-            const Icon(
-              AppIcons.share,
-              color: AppColors.blueShade3,
-              size: 20,
+            InkWell(
+              onTap: widget.onTapShare,
+              child: const Icon(
+                AppIcons.share,
+                color: AppColors.blueShade3,
+                size: 20,
+              ),
             ),
-            const Icon(AppIcons.hamburger,
-                color: AppColors.blueShade3, size: 20),
+            // const Icon(AppIcons.hamburger,
+            //     color: AppColors.blueShade3, size: 20),
           ],
         ),
       ),

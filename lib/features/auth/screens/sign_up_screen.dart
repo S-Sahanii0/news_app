@@ -60,7 +60,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             )
           : Scaffold(
               key: _scaffoldKey,
-              resizeToAvoidBottomInset: true,
+              resizeToAvoidBottomInset: false,
               appBar: AppBar(
                 elevation: 0,
                 backgroundColor: Colors.transparent,

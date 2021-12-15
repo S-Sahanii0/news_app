@@ -1,3 +1,4 @@
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/components/buttons/app_outlined_button.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/features/auth/screens/login_screen.dart';
 import 'package:news_app/features/news_feed/bloc/news_bloc.dart';
 import 'package:news_app/features/news_feed/bloc/tts/tts_cubit.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../components/app_bar/app_bar.dart';
 import '../../../config/theme/app_icons.dart';
 import '../../../config/theme/theme.dart';
@@ -22,6 +24,7 @@ class SingleNewsScreen extends StatefulWidget {
       required this.currentNewsIndex,
       required this.user})
       : super(key: key);
+
   final List<News> news;
   final int currentNewsIndex;
   final UserModel? user;
@@ -36,29 +39,23 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
   late final NewsBloc _newsBloc;
   late final AuthBloc _authBloc;
   bool isExpanded = false;
+  late bool isBookmarked;
 
   @override
   void initState() {
     super.initState();
+    isBookmarked = widget.user!.bookmarks!.any(
+        (element) => element.id == widget.news[widget.currentNewsIndex].id);
     _newsBloc = BlocProvider.of<NewsBloc>(context);
     _ttsCubit = context.read<TtsCubit>();
+    currentNews = widget.news[widget.currentNewsIndex].content;
     if (_ttsCubit.state.shouldAutoPlay) {
-      _ttsCubit.handlePlay(widget.news[widget.currentNewsIndex].content);
+      _ttsCubit.handlePlay(currentNews);
     }
     _authBloc = BlocProvider.of<AuthBloc>(context);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       _ttsCubit.state.pageController.jumpToPage(widget.currentNewsIndex);
     });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(covariant SingleNewsScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -100,15 +97,96 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                         }
                       },
                       shouldPlay: _shouldPlay,
+                      isBookmark: isBookmarked,
+                      onTapBookmark: () {
+                        if (widget.user != null) {
+                          if (widget.user!.bookmarks!
+                              .contains(widget.news[widget.currentNewsIndex])) {
+                            _authBloc.add(RemoveBookMarkEvent(
+                                newsToBookmark:
+                                    widget.news[widget.currentNewsIndex],
+                                user: widget.user!));
+                          } else {
+                            _authBloc.add(AddToBookMarkEvent(
+                                newsToBookmark:
+                                    widget.news[widget.currentNewsIndex],
+                                user: widget.user!));
+                          }
+                        } else {
+                          showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              useRootNavigator: false,
+                              isDismissible: true,
+                              isScrollControlled: true,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10.r),
+                                topRight: Radius.circular(10.r),
+                              )),
+                              builder: (_) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    color: AppColors.appWhite,
+                                  ),
+                                  constraints: BoxConstraints(maxHeight: 170.h),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 18.w, vertical: 25.h),
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 20.h),
+                                        child: InkWell(
+                                          onTap: () => Navigator.of(context)
+                                              .pushNamed(LoginScreen.route),
+                                          child: Text(
+                                            ' Login to Continue',
+                                            style: AppStyle.semiBoldText16
+                                                .copyWith(
+                                                    color: AppColors
+                                                        .darkBlueShade2),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 28.w, vertical: 20.h),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            AppOutlinedButton(
+                                                onTap: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                buttonText: "Continue Browsing")
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              });
+                        }
+                      },
+                      onTapShare: () {
+                        Share.share(
+                            'check out this ${widget.news[widget.currentNewsIndex].url}');
+                      },
                     ),
                     body: PageView.builder(
-                        physics: ClampingScrollPhysics(),
+                        physics: const ClampingScrollPhysics(),
                         onPageChanged: (_) {
                           currentNews = widget.news[_].content;
-                          if (!_shouldPlay)
+                          isBookmarked = widget.user!.bookmarks!.any(
+                              (element) => element.id == widget.news[_ + 1].id);
+                          if (!_shouldPlay) {
                             _ttsCubit.stop();
-                          else
+                          } else {
                             _ttsCubit.handlePlay(currentNews);
+                          }
                         },
                         controller: state.pageController,
                         scrollDirection: Axis.vertical,
@@ -223,100 +301,118 @@ class _SingleNewsScreenState extends State<SingleNewsScreen> {
                                   children: [
                                     InkWell(
                                       onTap: () {
-                                        if (widget.user != null) {
-                                          if (widget.user!.history!
-                                              .contains(_news)) {
-                                            _authBloc.add(RemoveFromHistory(
-                                                newsModel: _news,
-                                                user: widget.user!));
-                                            _newsBloc.add(UnlikeNewsEvent(
-                                                unlikedNews: _news.copyWith(
-                                                    likes: _news.likes! - 1)));
+                                        EasyDebounce.debounce(
+                                            'tag', Duration(milliseconds: 600),
+                                            () {
+                                          if (widget.user != null) {
+                                            if (widget.user!.history!.any(
+                                                (e) => (e.id == _news.id))) {
+                                              _authBloc.add(RemoveFromHistory(
+                                                  newsModel: _news,
+                                                  user: widget.user!.copyWith(
+                                                      history:
+                                                          widget.user!.history!
+                                                            ..remove(_news))));
+                                              _newsBloc.add(UnlikeNewsEvent(
+                                                  unlikedNews: _news.copyWith(
+                                                      likes:
+                                                          _news.likes! - 1)));
+                                            } else {
+                                              _authBloc.add(AddToHistory(
+                                                  newsModel: _news,
+                                                  user: widget.user!.copyWith(
+                                                      history:
+                                                          widget.user!.history!
+                                                            ..add(_news))));
+                                              _newsBloc.add(LikeNewsEvent(
+                                                  likedNews: _news.copyWith(
+                                                      likes:
+                                                          _news.likes! + 1)));
+                                            }
                                           } else {
-                                            _authBloc.add(AddToHistory(
-                                                newsModel: _news,
-                                                user: widget.user!));
-                                            _newsBloc.add(LikeNewsEvent(
-                                                likedNews: _news.copyWith(
-                                                    likes: _news.likes! + 1)));
-                                          }
-                                        } else {
-                                          showModalBottomSheet(
-                                              context: context,
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              useRootNavigator: false,
-                                              isDismissible: true,
-                                              isScrollControlled: true,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                topLeft: Radius.circular(10.r),
-                                                topRight: Radius.circular(10.r),
-                                              )),
-                                              builder: (_) {
-                                                return Container(
-                                                  decoration: BoxDecoration(
+                                            showModalBottomSheet(
+                                                context: context,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                useRootNavigator: false,
+                                                isDismissible: true,
+                                                isScrollControlled: true,
+                                                shape: RoundedRectangleBorder(
                                                     borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.r),
-                                                    color: AppColors.appWhite,
-                                                  ),
-                                                  constraints: BoxConstraints(
-                                                      maxHeight: 170.h),
-                                                  margin: EdgeInsets.symmetric(
-                                                      horizontal: 18.w,
-                                                      vertical: 25.h),
-                                                  child: Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: 20.h),
-                                                        child: InkWell(
-                                                          onTap: () => Navigator
-                                                                  .of(context)
-                                                              .pushNamed(
-                                                                  LoginScreen
-                                                                      .route),
-                                                          child: Text(
-                                                            'Login to Continue',
-                                                            style: AppStyle
-                                                                .semiBoldText16
-                                                                .copyWith(
-                                                                    color: AppColors
-                                                                        .darkBlueShade2),
+                                                        BorderRadius.only(
+                                                  topLeft:
+                                                      Radius.circular(10.r),
+                                                  topRight:
+                                                      Radius.circular(10.r),
+                                                )),
+                                                builder: (_) {
+                                                  return Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.r),
+                                                      color: AppColors.appWhite,
+                                                    ),
+                                                    constraints: BoxConstraints(
+                                                        maxHeight: 170.h),
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 18.w,
+                                                            vertical: 25.h),
+                                                    child: Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  vertical:
+                                                                      20.h),
+                                                          child: InkWell(
+                                                            onTap: () => Navigator
+                                                                    .of(context)
+                                                                .pushNamed(
+                                                                    LoginScreen
+                                                                        .route),
+                                                            child: Text(
+                                                              'Login to Continue',
+                                                              style: AppStyle
+                                                                  .semiBoldText16
+                                                                  .copyWith(
+                                                                      color: AppColors
+                                                                          .darkBlueShade2),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal:
-                                                                    28.w,
-                                                                vertical: 20.h),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceAround,
-                                                          children: [
-                                                            AppOutlinedButton(
-                                                                onTap: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                },
-                                                                buttonText:
-                                                                    "Continue Browsing")
-                                                          ],
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal:
+                                                                      28.w,
+                                                                  vertical:
+                                                                      20.h),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceAround,
+                                                            children: [
+                                                              AppOutlinedButton(
+                                                                  onTap: () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                  buttonText:
+                                                                      "Continue Browsing")
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              });
-                                        }
+                                                      ],
+                                                    ),
+                                                  );
+                                                });
+                                          }
+                                        });
                                       },
+
                                       child: (authState as AuthSuccess)
                                                   .currentUser !=
                                               null

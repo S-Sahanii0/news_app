@@ -47,9 +47,6 @@ class NewsDetailCard extends StatefulWidget {
 class _NewsDetailCardState extends State<NewsDetailCard> {
   @override
   void initState() {
-    // TODO: implement initState
-    // widget.isHeart = widget.isHeart;
-
     super.initState();
   }
 
@@ -66,7 +63,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: 140.h,
+                height: 120.h,
                 width: 120.w,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
@@ -122,7 +119,7 @@ class _NewsDetailCardState extends State<NewsDetailCard> {
                         ],
                       ),
                       SizedBox(
-                        height: 8.h,
+                        height: 4.h,
                       ),
                       Text(
                         widget.newsDescription,

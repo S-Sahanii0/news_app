@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/components/buttons/app_button.dart';
@@ -6,10 +7,8 @@ import 'package:news_app/components/buttons/app_outlined_button.dart';
 import 'package:news_app/config/theme/app_colors.dart';
 import 'package:news_app/config/theme/app_styles.dart';
 import 'package:news_app/features/auth/models/user_model.dart';
-import 'package:news_app/features/auth/services/auth_service.dart';
 import 'package:news_app/features/categories/screens/follwing_category_screen.dart';
 import 'package:news_app/features/profile/widgets/change_password_form.dart';
-import '../../../components/app_card.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../widgets/email_card.dart';
 import '../widgets/settings_screen_card.dart';
@@ -30,8 +29,8 @@ class _SettingsState extends State<Settings> {
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthFailure) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("Password didn't match")));
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Password didn't match")));
           }
         },
         builder: (context, state) {
@@ -57,9 +56,11 @@ class _SettingsState extends State<Settings> {
                         backgroundColor: Colors.transparent,
                         context: context,
                         builder: (contex) {
-                          return _ChangePasswordBottomSheet(
-                            authBloc: BlocProvider.of<AuthBloc>(context),
-                            user: widget.user!,
+                          return FractionallySizedBox(
+                            child: _ChangePasswordBottomSheet(
+                              authBloc: BlocProvider.of<AuthBloc>(context),
+                              user: widget.user!,
+                            ),
                           );
                         });
                   }),
@@ -179,6 +180,7 @@ class _ChangePasswordBottomSheet extends StatelessWidget {
       constraints: BoxConstraints(maxHeight: 400.h),
       margin: EdgeInsets.symmetric(horizontal: 18.w, vertical: 25.h),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: EdgeInsets.symmetric(vertical: 20.h),

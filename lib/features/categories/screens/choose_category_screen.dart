@@ -46,6 +46,7 @@ class _ChooseCategoryScreenState extends State<ChooseCategoryScreen> {
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
@@ -85,9 +86,13 @@ class _ChooseCategoryScreenState extends State<ChooseCategoryScreen> {
                         .copyWith(color: AppColors.yellowShade1)),
               ),
               FormButton(onTap: () {
-                _authBloc.add(AddChosenCategoryEvent(
-                    categoryList: chosenList, user: userData!));
-                Navigator.of(context).pop();
+                if (userData != null) {
+                  _authBloc.add(AddChosenCategoryEvent(
+                      categoryList: chosenList, user: userData));
+                  Navigator.of(context).pop();
+                } else {
+                  Navigator.of(context).pop();
+                }
               })
             ],
           ),

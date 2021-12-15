@@ -21,7 +21,8 @@ import '../../auth/bloc/auth_bloc.dart';
 
 class NewsByChannelScreen extends StatefulWidget {
   final String channelName;
-  const NewsByChannelScreen({Key? key, required this.channelName}) : super(key: key);
+  const NewsByChannelScreen({Key? key, required this.channelName})
+      : super(key: key);
   static const String route = '/kRouteNewsByChannel';
 
   @override
@@ -52,10 +53,12 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
-          appBar: CustomAppBar().appBarWithBack(pageTitle: "Interest", context: context),
+          appBar: CustomAppBar()
+              .appBarWithBack(pageTitle: "Interest", context: context),
           body: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, authState) {
-              return BlocBuilder<ChannelBloc, ChannelState>(builder: (context, state) {
+              return BlocBuilder<ChannelBloc, ChannelState>(
+                  builder: (context, state) {
                 if (state is ChannelInitial || state is ChannelLoading) {
                   return const AppLoadingIndicator();
                 }
@@ -66,6 +69,7 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                           child: Text("No news of this channel is available"),
                         )
                       : ListView.separated(
+                          padding: EdgeInsets.only(top: 16.h),
                           separatorBuilder: (BuildContext context, int index) {
                             return const ColoredBox(
                                 color: AppColors.appWhite,
@@ -78,39 +82,50 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
-                                Navigator.of(context).pushNamed(SingleNewsScreen.route,
+                                Navigator.of(context).pushNamed(
+                                    SingleNewsScreen.route,
                                     arguments: [index, newsList, userData]);
                               },
                               child: GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).pushNamed(SingleNewsScreen.route,
+                                  Navigator.of(context).pushNamed(
+                                      SingleNewsScreen.route,
                                       arguments: [index, newsList, userData]);
                                 },
                                 child: NewsDetailCard(
                                   channelName: newsList[index].channel.channel,
                                   newsDescription: newsList[index].content,
                                   newsTime: newsList[index].date,
-                                  numberOfLikes: newsList[index].likes!.toString(),
-                                  numberOfComments:
-                                      newsList[index].comment!.length.toString(),
+                                  numberOfLikes:
+                                      newsList[index].likes!.toString(),
+                                  numberOfComments: newsList[index]
+                                      .comment!
+                                      .length
+                                      .toString(),
                                   onTapHeart: () {
                                     if (userData != null) {
-                                      if (userData!.history!
-                                          .any((e) => state.news[index].id == e.id)) {
+                                      if (userData!.history!.any((e) =>
+                                          state.news[index].id == e.id)) {
                                         _authBloc.add(RemoveFromHistory(
                                             newsModel: newsList[index],
                                             user: userData!.copyWith(
                                                 history: userData!.history!
-                                                  ..remove(newsList[index].id))));
+                                                  ..remove(
+                                                      newsList[index].id))));
                                         _channelBloc.add(UnlikeNewsChannelEvent(
-                                            unlikedNews: newsList[index].copyWith(
-                                                likes: newsList[index].likes! - 1)));
+                                            unlikedNews: newsList[index]
+                                                .copyWith(
+                                                    likes:
+                                                        newsList[index].likes! -
+                                                            1)));
                                       } else {
                                         _authBloc.add(AddToHistory(
-                                            newsModel: newsList[index], user: userData!));
+                                            newsModel: newsList[index],
+                                            user: userData!));
                                         _channelBloc.add(LikeNewsChannelEvent(
                                             likedNews: newsList[index].copyWith(
-                                                likes: newsList[index].likes! + 1)));
+                                                likes: newsList[index].likes! +
+                                                    1)));
                                       }
                                     } else {
                                       showModalBottomSheet(
@@ -127,24 +142,31 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                           builder: (_) {
                                             return Container(
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.r),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
                                                 color: AppColors.appWhite,
                                               ),
-                                              constraints:
-                                                  BoxConstraints(maxHeight: 170.h),
+                                              constraints: BoxConstraints(
+                                                  maxHeight: 170.h),
                                               margin: EdgeInsets.symmetric(
-                                                  horizontal: 18.w, vertical: 25.h),
+                                                  horizontal: 18.w,
+                                                  vertical: 25.h),
                                               child: Column(
                                                 children: [
                                                   Padding(
-                                                    padding: EdgeInsets.symmetric(
-                                                        vertical: 20.h),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 20.h),
                                                     child: InkWell(
-                                                      onTap: () => Navigator.of(context)
-                                                          .pushNamed(LoginScreen.route),
+                                                      onTap: () =>
+                                                          Navigator.of(context)
+                                                              .pushNamed(
+                                                                  LoginScreen
+                                                                      .route),
                                                       child: Text(
                                                         'Login to Continue',
-                                                        style: AppStyle.semiBoldText16
+                                                        style: AppStyle
+                                                            .semiBoldText16
                                                             .copyWith(
                                                                 color: AppColors
                                                                     .darkBlueShade2),
@@ -152,15 +174,20 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                                     ),
                                                   ),
                                                   Padding(
-                                                    padding: EdgeInsets.symmetric(
-                                                        horizontal: 28.w, vertical: 20.h),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 28.w,
+                                                            vertical: 20.h),
                                                     child: Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.spaceAround,
+                                                          MainAxisAlignment
+                                                              .spaceAround,
                                                       children: [
                                                         AppOutlinedButton(
                                                             onTap: () {
-                                                              Navigator.of(context).pop();
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
                                                             },
                                                             buttonText:
                                                                 "Continue Browsing")
@@ -174,7 +201,8 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                     }
                                   },
                                   onTapComment: () {
-                                    Navigator.of(context).pushNamed(CommentScreen.route,
+                                    Navigator.of(context).pushNamed(
+                                        CommentScreen.route,
                                         arguments: newsList[index]);
                                   },
                                   onTapBookmark: () {
@@ -204,24 +232,31 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                           builder: (_) {
                                             return Container(
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.r),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
                                                 color: AppColors.appWhite,
                                               ),
-                                              constraints:
-                                                  BoxConstraints(maxHeight: 170.h),
+                                              constraints: BoxConstraints(
+                                                  maxHeight: 170.h),
                                               margin: EdgeInsets.symmetric(
-                                                  horizontal: 18.w, vertical: 25.h),
+                                                  horizontal: 18.w,
+                                                  vertical: 25.h),
                                               child: Column(
                                                 children: [
                                                   Padding(
-                                                    padding: EdgeInsets.symmetric(
-                                                        vertical: 20.h),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 20.h),
                                                     child: InkWell(
-                                                      onTap: () => Navigator.of(context)
-                                                          .pushNamed(LoginScreen.route),
+                                                      onTap: () =>
+                                                          Navigator.of(context)
+                                                              .pushNamed(
+                                                                  LoginScreen
+                                                                      .route),
                                                       child: Text(
                                                         'Login to Continue',
-                                                        style: AppStyle.semiBoldText16
+                                                        style: AppStyle
+                                                            .semiBoldText16
                                                             .copyWith(
                                                                 color: AppColors
                                                                     .darkBlueShade2),
@@ -229,15 +264,20 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                                     ),
                                                   ),
                                                   Padding(
-                                                    padding: EdgeInsets.symmetric(
-                                                        horizontal: 28.w, vertical: 20.h),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 28.w,
+                                                            vertical: 20.h),
                                                     child: Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.spaceAround,
+                                                          MainAxisAlignment
+                                                              .spaceAround,
                                                       children: [
                                                         AppOutlinedButton(
                                                             onTap: () {
-                                                              Navigator.of(context).pop();
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
                                                             },
                                                             buttonText:
                                                                 "Continue Browsing")
@@ -251,18 +291,20 @@ class _NewsByChannelScreenState extends State<NewsByChannelScreen> {
                                     }
                                   },
                                   onTapShare: () {
-                                    Share.share('check out this ${newsList[index].url}');
+                                    Share.share(
+                                        'check out this ${newsList[index].url}');
                                   },
                                   onTapMenu: () {},
                                   isBookmark: userData == null
                                       ? false
-                                      : userData!.bookmarks!
-                                          .any((e) => newsList[index].id == e.id),
+                                      : userData!.bookmarks!.any(
+                                          (e) => newsList[index].id == e.id),
                                   isHeart: userData == null
                                       ? false
-                                      : userData!.history!
-                                          .any((e) => newsList[index].id == e.id),
-                                  channelImage: newsList[index].channel.channelImage,
+                                      : userData!.history!.any(
+                                          (e) => newsList[index].id == e.id),
+                                  channelImage:
+                                      newsList[index].channel.channelImage,
                                   imageUrl: newsList[index].newsImage,
                                 ),
                               ),

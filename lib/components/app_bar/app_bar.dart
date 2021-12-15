@@ -18,11 +18,11 @@ class CustomAppBar {
   }) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
-      title: Center(
-        child: Text(
-          pageTitle,
-          style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
-        ),
+      centerTitle: true,
+      title: Text(
+        pageTitle,
+        style:
+            AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
       ),
       actions: [
         GestureDetector(
@@ -51,12 +51,12 @@ class CustomAppBar {
   AppBar primaryAppBarNoFilter(
       {required String pageTitle, required BuildContext context}) {
     return AppBar(
+      centerTitle: true,
       backgroundColor: AppColors.appWhite,
-      title: Center(
-        child: Text(
-          pageTitle,
-          style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
-        ),
+      title: Text(
+        pageTitle,
+        style:
+            AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
       ),
       actions: [
         GestureDetector(
@@ -76,12 +76,15 @@ class CustomAppBar {
     );
   }
 
-  AppBar appBarWithBack({required String pageTitle, required BuildContext context}) {
+  AppBar appBarWithBack(
+      {required String pageTitle, required BuildContext context}) {
     return AppBar(
+      centerTitle: true,
       backgroundColor: AppColors.appWhite,
       title: Text(
         pageTitle,
-        style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+        style:
+            AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
       ),
       leading: GestureDetector(
         onTap: () {
@@ -90,21 +93,24 @@ class CustomAppBar {
         child: const Icon(
           Icons.chevron_left_outlined,
           color: AppColors.appBlack,
-          size: 20,
+          size: 24,
         ),
       ),
     );
   }
 
-  AppBar appBarWithNoBack({required String pageTitle, required BuildContext context}) {
+  AppBar appBarWithNoBack(
+      {required String pageTitle, required BuildContext context}) {
     return AppBar(
       backgroundColor: AppColors.appWhite,
+      centerTitle: true,
       title: Padding(
         padding: const EdgeInsets.only(left: 24),
         child: Center(
           child: Text(
             pageTitle,
-            style: AppStyle.semiBoldText16.copyWith(color: AppColors.darkBlueShade2),
+            style: AppStyle.semiBoldText16
+                .copyWith(color: AppColors.darkBlueShade2),
           ),
         ),
       ),
@@ -112,8 +118,10 @@ class CustomAppBar {
   }
 
   AppBar appBarSearch(
-      {required BuildContext context, required void Function(String?) onChanged}) {
+      {required BuildContext context,
+      required void Function(String?) onChanged}) {
     return AppBar(
+      centerTitle: true,
       backgroundColor: AppColors.appWhite,
       leading: GestureDetector(
         onTap: () {
@@ -129,7 +137,8 @@ class CustomAppBar {
         Flexible(
           flex: 3,
           child: Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 15),
+            padding:
+                const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 15),
             child: FormBuilderTextField(
               name: "search",
               textAlign: TextAlign.center,
@@ -137,14 +146,16 @@ class CustomAppBar {
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                   isDense: true,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   suffixIcon: const Icon(
                     Icons.search,
                     color: AppColors.greyShade2,
                     size: 20,
                   ),
                   hintText: "Search",
-                  hintStyle: AppStyle.lightText12.copyWith(color: AppColors.greyShade1)),
+                  hintStyle: AppStyle.lightText12
+                      .copyWith(color: AppColors.greyShade1)),
             ),
           ),
         ),

@@ -49,6 +49,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       final currentState = (state as NewsLoadingSuccess).newsList;
 
       try {
+        log("Like event triggered");
         final updatedNews = await newsService.updateLike(event.likedNews.id!);
         final updatedList = List<News>.from(currentState
             .map((element) =>
@@ -62,6 +63,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     });
 
     on<UnlikeNewsEvent>((event, emit) async {
+      log("unlike event triggered");
       final currentState = (state as NewsLoadingSuccess).newsList;
 
       try {

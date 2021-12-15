@@ -75,6 +75,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           itemCount: state.otherChannels.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
+                              behavior: HitTestBehavior.opaque,
                               onTap: () {
                                 Navigator.of(context).pushNamed(
                                     NewsByChannelScreen.route,
@@ -83,7 +84,12 @@ class _ChannelScreenState extends State<ChannelScreen> {
                               },
                               child: AppCard(
                                 cardText: state.otherChannels[index].channel,
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(
+                                      NewsByChannelScreen.route,
+                                      arguments:
+                                          state.otherChannels[index].channel);
+                                },
                               ),
                             );
                           }),

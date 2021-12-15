@@ -23,7 +23,8 @@ import '../models/category_model.dart';
 class NewsByCategoryScreen extends StatefulWidget {
   final UserModel? userData;
   final CategoryModel category;
-  const NewsByCategoryScreen({Key? key, required this.userData, required this.category})
+  const NewsByCategoryScreen(
+      {Key? key, required this.userData, required this.category})
       : super(key: key);
   static const String route = '/kRouteNewsByCategory';
 
@@ -55,24 +56,28 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
       child: Scaffold(
           key: _key,
           resizeToAvoidBottomInset: true,
-          appBar: CustomAppBar().appBarWithBack(pageTitle: "Interest", context: context),
-          body: BlocBuilder<CategoryBloc, CategoryState>(buildWhen: (current, prev) {
+          appBar: CustomAppBar()
+              .appBarWithBack(pageTitle: "Interest", context: context),
+          body: BlocBuilder<CategoryBloc, CategoryState>(
+              buildWhen: (current, prev) {
             return current != prev;
           }, builder: (context, state) {
-            if (state is CategoryInitial || state is CategoryLoading)
+            if (state is CategoryInitial || state is CategoryLoading) {
               return const AppLoadingIndicator();
+            }
             if (state is CategoryLoadSuccess) {
-              final newsList =
-                  List.from(state.otherCategoryList..addAll(state.likedCategoryList))
-                      .where((element) =>
-                          element.categoryName == widget.category.categoryName)
-                      .first
-                      .news;
+              final newsList = List.from(
+                      state.otherCategoryList..addAll(state.likedCategoryList))
+                  .where((element) =>
+                      element.categoryName == widget.category.categoryName)
+                  .first
+                  .news;
               return newsList.isEmpty
                   ? const Center(
                       child: Text("No news of this category available"),
                     )
                   : ListView.separated(
+                      padding: EdgeInsets.only(top: 16.h),
                       separatorBuilder: (BuildContext context, int index) {
                         return const ColoredBox(
                             color: AppColors.appWhite,
@@ -85,7 +90,8 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            Navigator.of(context).pushNamed(SingleNewsScreen.route,
+                            Navigator.of(context).pushNamed(
+                                SingleNewsScreen.route,
                                 arguments: [index, newsList, userData]);
                           },
                           child: NewsDetailCard(
@@ -93,7 +99,8 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                             newsDescription: newsList[index].content,
                             newsTime: newsList[index].date,
                             numberOfLikes: newsList[index].likes!.toString(),
-                            numberOfComments: newsList[index].comment!.length.toString(),
+                            numberOfComments:
+                                newsList[index].comment!.length.toString(),
                             onTapHeart: () {
                               if (userData != null) {
                                 if (userData!.history!
@@ -104,15 +111,16 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                                           history: userData!.history!
                                             ..remove(newsList[index].id))));
                                   _categoryBloc.add(UnlikeNewsCategoryEvent(
-                                      unlikedNews: newsList[index]
-                                          .copyWith(likes: newsList[index].likes! - 1),
+                                      unlikedNews: newsList[index].copyWith(
+                                          likes: newsList[index].likes! - 1),
                                       category: widget.category));
                                 } else {
                                   _authBloc.add(AddToHistory(
-                                      newsModel: newsList[index], user: userData!));
+                                      newsModel: newsList[index],
+                                      user: userData!));
                                   _categoryBloc.add(LikeNewsCategoryEvent(
-                                      likedNews: newsList[index]
-                                          .copyWith(likes: newsList[index].likes! + 1),
+                                      likedNews: newsList[index].copyWith(
+                                          likes: newsList[index].likes! + 1),
                                       category: widget.category));
                                 }
                               } else {
@@ -130,39 +138,49 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                                     builder: (_) {
                                       return Container(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10.r),
+                                          borderRadius:
+                                              BorderRadius.circular(10.r),
                                           color: AppColors.appWhite,
                                         ),
-                                        constraints: BoxConstraints(maxHeight: 170.h),
+                                        constraints:
+                                            BoxConstraints(maxHeight: 170.h),
                                         margin: EdgeInsets.symmetric(
                                             horizontal: 18.w, vertical: 25.h),
                                         child: Column(
                                           children: [
                                             Padding(
-                                              padding:
-                                                  EdgeInsets.symmetric(vertical: 20.h),
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 20.h),
                                               child: InkWell(
-                                                onTap: () => Navigator.of(context)
-                                                    .pushNamed(LoginScreen.route),
+                                                onTap: () =>
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                            LoginScreen.route),
                                                 child: Text(
                                                   ' Login to Continue',
-                                                  style: AppStyle.semiBoldText16.copyWith(
-                                                      color: AppColors.darkBlueShade2),
+                                                  style: AppStyle.semiBoldText16
+                                                      .copyWith(
+                                                          color: AppColors
+                                                              .darkBlueShade2),
                                                 ),
                                               ),
                                             ),
                                             Padding(
                                               padding: EdgeInsets.symmetric(
-                                                  horizontal: 28.w, vertical: 20.h),
+                                                  horizontal: 28.w,
+                                                  vertical: 20.h),
                                               child: Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.spaceAround,
+                                                    MainAxisAlignment
+                                                        .spaceAround,
                                                 children: [
                                                   AppOutlinedButton(
                                                       onTap: () {
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
-                                                      buttonText: "Continue Browsing")
+                                                      buttonText:
+                                                          "Continue Browsing")
                                                 ],
                                               ),
                                             ),
@@ -173,7 +191,8 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                               }
                             },
                             onTapComment: () {
-                              Navigator.of(context).pushNamed(CommentScreen.route,
+                              Navigator.of(context).pushNamed(
+                                  CommentScreen.route,
                                   arguments: newsList[index]);
                             },
                             onTapBookmark: () {
@@ -192,39 +211,49 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                                     builder: (_) {
                                       return Container(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10.r),
+                                          borderRadius:
+                                              BorderRadius.circular(10.r),
                                           color: AppColors.appWhite,
                                         ),
-                                        constraints: BoxConstraints(maxHeight: 170.h),
+                                        constraints:
+                                            BoxConstraints(maxHeight: 170.h),
                                         margin: EdgeInsets.symmetric(
                                             horizontal: 18.w, vertical: 25.h),
                                         child: Column(
                                           children: [
                                             Padding(
-                                              padding:
-                                                  EdgeInsets.symmetric(vertical: 20.h),
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 20.h),
                                               child: InkWell(
-                                                onTap: () => Navigator.of(context)
-                                                    .pushNamed(LoginScreen.route),
+                                                onTap: () =>
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                            LoginScreen.route),
                                                 child: Text(
                                                   ' Login to Continue',
-                                                  style: AppStyle.semiBoldText16.copyWith(
-                                                      color: AppColors.darkBlueShade2),
+                                                  style: AppStyle.semiBoldText16
+                                                      .copyWith(
+                                                          color: AppColors
+                                                              .darkBlueShade2),
                                                 ),
                                               ),
                                             ),
                                             Padding(
                                               padding: EdgeInsets.symmetric(
-                                                  horizontal: 28.w, vertical: 20.h),
+                                                  horizontal: 28.w,
+                                                  vertical: 20.h),
                                               child: Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.spaceAround,
+                                                    MainAxisAlignment
+                                                        .spaceAround,
                                                 children: [
                                                   AppOutlinedButton(
                                                       onTap: () {
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
-                                                      buttonText: "Continue Browsing")
+                                                      buttonText:
+                                                          "Continue Browsing")
                                                 ],
                                               ),
                                             ),
@@ -246,7 +275,8 @@ class _NewsByCategoryScreenState extends State<NewsByCategoryScreen> {
                               }
                             },
                             onTapShare: () {
-                              Share.share('check out this ${newsList[index].url}');
+                              Share.share(
+                                  'check out this ${newsList[index].url}');
                             },
                             onTapMenu: () {},
                             isBookmark: userData == null

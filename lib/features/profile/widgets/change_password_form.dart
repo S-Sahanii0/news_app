@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:news_app/components/buttons/app_button.dart';
 import 'package:news_app/components/buttons/app_outlined_button.dart';
 import '../../../components/app_form_field.dart';
-import '../../../components/buttons/form_button.dart';
 
 class ChangePasswordForm extends StatefulWidget {
   ChangePasswordForm({Key? key, required this.onSubmit}) : super(key: key);

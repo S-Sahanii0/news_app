@@ -19,15 +19,11 @@ class TtsService implements TtsRepository {
     await flutterTts.stop();
   }
 
-  // Future readAndComplete(String text) async{
-  //   await flutterTts.speak(text);
-  //   return flutterTts.awaitSpeakCompletion(true);
-  // }
-
   Future<void> _setUpTTS() async {
     FlutterTts flutterTts = FlutterTts();
     await flutterTts.setSharedInstance(true);
-    await flutterTts.setIosAudioCategory(IosTextToSpeechAudioCategory.playAndRecord, [
+    await flutterTts
+        .setIosAudioCategory(IosTextToSpeechAudioCategory.playAndRecord, [
       IosTextToSpeechAudioCategoryOptions.allowBluetooth,
       IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
       IosTextToSpeechAudioCategoryOptions.mixWithOthers

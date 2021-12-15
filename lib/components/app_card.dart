@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../config/theme/theme.dart';
 
 class AppCard extends StatefulWidget {
@@ -15,7 +16,10 @@ class AppCard extends StatefulWidget {
     hasArrow = true;
   }
   AppCard.hasNumber(
-      {Key? key, required this.cardText, required this.onTap, required this.number})
+      {Key? key,
+      required this.cardText,
+      required this.onTap,
+      required this.number})
       : super(key: key) {
     canBeSaved = false;
     hasNumber = true;
@@ -75,7 +79,8 @@ class _AppCardState extends State<AppCard> {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               widget.cardText,
-              style: AppStyle.mediumText14.copyWith(color: AppColors.darkBlueShade1),
+              style: AppStyle.mediumText14
+                  .copyWith(color: AppColors.darkBlueShade1),
             ),
           ),
           const Spacer(
@@ -86,13 +91,15 @@ class _AppCardState extends State<AppCard> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 widget.number.toString(),
-                style: AppStyle.mediumText16.copyWith(color: AppColors.darkBlueShade1),
+                style: AppStyle.mediumText16
+                    .copyWith(color: AppColors.darkBlueShade1),
               ),
             ),
           if (widget.canBeRemoved!)
             GestureDetector(
                 onTap: () => widget.onTapRemove!(),
-                child: const Icon(Icons.remove_circle_outline_rounded, size: 24)),
+                child:
+                    const Icon(Icons.remove_circle_outline_rounded, size: 24)),
           if (widget.canBeSaved!)
             GestureDetector(
               onTap: () {
@@ -102,10 +109,15 @@ class _AppCardState extends State<AppCard> {
 
                 widget.onTapheart!();
               },
-              child: Icon(
-                widget.isSaved! ? AppIcons.heartTapped : AppIcons.heart,
-                color: widget.isSaved! ? Colors.red.shade800 : AppColors.darkBlueShade1,
-                size: 20,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Icon(
+                  widget.isSaved! ? AppIcons.heartTapped : AppIcons.heart,
+                  color: widget.isSaved!
+                      ? Colors.red.shade800
+                      : AppColors.darkBlueShade1,
+                  size: 24,
+                ),
               ),
             ),
           if (widget.hasArrow!)

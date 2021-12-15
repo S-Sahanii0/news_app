@@ -41,8 +41,8 @@ class _AppDrawerState extends State<AppDrawer> {
         child: DecoratedBox(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
-              topRight: Radius.circular(10),
-              bottomRight: Radius.circular(10),
+              bottomLeft: Radius.circular(10),
+              topLeft: Radius.circular(10),
             ),
             color: AppColors.blueShade2,
           ),
@@ -69,7 +69,9 @@ class _AppDrawerState extends State<AppDrawer> {
                       child: Text(
                         "My Feed",
                         style: AppStyle.mediumText20.copyWith(
-                            color: (state is MyFeedState) ? null : AppColors.appWhite),
+                            color: (state is MyFeedState)
+                                ? null
+                                : AppColors.appWhite),
                       ),
                     ),
                   ),
@@ -82,7 +84,9 @@ class _AppDrawerState extends State<AppDrawer> {
                       child: Text(
                         "Discover",
                         style: AppStyle.mediumText20.copyWith(
-                            color: (state is DiscoverState) ? null : AppColors.appWhite),
+                            color: (state is DiscoverState)
+                                ? null
+                                : AppColors.appWhite),
                       ),
                     ),
                   ),
@@ -95,7 +99,9 @@ class _AppDrawerState extends State<AppDrawer> {
                       child: Text(
                         "Categories",
                         style: AppStyle.mediumText20.copyWith(
-                            color: (state is CategoryState) ? null : AppColors.appWhite),
+                            color: (state is CategoryState)
+                                ? null
+                                : AppColors.appWhite),
                       ),
                     ),
                   ),
@@ -108,18 +114,52 @@ class _AppDrawerState extends State<AppDrawer> {
                       child: Text(
                         "Channels",
                         style: AppStyle.mediumText20.copyWith(
-                            color: (state is ChannelsState) ? null : AppColors.appWhite),
+                            color: (state is ChannelsState)
+                                ? null
+                                : AppColors.appWhite),
                       ),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
                     child: Row(children: [
                       GestureDetector(
                           onTap: () => Navigator.of(context).pop(),
                           child: const Icon(Icons.close)),
-                      Spacer(),
+                      if (_user != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: InkWell(
+                              onTap: () {
+                                if (_user != null) {
+                                  showModalBottomSheet(
+                                      useRootNavigator: false,
+                                      isDismissible: true,
+                                      isScrollControlled: true,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10.r),
+                                        topRight: Radius.circular(10.r),
+                                      )),
+                                      backgroundColor: Colors.transparent,
+                                      context: context,
+                                      builder: (contex) {
+                                        return LogoutBottomSheet(
+                                          authBloc: BlocProvider.of<AuthBloc>(
+                                              context),
+                                        );
+                                      });
+                                } else {
+                                  Navigator.of(context)
+                                      .pushReplacementNamed(LoginScreen.route);
+                                }
+                              },
+                              child: Text("Logout",
+                                  style: AppStyle.regularText14)),
+                        ),
+                      const Spacer(),
                       _user == null
                           ? Row(
                               children: [
@@ -127,8 +167,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text('Guest',
-                                        style: AppStyle.semiBoldText16
-                                            .copyWith(color: AppColors.darkBlueShade1)),
+                                        style: AppStyle.semiBoldText16.copyWith(
+                                            color: AppColors.darkBlueShade1)),
                                     InkWell(
                                         onTap: () => Navigator.pushNamed(
                                             context, LoginScreen.route),
@@ -136,11 +176,12 @@ class _AppDrawerState extends State<AppDrawer> {
                                             style: AppStyle.regularText14)),
                                   ],
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 CircleAvatar(
                                   child: Icon(Icons.person,
                                       size: 24,
-                                      color: AppColors.appWhite.withOpacity(0.8)),
+                                      color:
+                                          AppColors.appWhite.withOpacity(0.8)),
                                   backgroundColor: AppColors.yellowShade1,
                                   maxRadius: 18,
                                 ),
@@ -152,35 +193,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(_user!.username ?? '',
-                                        style: AppStyle.semiBoldText16
-                                            .copyWith(color: AppColors.darkBlueShade1)),
-                                    InkWell(
-                                        onTap: () {
-                                          if (_user != null) {
-                                            showModalBottomSheet(
-                                                useRootNavigator: false,
-                                                isDismissible: true,
-                                                isScrollControlled: true,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(10.r),
-                                                  topRight: Radius.circular(10.r),
-                                                )),
-                                                backgroundColor: Colors.transparent,
-                                                context: context,
-                                                builder: (contex) {
-                                                  return LogoutBottomSheet(
-                                                    authBloc: BlocProvider.of<AuthBloc>(
-                                                        context),
-                                                  );
-                                                });
-                                          } else {
-                                            Navigator.of(context)
-                                                .pushReplacementNamed(LoginScreen.route);
-                                          }
-                                        },
-                                        child: Text("Logout",
-                                            style: AppStyle.regularText14)),
+                                        style: AppStyle.semiBoldText16.copyWith(
+                                            color: AppColors.darkBlueShade1)),
                                   ],
                                 ),
                                 const SizedBox(width: 8),
@@ -201,24 +215,31 @@ class _AppDrawerState extends State<AppDrawer> {
                                           builder: (_) {
                                             return Container(
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.r),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
                                                 color: AppColors.appWhite,
                                               ),
-                                              constraints:
-                                                  BoxConstraints(maxHeight: 170.h),
+                                              constraints: BoxConstraints(
+                                                  maxHeight: 170.h),
                                               margin: EdgeInsets.symmetric(
-                                                  horizontal: 18.w, vertical: 25.h),
+                                                  horizontal: 18.w,
+                                                  vertical: 25.h),
                                               child: Column(
                                                 children: [
                                                   Padding(
-                                                    padding: EdgeInsets.symmetric(
-                                                        vertical: 20.h),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 20.h),
                                                     child: InkWell(
-                                                      onTap: () => Navigator.of(context)
-                                                          .pushNamed(LoginScreen.route),
+                                                      onTap: () =>
+                                                          Navigator.of(context)
+                                                              .pushNamed(
+                                                                  LoginScreen
+                                                                      .route),
                                                       child: Text(
                                                         ' Login to Continue',
-                                                        style: AppStyle.semiBoldText16
+                                                        style: AppStyle
+                                                            .semiBoldText16
                                                             .copyWith(
                                                                 color: AppColors
                                                                     .darkBlueShade2),
@@ -226,15 +247,20 @@ class _AppDrawerState extends State<AppDrawer> {
                                                     ),
                                                   ),
                                                   Padding(
-                                                    padding: EdgeInsets.symmetric(
-                                                        horizontal: 28.w, vertical: 20.h),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 28.w,
+                                                            vertical: 20.h),
                                                     child: Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.spaceAround,
+                                                          MainAxisAlignment
+                                                              .spaceAround,
                                                       children: [
                                                         AppOutlinedButton(
                                                             onTap: () {
-                                                              Navigator.of(context).pop();
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
                                                             },
                                                             buttonText:
                                                                 "Continue Browsing")
@@ -252,7 +278,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                   child: CircleAvatar(
                                     child: Icon(Icons.person,
                                         size: 24,
-                                        color: AppColors.appWhite.withOpacity(0.8)),
+                                        color: AppColors.appWhite
+                                            .withOpacity(0.8)),
                                     backgroundColor: AppColors.yellowShade1,
                                     maxRadius: 18,
                                   ),

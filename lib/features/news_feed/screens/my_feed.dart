@@ -60,10 +60,12 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
         appBar: CustomAppBar().primaryAppBar(
           pageTitle: "My Feed",
           context: context,
-          onPressSearch: () =>
-              Navigator.of(context).pushNamed(SearchScreen.route, arguments: userData),
-          onAscendingSort: () => _newsBloc.add(const SortNewsEvent(isAscending: true)),
-          onDescendingSort: () => _newsBloc.add(const SortNewsEvent(isAscending: false)),
+          onPressSearch: () => Navigator.of(context)
+              .pushNamed(SearchScreen.route, arguments: userData),
+          onAscendingSort: () =>
+              _newsBloc.add(const SortNewsEvent(isAscending: true)),
+          onDescendingSort: () =>
+              _newsBloc.add(const SortNewsEvent(isAscending: false)),
           onTrendingSort: () => ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('No trending news at the moment.')),
           ),
@@ -91,14 +93,15 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                         color: AppColors.appWhite,
                       ),
                       constraints: BoxConstraints(maxHeight: 170.h),
-                      margin: EdgeInsets.symmetric(horizontal: 18.w, vertical: 25.h),
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 18.w, vertical: 25.h),
                       child: Column(
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 20.h),
                             child: InkWell(
-                              onTap: () =>
-                                  Navigator.of(context).pushNamed(LoginScreen.route),
+                              onTap: () => Navigator.of(context)
+                                  .pushNamed(LoginScreen.route),
                               child: Text(
                                 ' Login to Continue',
                                 style: AppStyle.semiBoldText16
@@ -107,8 +110,8 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                             ),
                           ),
                           Padding(
-                            padding:
-                                EdgeInsets.symmetric(horizontal: 28.w, vertical: 20.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 28.w, vertical: 20.h),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -129,7 +132,8 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
           onReadFilter: () {
             if (userData != null) {
               final allNews = (_newsBloc.state as NewsLoadingSuccess).newsList;
-              _filterBloc.applyFilter(allNews, FilterType.read, userData!.history ?? []);
+              _filterBloc.applyFilter(
+                  allNews, FilterType.read, userData!.history ?? []);
             } else {
               showModalBottomSheet(
                   context: context,
@@ -149,14 +153,15 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                         color: AppColors.appWhite,
                       ),
                       constraints: BoxConstraints(maxHeight: 170.h),
-                      margin: EdgeInsets.symmetric(horizontal: 18.w, vertical: 25.h),
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 18.w, vertical: 25.h),
                       child: Column(
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 20.h),
                             child: InkWell(
-                              onTap: () =>
-                                  Navigator.of(context).pushNamed(LoginScreen.route),
+                              onTap: () => Navigator.of(context)
+                                  .pushNamed(LoginScreen.route),
                               child: Text(
                                 ' Login to Continue',
                                 style: AppStyle.semiBoldText16
@@ -165,8 +170,8 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                             ),
                           ),
                           Padding(
-                            padding:
-                                EdgeInsets.symmetric(horizontal: 28.w, vertical: 20.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 28.w, vertical: 20.h),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -189,16 +194,27 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
         body: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
             var userData = (_authBloc.state as AuthSuccess).currentUser;
-            return BlocBuilder<FilterCubit, FilterState>(buildWhen: (current, prev) {
+            return BlocBuilder<FilterCubit, FilterState>(
+                buildWhen: (current, prev) {
               return current != prev;
             }, builder: (context, state) {
-              if (state is FilterInitailState || state is FilterLoadInProgress) {
+              if (state is FilterInitailState ||
+                  state is FilterLoadInProgress) {
                 return const AppLoadingIndicator();
               }
               if (state is FilterLoadSuccess) {
                 return state.news.isEmpty
                     ? const Center(child: Text('Could not find any news.'))
                     : ListView.separated(
+                        padding: EdgeInsets.only(top: 16.h),
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const ColoredBox(
+                              color: AppColors.appWhite,
+                              child: Divider(
+                                thickness: 1.5,
+                                height: 14,
+                              ));
+                        },
                         controller: _scrollController,
                         itemCount: state.news.length + 1,
                         itemBuilder: (context, index) {
@@ -210,27 +226,38 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                   onTap: () {
                                     Navigator.of(context).pushNamed(
                                         SingleNewsScreen.route,
-                                        arguments: [index, state.news, userData]);
+                                        arguments: [
+                                          index,
+                                          state.news,
+                                          userData
+                                        ]);
                                   },
                                   child: NewsDetailCard(
-                                    channelName: state.news[index].channel.channel,
+                                    channelName:
+                                        state.news[index].channel.channel,
                                     newsDescription: state.news[index].content,
                                     newsTime: state.news[index].date,
-                                    numberOfLikes: state.news[index].likes.toString(),
-                                    numberOfComments:
-                                        state.news[index].comment!.length.toString(),
+                                    numberOfLikes:
+                                        state.news[index].likes.toString(),
+                                    numberOfComments: state
+                                        .news[index].comment!.length
+                                        .toString(),
                                     onTapHeart: () {
                                       if (userData != null) {
-                                        if (userData.history!
-                                            .any((e) => state.news[index].id == e.id)) {
+                                        if (userData.history!.any((e) =>
+                                            state.news[index].id == e.id)) {
                                           _authBloc.add(RemoveFromHistory(
                                               newsModel: state.news[index],
                                               user: userData.copyWith(
                                                   history: userData.history!
-                                                    ..remove(state.news[index]))));
+                                                    ..remove(
+                                                        state.news[index]))));
                                           _newsBloc.add(UnlikeNewsEvent(
-                                              unlikedNews: state.news[index].copyWith(
-                                                  likes: state.news[index].likes! - 1)));
+                                              unlikedNews: state.news[index]
+                                                  .copyWith(
+                                                      likes: state.news[index]
+                                                              .likes! -
+                                                          1)));
                                         } else {
                                           _authBloc.add(AddToHistory(
                                               newsModel: state.news[index],
@@ -238,8 +265,11 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                                   history: userData.history!
                                                     ..add(state.news[index]))));
                                           _newsBloc.add(LikeNewsEvent(
-                                              likedNews: state.news[index].copyWith(
-                                                  likes: state.news[index].likes! + 1)));
+                                              likedNews: state.news[index]
+                                                  .copyWith(
+                                                      likes: state.news[index]
+                                                              .likes! +
+                                                          1)));
                                         }
                                       } else {
                                         showModalBottomSheet(
@@ -257,24 +287,32 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                               return Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius:
-                                                      BorderRadius.circular(10.r),
+                                                      BorderRadius.circular(
+                                                          10.r),
                                                   color: AppColors.appWhite,
                                                 ),
-                                                constraints:
-                                                    BoxConstraints(maxHeight: 170.h),
+                                                constraints: BoxConstraints(
+                                                    maxHeight: 170.h),
                                                 margin: EdgeInsets.symmetric(
-                                                    horizontal: 18.w, vertical: 25.h),
+                                                    horizontal: 18.w,
+                                                    vertical: 25.h),
                                                 child: Column(
                                                   children: [
                                                     Padding(
-                                                      padding: EdgeInsets.symmetric(
-                                                          vertical: 20.h),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 20.h),
                                                       child: InkWell(
-                                                        onTap: () => Navigator.of(context)
-                                                            .pushNamed(LoginScreen.route),
+                                                        onTap: () =>
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pushNamed(
+                                                                    LoginScreen
+                                                                        .route),
                                                         child: Text(
                                                           ' Login to Continue',
-                                                          style: AppStyle.semiBoldText16
+                                                          style: AppStyle
+                                                              .semiBoldText16
                                                               .copyWith(
                                                                   color: AppColors
                                                                       .darkBlueShade2),
@@ -282,16 +320,19 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                                       ),
                                                     ),
                                                     Padding(
-                                                      padding: EdgeInsets.symmetric(
-                                                          horizontal: 28.w,
-                                                          vertical: 20.h),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 28.w,
+                                                              vertical: 20.h),
                                                       child: Row(
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment.spaceAround,
+                                                            MainAxisAlignment
+                                                                .spaceAround,
                                                         children: [
                                                           AppOutlinedButton(
                                                               onTap: () {
-                                                                Navigator.of(context)
+                                                                Navigator.of(
+                                                                        context)
                                                                     .pop();
                                                               },
                                                               buttonText:
@@ -306,7 +347,8 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                       }
                                     },
                                     onTapComment: () {
-                                      Navigator.of(context).pushNamed(CommentScreen.route,
+                                      Navigator.of(context).pushNamed(
+                                          CommentScreen.route,
                                           arguments: state.news[index]);
                                     },
                                     onTapBookmark: () {
@@ -337,24 +379,32 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                               return Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius:
-                                                      BorderRadius.circular(10.r),
+                                                      BorderRadius.circular(
+                                                          10.r),
                                                   color: AppColors.appWhite,
                                                 ),
-                                                constraints:
-                                                    BoxConstraints(maxHeight: 170.h),
+                                                constraints: BoxConstraints(
+                                                    maxHeight: 170.h),
                                                 margin: EdgeInsets.symmetric(
-                                                    horizontal: 18.w, vertical: 25.h),
+                                                    horizontal: 18.w,
+                                                    vertical: 25.h),
                                                 child: Column(
                                                   children: [
                                                     Padding(
-                                                      padding: EdgeInsets.symmetric(
-                                                          vertical: 20.h),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 20.h),
                                                       child: InkWell(
-                                                        onTap: () => Navigator.of(context)
-                                                            .pushNamed(LoginScreen.route),
+                                                        onTap: () =>
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pushNamed(
+                                                                    LoginScreen
+                                                                        .route),
                                                         child: Text(
                                                           ' Login to Continue',
-                                                          style: AppStyle.semiBoldText16
+                                                          style: AppStyle
+                                                              .semiBoldText16
                                                               .copyWith(
                                                                   color: AppColors
                                                                       .darkBlueShade2),
@@ -362,16 +412,19 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                                       ),
                                                     ),
                                                     Padding(
-                                                      padding: EdgeInsets.symmetric(
-                                                          horizontal: 28.w,
-                                                          vertical: 20.h),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 28.w,
+                                                              vertical: 20.h),
                                                       child: Row(
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment.spaceAround,
+                                                            MainAxisAlignment
+                                                                .spaceAround,
                                                         children: [
                                                           AppOutlinedButton(
                                                               onTap: () {
-                                                                Navigator.of(context)
+                                                                Navigator.of(
+                                                                        context)
                                                                     .pop();
                                                               },
                                                               buttonText:
@@ -392,28 +445,25 @@ class _MyFeedScreenState extends State<MyFeedScreen> {
                                     onTapMenu: () {
                                       Navigator.of(context).pushNamed(
                                           SingleNewsScreen.route,
-                                          arguments: [index, state.news, userData]);
+                                          arguments: [
+                                            index,
+                                            state.news,
+                                            userData
+                                          ]);
                                     },
                                     isBookmark: userData == null
                                         ? false
-                                        : userData.bookmarks!
-                                            .any((e) => state.news[index].id == e.id),
+                                        : userData.bookmarks!.any((e) =>
+                                            state.news[index].id == e.id),
                                     isHeart: userData == null
                                         ? false
-                                        : userData.history!
-                                            .any((e) => state.news[index].id == e.id),
-                                    channelImage: state.news[index].channel.channelImage,
+                                        : userData.history!.any((e) =>
+                                            state.news[index].id == e.id),
+                                    channelImage:
+                                        state.news[index].channel.channelImage,
                                     imageUrl: state.news[index].newsImage,
                                   ),
                                 );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return const ColoredBox(
-                              color: AppColors.appWhite,
-                              child: Divider(
-                                thickness: 1.5,
-                                height: 14,
-                              ));
                         },
                       );
               } else {
